@@ -334,10 +334,10 @@ body{font-size:16px;line-height:1.4;background:var(--bg);color:var(--tx)}
 <div class="gi"><div class="gx"><b>Chờ giữa 2 lần quét cùng mã</b></div><div class="seg"><label class="sg"><input type="radio" name="cd" data-k="cd" value="500"><span>0.5 giây</span></label><label class="sg"><input type="radio" name="cd" data-k="cd" value="1000"><span>1 giây</span></label><label class="sg"><input type="radio" name="cd" data-k="cd" value="1500"><span>1.5 giây</span></label><label class="sg"><input type="radio" name="cd" data-k="cd" value="2000"><span>2 giây</span></label></div></div>
 <div class="gi r"><div class="gx"><b>Camera 1080p</b><small>Nét hơn nhưng nặng máy hơn – tắt nếu thấy giật</small></div><input type="checkbox" data-k="hd"></div></div>
 <div class="gt">Đọc 7 số (SKU) trên tem</div>
-<div class="grp"><div class="gi"><div class="gx"><small>Khi tem có mã vạch 13 số mà mã đó chưa có trong danh mục, app sẽ đọc thêm dãy 7 số in trên tem. Số lạ (không có trong danh mục) phải đọc trùng 3 lần mới được nhận để tránh sai; số có trong danh mục chỉ cần 1–2 lần nên rất nhanh.</small></div></div>
+<div class="grp"><div class="gi"><div class="gx"><small>Mã vạch 13 số và dãy 7 số (SKU) in trên tem là HAI thứ khác nhau, không liên quan gì đến nhau. App không lấy bất kỳ con số nào trong mã 13 số để làm SKU. Chỉ khi mã 13 số chưa có trong danh mục, app mới cố đọc chữ 7 số in trên tem; đọc được thì điền, không đọc được thì để trống. Số lạ (không có trong danh mục) phải đọc trùng 3 lần mới được nhận để tránh sai; số có trong danh mục chỉ cần 1–2 lần nên rất nhanh.</small></div></div>
 <div class="gi r"><div class="gx"><b>Tự đọc khi Test giá</b><small>Quét mã 13 số không có trong danh mục → đọc 7 số trên tem rồi hiện giá và khuyến mãi.</small></div><input type="checkbox" data-k="ocrTest"></div>
-<div class="gi r"><div class="gx"><b>Tự đọc khi Scan barcode</b><small>Mỗi lần quét, tự điền 7 số vào cột SKU. Đọc không được thì để trống – bạn bấm nút hình thẻ giá cạnh dòng để nhập tay.</small></div><input type="checkbox" data-k="ocrScan"></div>
-<div class="gi r"><div class="gx"><b>Lấy SKU từ tem nội bộ (mã 2000…)</b><small>Mã 13 số bắt đầu bằng 2000 là tem cửa hàng tự in, SKU nằm sẵn trong mã. Bật thì lấy luôn 7 số ở giữa, không cần đọc chữ. Ví dụ: 2000112345678 → SKU 1234567. Chỉ dùng khi mã chưa có trong danh mục.</small></div><input type="checkbox" data-k="osku"></div>
+<div class="gi r"><div class="gx"><b>Tự đọc khi Scan barcode</b><small>Chỉ chạy khi nút "Tên&giá" ở màn hình Scan barcode đang bật và mã 13 số chưa có trong danh mục. Đọc được thì tự điền 7 số vào cột SKU; đọc không được thì để trống – bạn bấm nút hình thẻ giá cạnh dòng để nhập tay.</small></div><input type="checkbox" data-k="ocrScan"></div>
+
 <div class="gi"><div class="gx"><b>Bộ đọc chữ</b><small id="ocrst">…</small></div></div></div>
 <div class="gt">Độ chính xác khi quét mã vạch</div>
 <div class="grp"><div class="gi r"><div class="gx"><b>Xác nhận 3 lần liên tiếp</b><small>Áp dụng cho Kiểm kê, Scan và Test giá. Chính xác tuyệt đối; tắt để quét nhanh hơn (đọc trùng 2 lần)</small></div><input type="checkbox" data-k="kkStrict"></div></div>
@@ -396,7 +396,7 @@ function parseRange(t){t=String(t);let P=[],m;const iso=/(\d{4})-(\d{1,2})-(\d{1
  const f=p=>new Date(p[0],p[1]-1,p[2]),e=f(P[P.length-1]);e.setHours(23,59,59);return[f(P[0]),e]}
 function status(t){const r=parseRange(t),n=new Date();if(!r)return['Chưa rõ thời gian','var(--mu)','on'];return n<r[0]?['Chưa tới hạn KM','var(--wa)','off']:n>r[1]?['Đã hết hạn KM','var(--bad)','off']:['Đang khuyến mãi','var(--ok)','on']}
 function lookup(raw){const code=String(raw).trim().replace(/\s/g,'');const row=catBar[key(code)];let sku=row&&row.s;if(!sku&&DB.om&&DB.om[code])sku=DB.om[code];if(!sku&&OM2[code])sku=OM2[code];
- if(!sku){if(/^\d{7}$/.test(code))sku=code;else if(CFG.osku&&/^2000\d{9}$/.test(code))sku=code.substr(5,7)}
+ if(!sku){if(/^\d{7}$/.test(code))sku=code}
  const cat=row||catSku[sku],pr=(sku&&proSku[sku])||[],act=pr.filter(p=>status(p.d)[2]==='on');
  const l0=(pr[0]&&pr[0].l)||(cat&&cat.p)||0,ap=act.filter(p=>p.p>0);
  return{code,sku:sku||'',cat,pr,found:!!(cat||pr.length),name:(pr[0]&&pr[0].n)||(cat&&cat.n)||'',list:l0,price:ap.length?Math.min(...ap.map(p=>p.p)):l0,promo:act.length>0}}
@@ -717,7 +717,7 @@ function manualCancel(){if(askBusy&&QK.manual){askBusy=false;QK={c:'',box:null,s
 function add(c,q,force,box){c=String(c).trim();if(!c||!cur)return;if(!force&&cool(c))return;lastC=c;lastT=Date.now();
  const L=lookup(c),r={c,q,t:Date.now()};if(cur.type==='tc'){r.b=/^\d{13}$/.test(c)?c:(L.cat&&L.cat.b)||'';r.s=L.sku||''}
  cur.rows.push(r);saveSS();fb(cur.type==='tc'||L.found);$('code').value='';if(!CFG.scanN&&CFG.sl1)$('qty').value=1;$('sp').textContent='SP: '+(L.name||'Không có trong danh mục');$('gia').textContent='Giá: '+(L.price?fmt(L.price):'-');renderS();
- if(cur.type==='tc'&&CFG.ocrScan&&!r.s&&/^\d{13}$/.test(c)&&box&&stream)bgOCR(r,box)}
+ if(cur.type==='tc'&&CFG.ocrScan&&CFG.np&&!r.s&&/^\d{13}$/.test(c)&&box&&stream)bgOCR(r,box)}
 async function bgOCR(r,box){const sku=await resolve7(r.c,box,false);if(sku){r.s=sku;rememberSku(r.c,sku);saveSS();fb(true,'sku');if(HS[HS.length-1]==='ses')renderS()}}
 $('code').onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();codeSubmit()}};$('code').addEventListener('input',manualCancel);$('codeok').onclick=codeSubmit;
 $('qty').onkeydown=e=>{if(e.key==='Enter'&&askBusy&&QK.manual){e.preventDefault();manualDone()}};
