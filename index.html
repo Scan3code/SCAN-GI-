@@ -270,6 +270,90 @@ body{font-size:16px;line-height:1.4;background:var(--bg);color:var(--tx)}
 #ocrst{font-weight:600}
 :focus-visible{outline:3px solid var(--ac);outline-offset:2px}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+/* ===== GIAO DIỆN v3: màu chữ nổi bật, ô giá to rõ, trùng CTKM, thẻ thành viên ===== */
+:root:root{--wn-bg:#fff4d6;--wn-bd:#f59e0b;--wn-tx:#6b3a05;--wn-hd:#b45309;--pcard:#0f172a}
+@media (prefers-color-scheme:dark){:root:root:not([data-theme="light"]){--wn-bg:#3a2a06;--wn-bd:#f59e0b;--wn-tx:#fde9a8;--wn-hd:#fcd34d}}
+:root:root[data-theme="dark"]{--wn-bg:#3a2a06;--wn-bd:#f59e0b;--wn-tx:#fde9a8;--wn-hd:#fcd34d}
+/* thẻ sản phẩm */
+#pout .card{padding:14px}
+#pout .nm{font-size:19px;line-height:1.3;font-weight:800;color:var(--tx);margin-bottom:6px}
+#pinfo{background:linear-gradient(135deg,var(--in),var(--card));color:var(--ac);font-size:14.5px;letter-spacing:.3px;border:1.5px solid var(--line)}
+.pl{border-left:5px solid var(--ac);background:var(--in)}
+.pl small{color:var(--mu);font-weight:700}
+.pl .v{color:var(--tx);font-weight:800;font-variant-numeric:tabular-nums}
+.pl .v.cut{color:var(--mu);opacity:1}
+.sect{display:block;margin:16px 2px 8px;font-size:13px;font-weight:900;letter-spacing:.8px;text-transform:uppercase;color:var(--ac)}
+.card>.tm{margin:6px 0}
+/* ô giá */
+.g2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:10px 0}
+.g2>.pbx:last-child:nth-child(odd),.g2>.pbx.full{grid-column:1/-1}
+.pbx{position:relative;min-width:0;overflow:hidden;border-radius:18px;padding:12px 10px 10px;color:#fff;text-align:center;box-shadow:0 8px 20px rgba(15,23,42,.22);word-break:break-word}
+.pbx.full{margin:10px 0}
+.g2>.pbx.full{margin:0}
+.pbx .bl{font-size:12px;font-weight:900;letter-spacing:.6px;text-transform:uppercase}
+.pbx .bp{margin:4px 0 6px;line-height:1.05;font-weight:900;white-space:nowrap;font-variant-numeric:tabular-nums}
+.pbx .pn{font-size:24px;font-size:clamp(16px,6.6vw,34px)}.pbx .pn.b{font-size:22px;font-size:clamp(15px,5.6vw,30px)}.pbx .pn.c{font-size:20px;font-size:clamp(14px,5vw,27px)}.pbx .pn.d{font-size:18px;font-size:clamp(14px,4.4vw,24px)}
+.pbx.full .pn{font-size:32px;font-size:clamp(26px,9vw,44px)}.pbx.full .pn.b{font-size:28px;font-size:clamp(24px,7.6vw,40px)}.pbx.full .pn.c{font-size:26px;font-size:clamp(22px,6.8vw,36px)}.pbx.full .pn.d{font-size:24px;font-size:clamp(20px,6vw,32px)}
+.pbx .pu{font-size:.55em;font-weight:800;margin-left:2px}
+@supports (container-type:inline-size){.pbx{container-type:inline-size}.pbx .pn{font-size:clamp(15px,17cqw,40px)}.pbx .pn.b{font-size:clamp(14px,14cqw,40px)}.pbx .pn.c{font-size:clamp(14px,12.5cqw,38px)}.pbx .pn.d{font-size:clamp(13px,11cqw,34px)}.pbx.full .pn{font-size:clamp(26px,17cqw,52px)}.pbx.full .pn.b{font-size:clamp(24px,14cqw,48px)}.pbx.full .pn.c{font-size:clamp(22px,12.5cqw,44px)}.pbx.full .pn.d{font-size:clamp(20px,11cqw,40px)}}
+.pbx .bt{margin-top:6px;padding:5px 8px;border-radius:10px;background:rgba(0,0,0,.22);font-size:12.5px;line-height:1.35;font-weight:700}
+.pbx .bt.hi{background:rgba(255,255,255,.92);color:#7f1d1d;font-weight:800}
+.pbx .tm{margin:6px 0 0;padding:6px 8px;border-radius:10px;background:rgba(255,255,255,.94);color:#111827;font-size:12.5px;line-height:1.3;font-weight:800}
+.pbx .tm.ok{color:#166534}.pbx .tm.bad{color:#991b1b}.pbx .tm.wa{color:#92400e}
+/* KM thường + các giá trùng */
+.pbx.km,.pbx.c1{background:linear-gradient(135deg,#dc2626,#f97316)}
+.pbx.c2{background:linear-gradient(135deg,#0f766e,#0891b2)}
+.pbx.c3{background:linear-gradient(135deg,#be185d,#e11d48)}
+.pbx.c4{background:linear-gradient(135deg,#1d4ed8,#3b82f6)}
+/* thẻ thành viên */
+.pbx.dong{background:linear-gradient(135deg,#7c2d12,#c2410c)}
+.pbx.bac{background:linear-gradient(135deg,#f1f5f9,#94a3b8);color:#0f172a}
+.pbx.vang{background:linear-gradient(135deg,#fde047,#f59e0b);color:#422006}
+.pbx.bachkim{background:linear-gradient(135deg,#5b21b6,#8b5cf6)}
+.pbx.mx{background:linear-gradient(135deg,#1e293b,#1e3a8a)}
+.pbx.bac .bt,.pbx.vang .bt{background:rgba(0,0,0,.12);color:inherit}
+/* cảnh báo trùng CTKM */
+.cfl{margin:12px 0 8px;padding:10px 12px;border:2px solid var(--wn-bd);border-radius:16px;background:var(--wn-bg);color:var(--wn-tx)}
+.cfl b{display:block;font-size:17px;line-height:1.25;color:var(--wn-hd);letter-spacing:.2px}
+.cfl span{display:block;margin-top:4px;font-size:14px;line-height:1.4;font-weight:600}
+/* khối KM có thể lệ (cũ) – màu nổi hơn */
+.kmb{border:1.5px solid #fda4af;box-shadow:0 6px 16px rgba(225,29,72,.14)}
+.kmb h5{font-weight:900}.kmb h3{font-weight:900}
+.kd b.p{color:var(--pc);font-weight:900}
+/* giỏ hàng */
+.ctl2{flex:1;min-width:0}
+#cwn{display:block;margin-top:2px;color:#fde047;font-weight:800;font-size:12.5px;line-height:1.3}
+#cwn:empty{display:none}
+.ci .nt{display:inline-block;padding:1px 8px;border-radius:10px;background:var(--in);color:var(--bad);font-weight:800;font-size:12.5px}
+.ci .mh{grid-column:1/-1;font-size:13px;font-weight:800;color:var(--ac);line-height:1.35}
+.ci .cfw{grid-column:1/-1;padding:8px;border:2px solid var(--wn-bd);border-radius:14px;background:var(--wn-bg)}
+.ci .cfw.okc{border-color:var(--ok);background:var(--in)}
+.cfw .cft{margin-bottom:6px;font-size:13.5px;font-weight:900;line-height:1.3;color:var(--wn-hd)}
+.cfw.okc .cft{color:var(--ok)}
+.cfw .g2{margin:0}
+.cfb{display:flex;flex-direction:column;align-items:center;gap:1px;width:100%;min-width:0;padding:8px 4px;border-radius:12px;border:2px solid var(--line);background:var(--card);color:var(--tx);box-shadow:none}
+.cfb .cl{font-size:11.5px;font-weight:800;color:var(--mu)}
+.cfb .cn{font-size:20px;font-size:clamp(17px,5.4vw,23px);font-weight:900;color:var(--pc);white-space:nowrap}
+.cfb .cd2{font-size:11.5px;line-height:1.25;font-weight:600;color:var(--mu);word-break:break-word;text-align:center}
+.cfb.sel{background:#16a34a;border-color:#15803d}
+.cfb.sel .cl,.cfb.sel .cn,.cfb.sel .cd2{color:#fff}
+.tm small{display:block;margin-top:1px;font-size:11.5px;font-weight:700;opacity:.9}
+.pl .v{font-size:26px;font-size:clamp(20px,7.4vw,32px)}
+
+/* gọn lại: banner Tra giá + chọn giá trong giỏ */
+.cfl{margin:10px 0 6px;padding:6px 10px;border-width:1.5px;border-radius:12px}
+.cfl b{font-size:15px}
+.ci .cfw{display:flex;flex-wrap:wrap;align-items:stretch;gap:6px;padding:6px 8px;border-width:1px;border-radius:12px}
+.cfw .cft{flex:1 1 100%;margin:0;font-size:12.5px;font-weight:800}
+.cfw.okc .cft{flex:0 0 auto;align-self:center}
+.cfb{flex:1 1 0;width:auto;gap:0;padding:5px 8px;border-width:1.5px;border-radius:10px}
+.cfb .cn{font-size:14px}
+.cfb .cd2{font-size:10.5px}
+.cfw.okc .cfb{flex:0 0 auto}
+.cfw.okc .cfb:not(.sel){opacity:.7}
+.ci .mh{font-size:12.5px;font-weight:700}
+
 </style></head><body>
 
 <section class="scr home on" id="home">
@@ -314,7 +398,7 @@ body{font-size:16px;line-height:1.4;background:var(--bg);color:var(--tx)}
 <div id="tierw" class="tier" style="display:none"><div class="chips" id="tchips"><button data-t="none">Không thẻ</button><button data-t="dong">Đồng</button><button data-t="bac">Bạc</button><button data-t="vang">Vàng</button><button data-t="bachkim">Bạch kim</button></div></div>
 <div class="cam" id="cam2"><div class="frame"><i></i></div><div class="ctl"><button class="cb zin" onclick="zoomBy(-1)">−</button><b class="zv">1.0×</b><button class="cb zin" onclick="zoomBy(1)">+</button><button class="cb tcb" onclick="torch()">🔦</button><button class="cb lcb" onclick="nextLens()">🔄</button></div><div class="ocrb"></div><div class="camov" onclick="enableCam()"></div></div>
 <div class="sc"><div class="msg" id="pinfo">MÃ VẠCH: - | SKU: -</div><div id="pout"><div class="card nm">Vui lòng quét mã để kiểm tra giá...</div></div></div>
-<div id="ctot" class="ctot" style="display:none"><div class="ctl2"><span class="tl">TỔNG CỘNG</span><b id="ctv">0 VNĐ</b><small id="ctn"></small><small id="csv"></small></div><button class="ib ghost" onclick="cartClr()" aria-label="Xóa giỏ hàng"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button></div>
+<div id="ctot" class="ctot" style="display:none"><div class="ctl2"><span class="tl">TỔNG CỘNG</span><b id="ctv">0 VNĐ</b><small id="ctn"></small><small id="csv"></small><small id="cwn"></small></div><button class="ib ghost" onclick="cartClr()" aria-label="Xóa giỏ hàng"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button></div>
 <div id="pagainw" style="padding:8px 12px"><button class="big" style="background:#0a84ff;margin:0" onclick="pagain()">⚡ QUÉT TIẾP SẢN PHẨM KHÁC</button></div></section>
 
 <section class="scr set" id="set"><div class="hd"><button class="bk ib"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button><span>Cài đặt</span></div><div class="sc">
@@ -400,18 +484,42 @@ function lookup(raw){const code=String(raw).trim().replace(/\s/g,'');const row=c
  const cat=row||catSku[sku],pr=(sku&&proSku[sku])||[],act=pr.filter(p=>status(p.d)[2]==='on');
  const l0=(pr[0]&&pr[0].l)||(cat&&cat.p)||0,ap=act.filter(p=>p.p>0);
  return{code,sku:sku||'',cat,pr,found:!!(cat||pr.length),name:(pr[0]&&pr[0].n)||(cat&&cat.n)||'',list:l0,price:ap.length?Math.min(...ap.map(p=>p.p)):l0,promo:act.length>0}}
+/* ===== v3: TRÙNG CTKM + GIÁ THẺ THÀNH VIÊN ===== */
+const isMem=p=>memberOK(p,'none')!==null;
+const TORD=['dong','bac','vang','bachkim'];
+const tiersOf=p=>{const t=norm(p.t),o=[];if(/\bdong\b/.test(t))o.push('dong');if(/\bbac\b/.test(t))o.push('bac');if(/\bvang\b/.test(t))o.push('vang');if(/\bbach kim\b/.test(t))o.push('bachkim');return o};
+const uq=a=>a.filter((x,i)=>a.indexOf(x)===i);
+const dtm=d=>{const st=status(d),c=st[2]==='off'?(/hết/.test(st[0])?'bad':'wa'):'ok';return`<div class="tm ${c}">⏰ ${esc(d||'Chưa rõ thời gian')}<small>${st[0]}</small></div>`};
+const pnum=n=>{const s=n.toLocaleString('vi-VN'),k=s.length<=7?'a':s.length<=9?'b':s.length===10?'c':'d';return`<span class="pn ${k}">${s}</span><span class="pu">đ</span>`};
+/* Trùng CTKM = các dòng KM đang chạy, KHÔNG phải KM thẻ thành viên, có giá KM khác nhau */
+function conf(L){const m=new Map();(L.pr||[]).forEach(p=>{if(status(p.d)[2]!=='on'||isMem(p)||!(p.p>0))return;(m.get(p.p)||m.set(p.p,[]).get(p.p)).push(p)});
+ return m.size>1?Array.from(m.entries()).sort((a,b)=>a[0]-b[0]).map(e=>({p:e[0],rows:e[1]})):[]}
+function t2(p,l){const t=String(p.t);let m=t.match(/thứ\s*2.*?(\d[\d.]*)\s*(?:đ|vnd)/i);if(m&&l)return l+num(m[1]);m=t.match(/mua\s*2.*?giá\s*(\d[\d.]*)\s*(?:đ|vnd)/i);if(m)return num(m[1]);return/mua\s*1\s*tặng\s*1/i.test(t)&&l?l:0}
+const genT=t=>/^(thanh vien|member|vip|the)?[\s,\/\-]*((hang\s*)?(dong|bac|vang|bach kim)[\s,\/\-]*(va\s*)?)*$/.test(norm(t));
+function pbox(cls,lab,pr,rows,l){const tl=uq(rows.map(p=>String(p.t||'').trim()).filter(Boolean)).filter(t=>!(/^mem/.test(cls)&&genT(t))),ds=uq(rows.map(p=>p.d||'')),t2s=uq(rows.map(p=>t2(p,l)).filter(Boolean));
+ return`<div class="pbx ${cls}"><div class="bl">${lab}</div><div class="bp">${pnum(pr)}</div>${tl.map(t=>`<div class="bt">${esc(t)}</div>`).join('')}${t2s.map(T=>`<div class="bt hi">→ Mua 2 sản phẩm giá ${fmt(T)}</div>`).join('')}${ds.map(dtm).join('')}</div>`}
+/* KM thẻ thành viên: mỗi mức giá 1 ô to, xếp 2 ô cạnh nhau (nhiều ô thì xuống hàng, ô lẻ chiếm cả hàng) */
+function memBoxes(MEM,l){const g=new Map(),tx=[];
+ MEM.forEach(p=>{if(p.p>0){const T=tiersOf(p),k=p.p+'|'+T.join(',');(g.get(k)||g.set(k,{p:p.p,T,rows:[]}).get(k)).rows.push(p)}else tx.push(p)});
+ const arr=Array.from(g.values()).sort((a,b)=>{const x=a.T.length?TORD.indexOf(a.T[0]):99,y=b.T.length?TORD.indexOf(b.T[0]):99;return x-y||a.p-b.p});
+ let h=arr.map(o=>pbox('mem '+(o.T.length===1?o.T[0]:'mx'),'💳 '+(o.T.length?'THẺ '+o.T.map(x=>TIERS[x].toUpperCase()).join(' · '):'THÀNH VIÊN'),o.p,o.rows,l)).join('');
+ if(tx.length){const tl=uq(tx.map(p=>String(p.t||'').trim()).filter(Boolean)),ds=uq(tx.map(p=>p.d||''));
+  h+=`<div class="pbx mem mx full"><div class="bl">💳 ƯU ĐÃI THÀNH VIÊN</div>${tl.map(t=>`<div class="bt">${esc(t)}</div>`).join('')}${ds.map(dtm).join('')}</div>`}
+ return`<div class="g2">${h}</div>`}
+function memLine(L){return(L.pr||[]).some(p=>status(p.d)[2]==='on'&&isMem(p)&&p.p>0)?'<div class="mh">💳 Áp dụng theo thẻ thành viên</div>':''}
+function cfHTML(cf,pk,i){if(!cf.length)return'';
+ return`<div class="cfw${pk?' okc':''}"><span class="cft">${pk?'✓ Giá KM':'⚠️ Trùng CTKM – chọn giá'}</span>${cf.map(g=>`<button class="cfb${g.p===pk?' sel':''}" data-i="${i}" data-a="pick" data-v="${g.p}"><span class="cn">${g.p.toLocaleString('vi-VN')}đ</span>${pk?'':`<span class="cd2">${esc(uq(g.rows.map(x=>x.d||'')).join(' | '))}</span>`}</button>`).join('')}</div>`}
 function card(L){if(!L.found){const b13=/^\d{13}$/.test(L.code)?L.code:'';return`<div class="card">${b13?`<svg id="bc" data-v="${b13}"></svg>`:''}<div class="nm">${L.sku?'Sản phẩm '+esc(L.sku):'Không tìm thấy mã '+esc(L.code)}</div><div class="mu">${DB.cat.length?'Mã này không có trong dữ liệu danh mục / khuyến mãi.':'Chưa có dữ liệu – vào ⚙️ Cài đặt để đồng bộ.'}</div>${b13&&!L.sku?'<div class="hintl"><b>Nhập SKU 7 số in trên tem</b> vào ô tra cứu phía trên rồi bấm Tìm.</div>':''}</div>`}
- const bc=/^\d{13}$/.test(L.code)?L.code:(L.cat&&/^\d{13}$/.test(L.cat.b)?L.cat.b:''),l=L.list,AP=L.pr.filter(p=>status(p.d)[2]==='on'),NP=L.pr.filter(p=>status(p.d)[2]!=='on'),hp=AP.some(p=>p.p>0),plain=[],ruled=[];
- AP.forEach(p=>(String(p.t||'').trim()?ruled:plain).push(p));
- const dt=d=>{const st=status(d),c=st[2]==='off'?(/hết/.test(st[0])?'bad':'wa'):'ok';return`<div class="tm ${c}" style="margin-bottom:6px">⏰ ${esc(d||'Chưa rõ thời gian')} · ${st[0]}</div>`};
+ const bc=/^\d{13}$/.test(L.code)?L.code:(L.cat&&/^\d{13}$/.test(L.cat.b)?L.cat.b:''),l=L.list,AP=L.pr.filter(p=>status(p.d)[2]==='on'),NP=L.pr.filter(p=>status(p.d)[2]!=='on'),hp=AP.some(p=>p.p>0),plain=[],ruled=[],MEM=[],CF=conf(L);
+ AP.forEach(p=>{if(isMem(p))MEM.push(p);else(String(p.t||'').trim()?ruled:plain).push(p)});
  let h=`<div class="card">${bc?`<svg id="bc" data-v="${bc}"></svg>`:''}<div class="nm">${esc(L.name)}</div>${stk(L.sku)}<div class="pl"><small>Giá niêm yết${L.pr[0]&&L.pr[0].u?' / '+esc(L.pr[0].u):''}:</small><div class="v${hp?' cut':''}">${l?fmt(l):'-'}</div></div>`;
- const byP=new Map();plain.forEach(p=>{if(!(p.p>0))return;const a=byP.get(p.p)||byP.set(p.p,[]).get(p.p);if(a.indexOf(p.d)<0)a.push(p.d)});
- byP.forEach((ds,pr)=>{h+=`<div class="kmb"><h5>GIÁ KHUYẾN MÃI:</h5><h3 style="font-size:34px;margin-bottom:8px">${fmt(pr)}</h3>${ds.map(dt).join('')}</div>`});
- const G=new Map();ruled.forEach(p=>{const k=p.t+'|'+p.d;(G.get(k)||G.set(k,[]).get(k)).push(p)});
+ if(CF.length){h+=`<div class="cfl"><b>⚠️ TRÙNG CTKM</b></div><div class="g2">${CF.map((g,j)=>pbox('c'+((j%4)+1),'Giá KM '+(j+1),g.p,g.rows,l)).join('')}</div>`}
+ else{const byP=new Map();plain.forEach(p=>{if(!(p.p>0))return;(byP.get(p.p)||byP.set(p.p,[]).get(p.p)).push(p)});byP.forEach((rs,pr)=>{h+=pbox('km full','GIÁ KHUYẾN MÃI',pr,rs,l)})}
+ if(MEM.length)h+='<div class="sect">💳 Giá thẻ thành viên</div>'+memBoxes(MEM,l);
+ const RL=CF.length?ruled.filter(p=>!(p.p>0)):ruled,G=new Map();RL.forEach(p=>{const k=p.t+'|'+p.d;(G.get(k)||G.set(k,[]).get(k)).push(p)});
  G.forEach(A=>{const sn0={};A=A.filter(p=>{const k=p.p+'|'+p.t;if(sn0[k])return false;sn0[k]=1;return true});const d=A[0].d,one=A.length===1&&A[0].p>0;
-  const tot=p=>{const t=String(p.t);let m=t.match(/thứ\s*2.*?(\d[\d.]*)\s*(?:đ|vnd)/i);if(m&&l)return l+num(m[1]);m=t.match(/mua\s*2.*?giá\s*(\d[\d.]*)\s*(?:đ|vnd)/i);if(m)return num(m[1]);return/mua\s*1\s*tặng\s*1/i.test(t)&&l?l:0};
-  const ln=A.map(p=>{const T=tot(p);return(p.p>0&&!one?`<p>• ${esc(p.t)} giá <b class="p">${fmt(p.p)}</b></p>`:`<p>• ${esc(p.t)}</p>`)+(T?`<p><b class="p">→ Mua 2 sản phẩm giá ${fmt(T)}</b></p>`:'')}).join('');
-  h+=`<div class="kmb"><h5>${one?'GIÁ KHUYẾN MÃI:':hp?'ƯU ĐÃI KHUYẾN MÃI':'THỂ LỆ KHUYẾN MÃI'}</h5>${one?`<h3 style="font-size:34px">${fmt(A[0].p)}</h3>`:'<h3>XEM CHI TIẾT BÊN DƯỚI</h3>'}<div class="kd"><p>📌 <b>CHI TIẾT ƯU ĐÃI:</b></p>${ln}</div></div>${dt(d)}`});
+  const ln=A.map(p=>{const T=t2(p,l);return(p.p>0&&!one?`<p>• ${esc(p.t)} giá <b class="p">${fmt(p.p)}</b></p>`:`<p>• ${esc(p.t)}</p>`)+(T?`<p><b class="p">→ Mua 2 sản phẩm giá ${fmt(T)}</b></p>`:'')}).join('');
+  h+=`<div class="kmb"><h5>${one?'GIÁ KHUYẾN MÃI:':hp?'ƯU ĐÃI KHUYẾN MÃI':'THỂ LỆ KHUYẾN MÃI'}</h5>${one?`<h3 style="font-size:34px">${fmt(A[0].p)}</h3>`:'<h3>XEM CHI TIẾT BÊN DƯỚI</h3>'}<div class="kd"><p>📌 <b>CHI TIẾT ƯU ĐÃI:</b></p>${ln}</div></div>${dtm(d)}`});
  const seenNP={};NP.forEach(p=>{const k=p.d+'|'+status(p.d)[0];if(seenNP[k])return;seenNP[k]=1;h+=`<div class="tm wa" style="margin-top:6px">⏳ ${status(p.d)[0]}: ${esc(p.d||'')}</div>`});
  return h+'</div>'}
 /* scanner */
@@ -790,9 +898,9 @@ function resume(){clearTimeout(idleT);$('cam2').style.display='';if(stream){v.pl
 const TIERS={dong:'Đồng',vang:'Vàng',bac:'Bạc',bachkim:'Bạch kim'};
 function memberOK(p,tier){const t=norm(p.t);if(!/thanh vien|member|vip/.test(t))return null;if(!tier||tier==='none')return false;
  const h={dong:/\bdong\b/.test(t),vang:/\bvang\b/.test(t),bac:/\bbac\b/.test(t),bachkim:/\bbach kim\b/.test(t)};return(h.dong||h.vang||h.bac||h.bachkim)?h[tier]:true}
-function calc(L,n,tier){const l=L.list||0,use=L.pr.filter(p=>{if(status(p.d)[2]!=='on')return false;const m=memberOK(p,tier);return m===null||m}),pp=use.filter(p=>p.p>0),u=pp.length?Math.min.apply(null,pp.map(p=>p.p)):l,
+function calc(L,n,tier,pick){const l=L.list||0,cf=conf(L),pk=cf.some(g=>g.p===pick)?pick:0,use=L.pr.filter(p=>{if(status(p.d)[2]!=='on')return false;const m=memberOK(p,tier);if(m===null)return!(pk&&p.p>0&&p.p!==pk);return m}),pp=use.filter(p=>p.p>0),u=pp.length?Math.min.apply(null,pp.map(p=>p.p)):l,
  mem=pp.some(p=>p.p===u&&memberOK(p,tier)===true);
- let b={t:n*u,note:pp.length?(mem?'Giá thẻ '+TIERS[tier]+' ':'Giá KM ')+fmt(u):''};
+ let b={t:n*u,note:pp.length?(mem?'Giá thẻ '+TIERS[tier]+' ':pk?'Giá KM đã chọn ':'Giá KM ')+fmt(u):''};
  use.forEach(p=>{const t=String(p.t);let r=null,m;
   if(m=t.match(/mua\s*(\d+)\s*tặng\s*(\d+)/i)){const a=+m[1],g=a+ +m[2];r=Math.floor(n/g)*a*u+Math.min(n%g,a)*u}
   else if(m=t.match(/thứ\s*2.*?(\d[\d.]*)\s*(?:đ|vnd)/i))r=Math.ceil(n/2)*u+Math.floor(n/2)*num(m[1]);
@@ -801,13 +909,13 @@ function calc(L,n,tier){const l=L.list||0,use=L.pr.filter(p=>{if(status(p.d)[2]!
  return b}
 async function cartAdd(c,force,box){c=String(c).trim();if(!c)return;if(!force&&cool(c))return;lastC=c;lastT=Date.now();let L=lookup(c);
  if(!L.found&&!L.sku&&/^\d{13}$/.test(c)&&CFG.ocrTest&&box&&stream){const sku=await resolve7(c,box,false);if(sku){rememberSku(c,sku);L=lookup(c)}}
- const k=L.sku||c;let r=CART.find(x=>x.k===k);if(r)r.q++;else CART.unshift({k,c,q:1});fb(L.found||!!L.sku);kv('cart',CART);renderCart()}
-function renderCart(){let tot=0,cnt=0,sav=0;const tier=CFG.tier||'none';
- const h=CART.map((r,i)=>{const L=lookup(r.c),cc=calc(L,r.q,tier);tot+=cc.t;cnt+=r.q;sav+=Math.max(0,(L.list||0)*r.q-cc.t);
-  return`<div class="ci"><div class="cm"><b class="${L.found?'':'bad'}">${esc(L.found?L.name:'Không có: '+r.c)}</b><div class="mu">${esc(L.sku||r.c)} · ${L.list?fmt(L.list):'-'}${cc.note?` · <span style="color:var(--bad)">${esc(cc.note)}</span>`:''}</div>${stk(L.sku)}</div><div class="cq"><button data-i="${i}" data-a="-">−</button><b>${r.q}</b><button data-i="${i}" data-a="+">+</button></div><div class="cp"><span>${fmt(cc.t)}</span><button class="ic" data-i="${i}" data-a="x">${TRS}</button></div></div>`}).join('');
+ const k=L.sku||c;let r=CART.find(x=>x.k===k);if(r)r.q++;else CART.unshift({k,c,q:1});fb(L.found||!!L.sku);kv('cart',CART);renderCart();{const it=CART.find(x=>x.k===k);if(conf(L).length&&!(it&&it.pick))toast('⚠️ Trùng CTKM – vào giỏ để chọn giá')}}
+function renderCart(){let tot=0,cnt=0,sav=0,unres=0;const tier=CFG.tier||'none';
+ const h=CART.map((r,i)=>{const L=lookup(r.c),cf=conf(L),pk=cf.some(g=>g.p===r.pick)?r.pick:0,cc=calc(L,r.q,tier,pk);if(cf.length&&!pk)unres++;tot+=cc.t;cnt+=r.q;sav+=Math.max(0,(L.list||0)*r.q-cc.t);
+  return`<div class="ci"><div class="cm"><b class="${L.found?'':'bad'}">${esc(L.found?L.name:'Không có: '+r.c)}</b><div class="mu">${esc(L.sku||r.c)} · ${L.list?fmt(L.list):'-'}${cc.note?` · <span class="nt">${esc(cc.note)}</span>`:''}</div>${stk(L.sku)}</div><div class="cq"><button data-i="${i}" data-a="-">−</button><b>${r.q}</b><button data-i="${i}" data-a="+">+</button></div><div class="cp"><span>${fmt(cc.t)}</span><button class="ic" data-i="${i}" data-a="x">${TRS}</button></div>${cfHTML(cf,pk,i)}${memLine(L)}</div>`}).join('');
  $('pout').innerHTML=CART.length?h:'<div class="card nm">🛒 Giỏ trống – quét mã để thêm sản phẩm</div>';
- $('ctn').textContent=`${CART.length} SP · SL ${cnt}`+(tier!=='none'?' · Thẻ '+TIERS[tier]:'');$('ctv').textContent=fmt(tot);$('csv').textContent=sav>0?'Tiết kiệm '+fmt(sav):''}
-$('pout').onclick=e=>{const b=e.target.closest('button[data-a]');if(!b||PM!==2)return;const i=+b.dataset.i,r=CART[i];if(b.dataset.a==='+')r.q++;else if(b.dataset.a==='-'){if(--r.q<1)CART.splice(i,1)}else CART.splice(i,1);kv('cart',CART);renderCart()};
+ $('ctn').textContent=`${CART.length} SP · SL ${cnt}`+(tier!=='none'?' · Thẻ '+TIERS[tier]:'');$('ctv').textContent=fmt(tot);$('csv').textContent=sav>0?'Tiết kiệm '+fmt(sav):'';$('cwn').textContent=unres?'⚠️ '+unres+' SP trùng CTKM chưa chọn giá (đang tạm tính giá thấp nhất)':''}
+$('pout').onclick=e=>{const b=e.target.closest('button[data-a]');if(!b||PM!==2)return;const i=+b.dataset.i,r=CART[i];if(b.dataset.a==='pick')r.pick=+b.dataset.v;else if(b.dataset.a==='+')r.q++;else if(b.dataset.a==='-'){if(--r.q<1)CART.splice(i,1)}else CART.splice(i,1);kv('cart',CART);renderCart()};
 function tierUI(){document.querySelectorAll('#tchips button').forEach(b=>b.classList.toggle('on',b.dataset.t===(CFG.tier||'none')))}
 document.querySelectorAll('#tchips button').forEach(b=>b.onclick=()=>{CFG.tier=b.dataset.t;saveCfg();tierUI();renderCart()});
 function cartClr(){if(CART.length&&confirm('Xóa toàn bộ giỏ hàng?')){CART=[];kv('cart',CART);renderCart()}}
