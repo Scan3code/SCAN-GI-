@@ -437,7 +437,8 @@ body{font-size:16px;line-height:1.4;background:var(--bg);color:var(--tx)}
 const $=id=>document.getElementById(id),dlg=$('dlg'),v=$('v');
 const TABS={s1:'04032026',s2:'Data_KhuyenMai',s3:'LichSuBanHang'}; // tên 3 tab trong Google Sheet (không hiện trong Cài đặt nữa)
 const DEFAULT_LINK='https://script.google.com/macros/s/AKfycbxrLbmWchZg6ASnSiAeHgK7oOZG_7pcrb3nXV0ti8U29HgyPtljO1WzQPMChrnu_FE/exec'; // <- dán link Apps Script (/exec) của bạn vào giữa 2 dấu nháy để mở web là có sẵn dữ liệu
-const LIVE_LINK='https://script.google.com/macros/s/AKfycby2rFzxcV4vgnkJyqIc4y9fN0bSWbHxP155wiWZ4u62UC5HZfm509kB-IVLVA8X33Y/exec'; // link Code.gs dùng cho nút tra cứu trực tiếp 🌐 const DEF={snd:1,vol:100,vib:1,vp:1,cd:1500,hold:1,ocrTest:1,ocrScan:1,kkStrict:1,scanN:0,tier:'none',cam:'',camAuto:'',zoom:0,hd:((navigator.hardwareConcurrency||4)>=6?1:0),ver:3,theme:0,osku:1,np:1,sl1:1,link:'',s1:'04032026',s2:'Data_KhuyenMai',s3:'LichSuBanHang'};
+const LIVE_LINK='https://script.google.com/macros/s/AKfycby2rFzxcV4vgnkJyqIc4y9fN0bSWbHxP155wiWZ4u62UC5HZfm509kB-IVLVA8X33Y/exec'; // link Code.gs dùng cho nút tra cứu trực tiếp 🌐
+const DEF={snd:1,vol:100,vib:1,vp:1,cd:1500,hold:1,ocrTest:1,ocrScan:1,kkStrict:1,scanN:0,tier:'none',cam:'',camAuto:'',zoom:0,hd:((navigator.hardwareConcurrency||4)>=6?1:0),ver:3,theme:0,osku:1,np:1,sl1:1,link:'',s1:'04032026',s2:'Data_KhuyenMai',s3:'LichSuBanHang'};
 let CFG={...DEF},DB={cat:[],promo:[],t:0},SS=[],cur=null,catBar={},catSku={},proSku={},HS=['home'],tabN=2;
 const norm=s=>String(s==null?'':s).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/đ/g,'d').trim();
 const num=x=>{const n=parseInt(String(x).replace(/\D/g,''),10);return isNaN(n)?0:n};
