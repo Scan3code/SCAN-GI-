@@ -340,12 +340,12 @@ body{font-size:16px;line-height:1.4;background:var(--bg);color:var(--tx)}
 .cfw.okc .cfb:not(.sel){opacity:.7}
 .ci .mh{font-size:12.5px;font-weight:700}
 
-</style><style id="kbfix">
+</style><style id="kbfix"> html,body{overscroll-behavior:none;overscroll-behavior-y:none}
 /* Bàn phím điện thoại: màn hình luôn nằm gọn phía trên bàn phím (--kb, --vt do JS tính từ visualViewport) */
 html .scr.on{top:var(--vt,0px);bottom:var(--kb,0px)}
 html.kb .scr.on{padding-bottom:0}
 /* Camera chỉ thu nhỏ vừa đủ (JS tính --camh theo chỗ trống thật, tối thiểu 140px), không cố định số nhỏ */
-html.kb .scr.on .cam{height:var(--camh,160px)!important;min-height:var(--camh,160px)!important;max-height:var(--camh,160px)!important}
+html.kb .scr.on .cam{height:var(--camh,160px)!important;min-height:var(--camh,160px)!important;max-height:var(--camh,160px)!important} .qk{position:fixed;z-index:60} .qk .kp{gap:6px}.qk .kp button{padding:10px 0;font-size:21px}.qk .qv{font-size:32px;min-height:40px} .chips2,.chips{touch-action:pan-x;overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch} .chips button.on{box-shadow:none} .hd2{touch-action:none}
 </style>
 <style id="brandfix">
 .brand{display:flex;align-items:center;gap:12px;min-width:0}
@@ -458,7 +458,7 @@ html.kb .scr.on .cam{height:var(--camh,160px)!important;min-height:var(--camh,16
 <div class="qk" id="qk"><div class="qh"><div style="flex:1;min-width:0"><b id="qkn"></b><span class="mu" id="qks"></span></div><button class="gr" onclick="qkCancel()" style="padding:8px 12px">✕ Bỏ</button></div><div class="qv" id="qkv">0</div><div class="kp" id="qkp"></div></div></section>
 
 <section class="sheet" id="det"><div class="grab" id="grab2"><i></i></div>
-<div class="hd2"><b id="dname"></b><span id="dsum"></span><button class="ib" onclick="closeDet()" aria-label="Đóng"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
+<div class="hd2"><b id="dname"></b><span id="dsum" style="text-align:right;line-height:1.3;font-size:15px;font-weight:800"></span><button class="ib" onclick="closeDet()" aria-label="Đóng"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
 <div class="acts"><button class="o" onclick="all()">Tra cứu</button><button class="g" onclick="xport(cur)">Excel</button><button onclick="share(cur)">Zalo</button><button class="dk" id="up" onclick="upload()">Sheet</button></div>
 <div class="tabs"><button class="on" id="t2" onclick="tab(2)">CỘNG DỒN (SKU)</button><button id="t1" onclick="tab(1)">DATA THÔ (LOG)</button></div>
 <div class="sc" id="dlist" style="padding:0"></div></section>
@@ -476,13 +476,9 @@ html.kb .scr.on .cam{height:var(--camh,160px)!important;min-height:var(--camh,16
 
 <section class="scr set" id="set"><div class="hd"><button class="bk ib"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button><span>Cài đặt</span></div><div class="sc">
 <div class="gt">Cách quét</div>
-<div class="grp"><div class="gi r"><div class="gx"><b>Nhấn giữ để quét</b><small>Kiểm kê &amp; Scan chỉ quét khi đang giữ nút. Tắt đi để quét liên tục.</small></div><input type="checkbox" data-k="hold"></div></div>
+<div class="grp"><div class="gi r"><div class="gx"><b>Nhấn giữ để quét</b><small>Kiểm kê &amp; Scan chỉ quét khi đang giữ nút. Tắt đi để quét liên tục.</small></div><input type="checkbox" data-k="hold"></div> <div class="gi r"><div class="gx"><b>Áp dụng cả khi Scan N</b><small>Mặc định tắt: chỉ Scan 1 mới phải giữ nút, Scan N luôn quét liên tục.</small></div><input type="checkbox" data-k="holdN"></div></div>
 <div class="gt">Giao diện</div>
 <div class="grp"><div class="gi"><div class="gx"><b>Chế độ màu</b><small>Tự động: đổi sáng/tối theo cài đặt của điện thoại</small></div><div class="seg"><label class="sg"><input type="radio" name="th" data-k="theme" value="0"><span>Tự động</span></label><label class="sg"><input type="radio" name="th" data-k="theme" value="1"><span>Sáng</span></label><label class="sg"><input type="radio" name="th" data-k="theme" value="2"><span>Tối</span></label></div></div></div>
-<div class="gt">Dữ liệu</div>
-<div class="grp"><div class="gi"><div class="gx"><b>Danh mục &amp; khuyến mãi</b><small id="stat2"></small><small id="stkst"></small></div></div>
-<div class="gi two"><button onclick="sync(1)">Đồng bộ ngay</button><button class="gr" onclick="chkStk()">Kiểm tra tồn</button></div>
-<details class="gi"><summary>Nạp file thủ công (khi không có mạng)</summary><div class="two" style="margin-top:8px"><button class="gr" onclick="chooseFile('cat')">Danh mục gốc</button><button class="gr" onclick="chooseFile('promo')">Khuyến mãi</button></div></details></div>
 <div class="gt">Âm thanh &amp; rung</div>
 <div class="grp"><div class="gi r"><div class="gx"><b>Âm báo khi quét</b></div><input type="checkbox" data-k="snd"></div>
 <div class="gi"><div class="gx"><b>Âm lượng</b><small>iPhone: âm báo vẫn kêu khi gạt chuông im lặng</small></div><input type="range" data-k="vol" min="10" max="100"></div>
@@ -500,7 +496,7 @@ html.kb .scr.on .cam{height:var(--camh,160px)!important;min-height:var(--camh,16
 <div class="gi"><div class="gx"><b>Bộ đọc chữ</b><small id="ocrst">…</small></div></div></div>
 <div class="gt">Độ chính xác khi quét mã vạch</div>
 <div class="grp"><div class="gi r"><div class="gx"><b>Xác nhận 3 lần liên tiếp</b><small>Áp dụng cho Kiểm kê, Scan và Test giá. Chính xác tuyệt đối; tắt để quét nhanh hơn (đọc trùng 2 lần)</small></div><input type="checkbox" data-k="kkStrict"></div></div>
-<div class="gt">Giảm giá theo vendor</div>
+<div class="gt">Dữ liệu</div> <div class="grp"><div class="gi"><div class="gx"><b>Danh mục &amp; khuyến mãi</b><small id="stat2"></small><small id="stkst"></small></div></div> <div class="gi two"><button onclick="sync(1)">Đồng bộ ngay</button><button class="gr" onclick="chkStk()">Kiểm tra tồn</button></div> <details class="gi"><summary>Nạp file thủ công (khi không có mạng)</summary><div class="two" style="margin-top:8px"><button class="gr" onclick="chooseFile('cat')">Danh mục gốc</button><button class="gr" onclick="chooseFile('promo')">Khuyến mãi</button></div></details></div> <div class="gt">Giảm giá theo vendor</div>
 <div class="grp"><div class="gi"><div class="gx"><b>Tình trạng dữ liệu vendor</b><small id="stat3"></small></div></div></div>
 <button class="big dk" style="margin-top:20px" onclick="reset()">Đặt lại mặc định</button></div></section>
 
@@ -515,7 +511,7 @@ const $=id=>document.getElementById(id),dlg=$('dlg'),v=$('v');
 const TABS={s1:'04032026',s2:'Data_KhuyenMai',s3:'LichSuBanHang'}; // tên 3 tab trong Google Sheet (không hiện trong Cài đặt nữa)
 const DEFAULT_LINK='https://script.google.com/macros/s/AKfycbxrLbmWchZg6ASnSiAeHgK7oOZG_7pcrb3nXV0ti8U29HgyPtljO1WzQPMChrnu_FE/exec'; // <- dán link Apps Script (/exec) của bạn vào giữa 2 dấu nháy để mở web là có sẵn dữ liệu
 const LIVE_LINK='https://script.google.com/macros/s/AKfycby2rFzxcV4vgnkJyqIc4y9fN0bSWbHxP155wiWZ4u62UC5HZfm509kB-IVLVA8X33Y/exec'; // link Code.gs dùng cho nút tra cứu trực tiếp 🌐
-const DEF={snd:1,snk:'def',vol:100,vib:1,vp:1,cd:1500,hold:1,ocrTest:1,ocrScan:1,kkStrict:1,scanN:0,tier:'none',cam:'',camAuto:'',zoom:0,hd:((navigator.hardwareConcurrency||4)>=6?1:0),ver:3,theme:0,osku:1,np:1,sl1:1,link:'',s1:'04032026',s2:'Data_KhuyenMai',s3:'LichSuBanHang'};
+const DEF={snd:1,snk:'def',vol:100,vib:1,vp:1,cd:1500,hold:0,holdN:0,ocrTest:1,ocrScan:1,kkStrict:1,scanN:0,tier:'none',cam:'',camAuto:'',zoom:0,hd:((navigator.hardwareConcurrency||4)>=6?1:0),ver:3,theme:0,osku:1,np:1,sl1:1,link:'',s1:'04032026',s2:'Data_KhuyenMai',s3:'LichSuBanHang'};
 let CFG={...DEF},DB={cat:[],promo:[],t:0},SS=[],cur=null,catBar={},catSku={},proSku={},HS=['home'],tabN=2;
 const norm=s=>String(s==null?'':s).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/đ/g,'d').trim();
 const num=x=>{const n=parseInt(String(x).replace(/\D/g,''),10);return isNaN(n)?0:n};
@@ -725,7 +721,7 @@ function fb(ok,k){haptic(ok);beep(k||(ok?'ok':'bad'))}
 const camMsg=t=>document.querySelectorAll('.camov').forEach(e=>{e.textContent=t;e.style.display=t?'flex':'none'});
 const ocrSt=t=>{try{OCRD.st=t;detUp()}catch(e){}document.querySelectorAll('.ocrb').forEach(e=>{e.textContent=t;e.style.display=t?'block':'none'})};
 const cool=c=>c===lastC&&Date.now()-lastT<CFG.cd;
-function armScan(){const id=HS[HS.length-1];scanning=id==='price'?$('cam2').style.display!=='none':id==='ses'?!CFG.hold:false}
+const holdOn=()=>!!CFG.hold&&(!CFG.scanN||!!CFG.holdN); function refreshHold(){const h=$('holdrow');if(h)h.style.display=holdOn()?'flex':'none';if(HS[HS.length-1]==='ses')scanning=!holdOn()} function armScan(){const id=HS[HS.length-1];scanning=id==='price'?$('cam2').style.display!=='none':id==='ses'?!holdOn():false}
 function enableCam(){camMsg('');startCam().then(ok=>{if(ok)armScan()})}
 function need(c){return CFG.kkStrict?3:2}
 function accept(d){let c=String(d.t).trim();if(/^\d{12}$/.test(c))c='0'+c;if(!c||!scanning||!H||askBusy)return;if(/^\d{13}$/.test(c)&&!eanOK(c))return;
@@ -956,10 +952,10 @@ const rememberSku=(bc,sku)=>{if(inData(sku)){DB.om=DB.om||{};DB.om[bc]=sku;saveD
 function openDlg(d){d.showModal?d.showModal():d.setAttribute('open','')}
 function closeDlg(d){d.close?d.close():d.removeAttribute('open')}
 /* navigation */
-function go(id,keep){try{var _a=document.activeElement;if(_a&&_a.blur&&/^(INPUT|TEXTAREA)$/.test(_a.tagName))_a.blur()}catch(e){}if(!keep&&HS[HS.length-1]!==id)HS.push(id);
+function go(id,keep){if(askBusy&&id!=='ses')qkCancel();try{var _a=document.activeElement;if(_a&&_a.blur&&/^(INPUT|TEXTAREA)$/.test(_a.tagName))_a.blur()}catch(e){}if(!keep&&HS[HS.length-1]!==id)HS.push(id);
  if(id==='ses'||id==='price')clearTimeout(idleT);else{scanning=false;clearTimeout(idleT);idleT=setTimeout(stopCam,id==='home'?3000:60000)}
  document.querySelectorAll('.scr').forEach(e=>e.classList.toggle('on',e.id===id));
- if(id==='ses'){bind();$('cam1').prepend(v);v.style.display='block';H=onSes;showSeq++;$('holdrow').style.display=CFG.hold?'flex':'none';scanning=!CFG.hold;if(stream)v.play&&v.play().catch(()=>{});startCam().then(ok=>{if(ok){armScan();warm()}});renderS()}
+ if(id==='ses'){bind();$('cam1').prepend(v);v.style.display='block';H=onSes;showSeq++;$('holdrow').style.display=holdOn()?'flex':'none';scanning=!holdOn();if(stream)v.play&&v.play().catch(()=>{});startCam().then(ok=>{if(ok){armScan();warm()}});renderS()}
  else if(id==='price'){fetchStock();$('cam2').style.display='';$('cam2').prepend(v);v.style.display='block';H=onPrice;scanning=true;if(stream)v.play&&v.play().catch(()=>{});startCam().then(ok=>{if(ok){armScan();warm()}})}
  else if(id==='det')renderD();else if(id==='list')renderL();else if(id==='set'){bind();ocrStat()}}
 function back(){if(SHEET){closeDet();return}HS.pop();go(HS[HS.length-1]||'home',1);if(HS.length<1)HS=['home']}
@@ -980,24 +976,37 @@ function pagain(){showSeq++;ocrCancel();$('pq').value='';$('pinfo').textContent=
 $('pgo').onclick=()=>{const c=$('pq').value.trim();if(!c)return;if(PM===2){cartAdd(c,1);$('pq').value=''}else showP(c)};$('pq').onkeydown=e=>{if(e.key==='Enter')$('pgo').click()};
 
 /* sessions */
-function newSes(type){const base=(type==='kk'?'Phiên Kiểm Kê ':'Phiên Tra Cứu ')+fd(Date.now());let nm=base,i=2;while(SS.some(x=>x.name===nm))nm=base+' ('+(i++)+')';cur={id:Date.now(),type,name:nm,t:Date.now(),rows:[]};SS.push(cur);saveSS();go('ses')}
+function newSes(type){CFG.scanN=0;const base=(type==='kk'?'Phiên Kiểm Kê ':'Phiên Tra Cứu ')+fd(Date.now());let nm=base,i=2;while(SS.some(x=>x.name===nm))nm=base+' ('+(i++)+')';cur={id:Date.now(),type,name:nm,t:Date.now(),rows:[]};SS.push(cur);saveSS();go('ses')}
 function newHere(){if(!cur)return;if(askBusy)return;renameDone(true);if(!cur.rows.length){toast('Phiên này còn trống – cứ quét tiếp nhé');return}newSes(cur.type);$('code').value='';toast('Đã tạo phiên mới')}
-function contSes(){cur=SS[SS.length-1];cur?go('ses'):toast('Chưa có phiên nào')}
+function contSes(){CFG.scanN=0;cur=SS[SS.length-1];cur?go('ses'):toast('Chưa có phiên nào')}
 function onSes(c,box){if(askBusy||cool(c)||ocrCtl.code===c)return;if(ocrCtl.code)ocrCancel();if(CFG.scanN){askQty(c,box);return}add(c,+$('qty').value||1,0,box)}
-/* Scan N khi quét bằng camera: quét xong nhảy sang ô SL + bàn phím số riêng (giống nhau trên mọi hệ điều hành) */
-let QK={c:'',box:null,s:'',manual:false};
-function askQty(c,box){askBusy=true;QK={c,box,s:'',manual:false};const L=lookup(c);$('code').value=c;$('sp').textContent='SP: '+(L.name||'Không có trong danh mục');$('gia').textContent='Giá: '+(L.price?fmt(L.price):'-');
- $('qkn').textContent=L.found?L.name:c;$('qks').textContent=(L.sku?'SKU '+L.sku:c)+(L.price?' · '+fmt(L.price):'');$('qty').classList.add('qa');fb(true);qkShow()}
-function qkShow(){try{var _a=document.activeElement;if(_a&&_a.blur&&/^(INPUT|TEXTAREA)$/.test(_a.tagName))_a.blur()}catch(e){}$('qkv').textContent=QK.s||'0';$('qty').value=QK.s;$('qk').style.display='block'}
+/* Scan N: iPhone dùng bàn phím số web; Android thử bàn phím máy, không lên thì tự chuyển sang bàn phím web; PC dùng bàn phím vật lý */
+let QK={c:'',box:null,s:'',manual:false},QKH=0,askTok=0;
+const COARSE=matchMedia('(pointer:coarse)').matches||(navigator.maxTouchPoints>0&&!matchMedia('(pointer:fine)').matches);
+const vpH=()=>window.visualViewport?window.visualViewport.height:window.innerHeight;
+function askQty(c,box){askBusy=true;QK={c,box,s:'',manual:false};const my=++askTok,L=lookup(c);
+ $('code').value=c;$('sp').textContent='SP: '+(L.name||'Không có trong danh mục');$('gia').textContent='Giá: '+(L.price?fmt(L.price):'-');
+ const q=$('qty');q.value='';q.classList.add('qa');fb(true);
+ if(IOS){webKeypad();return}
+ QK.manual=true;q.readOnly=false;q.setAttribute('inputmode','numeric');q.setAttribute('enterkeyhint','done');
+ const h0=vpH(),had=document.documentElement.classList.contains('kb');
+ setTimeout(()=>{if(my!==askTok)return;try{q.focus();q.select&&q.select()}catch(e){}},30);
+ if(COARSE&&!had)setTimeout(()=>{if(!askBusy||my!==askTok||!QK.manual)return;if(h0-vpH()<80)webKeypad()},650)}
+function webKeypad(){const q=$('qty');QK.manual=false;QK.s='';q.setAttribute('inputmode','none');q.readOnly=true;q.value='';
+ const L=lookup(QK.c);$('qkn').textContent=L.name||'Không có trong danh mục';$('qks').textContent=QK.c+' · nhập số lượng';qkShow()}
+function qkShow(){try{var _a=document.activeElement;if(_a&&_a.blur&&/^(INPUT|TEXTAREA)$/.test(_a.tagName))_a.blur()}catch(e){}
+ $('qkv').textContent=QK.s||'0';$('qty').value=QK.s;const k=$('qk');k.style.display='block';
+ const h=k.offsetHeight;if(h!==QKH){QKH=h;window.dispatchEvent(new Event('resize'))}}
 function qkPress(k){if(!askBusy||QK.manual)return;if(k==='ok')return qkOk();if(k==='del')QK.s=QK.s.slice(0,-1);else if(QK.s.length<4)QK.s=(QK.s+k).replace(/^0+/,'');qkShow()}
-function qkHide(){askBusy=false;lastT=Date.now();$('qk').style.display='none';$('qty').classList.remove('qa');QK={c:'',box:null,s:'',manual:false};qtyVis()}
+function qkHide(){askTok++;askBusy=false;lastT=Date.now();$('qk').style.display='none';$('qty').classList.remove('qa');QK={c:'',box:null,s:'',manual:false};qtyVis();
+ if(QKH){QKH=0;window.dispatchEvent(new Event('resize'))}}
 function qkOk(){const n=+QK.s||1,c=QK.c,box=QK.box;qkHide();add(c,n,1,box)}
 function qkCancel(){qkHide();$('code').value=''}
 /* Scan N khi NHẬP TAY mã: gõ mã → Enter/✓ → con trỏ nhảy sang ô SL (bàn phím số của máy) → gõ số → Enter */
 function codeSubmit(){if(askBusy&&QK.manual){manualDone();return}const c=$('code').value.trim();if(!c)return;if(CFG.scanN)askManual(c);else add(c,+$('qty').value||1,1)}
 function askManual(c){askBusy=true;QK={c,box:null,s:'',manual:true};const L=lookup(c);$('sp').textContent='SP: '+(L.name||'Không có trong danh mục');$('gia').textContent='Giá: '+(L.price?fmt(L.price):'-');
  const q=$('qty');q.readOnly=false;q.setAttribute('inputmode','numeric');q.value='';q.classList.add('qa');setTimeout(()=>{try{q.focus();q.select&&q.select()}catch(e){}},30)}
-function manualDone(){const n=+$('qty').value||1,c=QK.c;askBusy=false;QK={c:'',box:null,s:'',manual:false};$('qty').classList.remove('qa');qtyVis();add(c,n,1);try{$('code').focus()}catch(e){}}
+function manualDone(){const n=+$('qty').value||1,c=QK.c,box=QK.box;askBusy=false;QK={c:'',box:null,s:'',manual:false};$('qty').classList.remove('qa');qtyVis();add(c,n,1,box);try{if(box)$('qty').blur();else $('code').focus()}catch(e){}}
 function manualCancel(){if(askBusy&&QK.manual){askBusy=false;QK={c:'',box:null,s:'',manual:false};$('qty').classList.remove('qa');qtyVis()}}
 function add(c,q,force,box){c=String(c).trim();if(!c||!cur)return;if(!force&&cool(c))return;lastC=c;lastT=Date.now();
  const L=lookup(c),r={c,q,t:Date.now()};if(cur.type==='tc'){r.b=/^\d{13}$/.test(c)?c:(L.cat&&L.cat.b)||'';r.s=L.sku||''}
@@ -1010,7 +1019,7 @@ const hb=$('hold');['pointerdown','touchstart'].forEach(e=>hb.addEventListener(e
 ['pointerup','pointerleave','touchend','touchcancel'].forEach(e=>hb.addEventListener(e,()=>{scanning=false;hb.style.background=''}));
 const TAG='<svg viewBox="0 0 24 24"><path d="M20.6 13.4l-7.2 7.2a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8z"/><circle cx="7.5" cy="7.5" r="1.2"/></svg>';const PEN='<svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>',TRS='<svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>';
 function rowHTML(r,i,hl){const L=lookup(r.c),tc=r.b!==undefined,nm=CFG.np?(L.found?esc(L.name)+(L.price?' · '+fmt(L.price):''):(r.live?esc(r.live.n)+(r.live.p?' · '+fmt(r.live.k||r.live.p)+(r.live.k?' (KM)':''):'')+(r.live.t!==undefined&&r.live.t!==''?' · tồn '+esc(r.live.t):'')+(r.live.d?' · KM '+esc(r.live.d):'')+' · 🌐':'<span class="bad">Không có trong danh mục</span>')):'';
- const sub=[tc?'SKU '+esc(r.s||'—'):'',nm].filter(Boolean).join(' · ');
+ const sub=[tc?'<b style="color:var(--ac)">'+esc(r.s||'—')+'</b>':'',nm].filter(Boolean).join(' · ');
  return`<div class="it${hl?' new':''}"><b class="n">${i+1}</b><div class="m"><b class="cd${hl?' hl':''}">${esc(tc?(r.b||r.c):r.c)}</b><span class="qt">×${r.q}</span>${sub?`<span class="sub">${sub}</span>`:''}</div><button class="ic" data-e="${i}">${PEN}</button>${tc&&!L.found?`<button class="ic" data-w="${i}" title="Tra trực tiếp trên web"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 0 1 0 20M12 2a15 15 0 0 0 0 20"/></svg></button>`:''}${tc&&!r.s?`<button class="ic" data-s="${i}">${TAG}</button>`:''}<button class="ic" data-d="${i}">${TRS}</button></div>`}
 function bindRows(el,s){const re=()=>el===$('slist')?renderS():renderD();el.onclick=e=>{const b=e.target.closest('button');if(!b)return;
  if(b.dataset.d!==undefined){s.rows.splice(+b.dataset.d,1);saveSS();re()}
@@ -1019,9 +1028,9 @@ function bindRows(el,s){const re=()=>el===$('slist')?renderS():renderD();el.oncl
 function renderS(){const s=cur;$('sname').textContent=s.name;$('tot').textContent='Tổng: '+s.rows.reduce((a,r)=>a+r.q,0);
  const el=$('slist');el.innerHTML=s.rows.map((r,i)=>rowHTML(r,i,i===s.rows.length-1)).reverse().join('');bindRows(el,s)}
 function agg(s){const m=new Map();s.rows.forEach(r=>{const L=lookup(r.c),lv=r.live,sk=r.s||L.sku,k=sk||r.c;const o=m.get(k)||{k,sku:sk,n:L.name||'(không có trong DM)',q:0,p:L.price||0,l:L};if(lv&&lv.n&&!L.name&&!o.lv){o.lv=lv;o.n=lv.n;o.p=lv.k||lv.p||0}o.q+=r.q;m.set(k,o)});return Array.from(m.values())}
-function renderD(){const s=cur,A=agg(s);$('dname').textContent=s.name;$('dsum').textContent=`${A.length} SKU | SL: ${s.rows.reduce((a,r)=>a+r.q,0)}`;$('up').style.display=/\/macros\//.test(CFG.link)?'':'none';const el=$('dlist');
- if(tabN===1){el.innerHTML=`<div class="th"><span style="width:42px">STT</span><span style="flex:1">Barcode / Tên hàng</span><span>Qty</span></div>`+s.rows.map((r,i)=>rowHTML(r,i,i===s.rows.length-1)).reverse().join('');bindRows(el,s)}
- else{el.onclick=null;el.innerHTML=`<div class="th gn"><span style="width:80px">SKU</span><span style="flex:1">Tên sản phẩm</span><span style="width:40px">Tổng</span><span style="width:76px;text-align:right">Đơn giá</span></div>`+A.map(o=>`<div class="it"><b style="width:80px;color:var(--ac)">${esc(o.sku||'-')}</b><span class="m">${esc(o.n)}</span><b style="width:40px;color:var(--bad);font-size:20px">${o.q}</b><b style="width:76px;text-align:right;color:var(--ok)">${o.p?o.p.toLocaleString('vi-VN'):'-'}</b></div>`).join('')}}
+function renderD(){const s=cur,A=agg(s);$('dname').textContent=s.name;$('dsum').innerHTML=`Tổng SKU: <b style="font-size:18px">${A.length}</b><br>Tổng số lượng: <b style="font-size:18px">${s.rows.reduce((a,r)=>a+r.q,0)}</b>`;$('up').style.display=/\/macros\//.test(CFG.link)?'':'none';const el=$('dlist');
+ if(tabN===1){el.innerHTML=`<div class="th"><span style="width:42px">STT</span><span style="flex:1">Barcode / Tên hàng</span><span>Số lượng</span></div>`+s.rows.map((r,i)=>rowHTML(r,i,i===s.rows.length-1)).join('');bindRows(el,s)}
+ else{el.onclick=null;el.innerHTML=`<div class="th gn"><span style="width:30px;text-align:center">STT</span><span style="width:76px">SKU</span><span style="flex:1">Tên sản phẩm</span><span style="width:64px;text-align:center">Số lượng</span><span style="width:76px;text-align:right">Đơn giá</span></div>`+A.map((o,i)=>`<div class="it"><b style="width:30px;color:var(--mu);text-align:center">${i+1}</b><b style="width:76px;color:var(--ac)">${esc(o.sku||'-')}</b><span class="m">${esc(o.n)}</span><b style="width:64px;text-align:center;color:var(--bad);font-size:20px">${o.q}</b><b style="width:76px;text-align:right;color:var(--ok)">${o.p?o.p.toLocaleString('vi-VN'):'-'}</b></div>`).join('')}}
 function tab(n){tabN=n;$('t1').className=n===1?'on':'';$('t2').className=n===2?'on':'';renderD()}
 function renameSes(){if(!cur)return;const sp=$('sname'),inp=$('snin');inp.value=cur.name;sp.style.display='none';inp.style.display='block';inp.focus();inp.select()}
 function renameDone(save){const sp=$('sname'),inp=$('snin');if(inp.style.display==='none')return;const t=inp.value.trim();inp.style.display='none';sp.style.display='';if(save&&t&&cur){cur.name=t;saveSS()}sp.textContent=cur?cur.name:''}
@@ -1035,22 +1044,27 @@ function delAll(){const s=SS[SS.length-1];s&&confirm('Xóa dữ liệu phiên "'
 /* ===== TRA CỨU TRỰC TIẾP (không lưu lịch sử): mã 13 số hoặc SKU ===== */ async function liveRow(s,i,re){   const r=s.rows[i];if(!r)return;   const u=LIVE_LINK;   if(!/\/macros\//.test(u)){toast('Chưa có link Apps Script');return}   if(!navigator.onLine){toast('Không có mạng');return}   const code=String(r.s||r.b||r.c||'').replace(/\D/g,'');   if(!code){toast('Dòng này chưa có mã');return}   toast('Đang tra trực tiếp trên web...');   try{     const ctl=new AbortController(),tm=setTimeout(()=>ctl.abort(),40000);     const res=await fetch(u+(u.includes('?')?'&':'?')+'live='+encodeURIComponent(code),{signal:ctl.signal});     const j=await res.json();clearTimeout(tm);     if(!j.success){toast('❌ '+(j.message||'Không tra được'));return}     r.live={n:j.tenHang||'',p:num(j.giaBan),k:num(j.giaKM),t:j.ton306,d:j.dateRange||''};     if(j.sku&&!r.s){r.s=j.sku;rememberSku(r.c,j.sku)}     if(j.barcode&&!r.b&&cur&&cur.type==='tc')r.b=j.barcode;     saveSS();re();fb(true,'sku');toast('✓ Đã lấy thông tin trực tiếp');   }catch(e){toast(e&&e.name==='AbortError'?'❌ Quá thời gian chờ':'❌ Không tra được, kiểm tra mạng / link')} } /* export / share */
 const xname=s=>s.name.replace(/[\/:*?"<>|]/g,'-')+'.xlsx';
 function buildWB(s){const A=agg(s),wb=XLSX.utils.book_new();
- XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet([['STT','Barcode','SKU','Tên hàng','SL','Giá','Thời gian']].concat(s.rows.map((r,i)=>{const L=lookup(r.c);return[i+1,r.b!==undefined?(r.b||r.c):r.c,r.s||L.sku,L.name||(r.live&&r.live.n)||L.name,r.q,L.price||(r.live&&(r.live.k||r.live.p))||L.price,fd(r.t)]}))),'Log');
- XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet([['SKU','Tên sản phẩm','Tổng SL','Đơn giá','Thành tiền']].concat(A.map(o=>[o.sku,o.n,o.q,o.p,o.p*o.q]))),'CongDon');
+ const mk=(aoa,w,money)=>{const ws=XLSX.utils.aoa_to_sheet(aoa);ws['!cols']=w.map(x=>({wch:x}));money.forEach(c=>{for(let r=1;r<aoa.length;r++){const a=ws[XLSX.utils.encode_cell({r:r,c:c})];if(a&&typeof a.v==='number')a.z='#,##0'}});return ws};
+ const lg=[['STT','Barcode','SKU','Tên hàng','Số lượng','Giá','Thời gian']].concat(s.rows.map((r,i)=>{const L=lookup(r.c);return[i+1,r.b!==undefined?(r.b||r.c):r.c,r.s||L.sku,L.name||(r.live&&r.live.n)||L.name,r.q,L.price||(r.live&&(r.live.k||r.live.p))||L.price,fd(r.t)]}));
+ XLSX.utils.book_append_sheet(wb,mk(lg,[6,16,10,48,10,12,18],[5]),'Log');
+ const tq=A.reduce((a,o)=>a+o.q,0),tt=A.reduce((a,o)=>a+o.p*o.q,0);
+ const cd=[['STT','SKU','Tên sản phẩm','Số lượng','Đơn giá','Thành tiền']].concat(A.map((o,i)=>[i+1,o.sku,o.n,o.q,o.p,o.p*o.q])).concat([['','','TỔNG ('+A.length+' SKU)',tq,'',tt]]);
+ XLSX.utils.book_append_sheet(wb,mk(cd,[6,10,48,10,12,14],[4,5]),'CongDon');
  return wb}
 function xport(s){if(!s)return toast('Chưa có phiên nào');XLSX.writeFile(buildWB(s),xname(s))}
-async function share(s){s=s||cur;if(!s||!s.rows.length)return toast('Chưa có dữ liệu để chia sẻ');const wb=buildWB(s),nm=xname(s);
- try{const buf=XLSX.write(wb,{type:'array',bookType:'xlsx'}),f=new File([buf],nm,{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
-  if(navigator.canShare&&navigator.canShare({files:[f]}))await navigator.share({files:[f],title:s.name});else{XLSX.writeFile(wb,nm);toast('Máy không chia sẻ trực tiếp được – đã tải file Excel về')}}
- catch(e){if(e&&e.name==='AbortError')return;try{XLSX.writeFile(wb,nm);toast('Không chia sẻ được – đã tải file Excel về')}catch(x){toast('Không tạo được file Excel')}}}
+async function share(s){s=s||cur;if(!s||!s.rows.length)return toast('Chưa có dữ liệu để chia sẻ');const nm=xname(s);let wb,buf;
+ try{wb=buildWB(s);buf=XLSX.write(wb,{type:'array',bookType:'xlsx'})}catch(e){return toast('Không tạo được file Excel')}
+ if(navigator.share){for(const t of ['application/vnd.openxmlformats-officedocument.spreadsheetml.sheet','application/octet-stream']){let f;try{f=new File([buf],nm,{type:t})}catch(e){continue}
+  try{if(navigator.canShare&&!navigator.canShare({files:[f]}))continue;await navigator.share({files:[f],title:s.name});return}catch(e){if(e&&e.name==='AbortError')return}}}
+ try{XLSX.writeFile(wb,nm);toast('Trình duyệt này không cho gửi file trực tiếp – đã tải file về, bạn mở Zalo gửi nhé')}catch(x){toast('Không tạo được file Excel')}}
 async function upload(q){try{const rows=cur.rows.map(r=>{const L=lookup(r.c);return[cur.name,fd(r.t),r.b!==undefined?(r.b||r.c):r.c,r.s||L.sku,L.name||(r.live&&r.live.n)||L.name,r.q,L.price||(r.live&&(r.live.k||r.live.p))||L.price]});if(!rows.length)return;
  await fetch(CFG.link,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({rows})});toast('Đã gửi lên Sheet "KiemKe"')}catch(e){toast('Gửi lên Sheet thất bại')}}
 let allBusy=false; async function liveFetch(code){const u=LIVE_LINK,ctl=new AbortController(),tm=setTimeout(()=>ctl.abort(),40000);  try{const res=await fetch(u+(u.includes('?')?'&':'?')+'live='+encodeURIComponent(code),{signal:ctl.signal});return await res.json()}finally{clearTimeout(tm)}} async function all(){  if(allBusy){toast('Đang tra, chờ chút...');return}  const need=new Map();  cur.rows.forEach(r=>{if(r.live||lookup(r.c).found)return;const code=String(r.s||r.b||r.c||'').replace(/\D/g,'');if(!code)return;if(!need.has(code))need.set(code,[]);need.get(code).push(r)});  if(need.size){   if(!/\/macros\//.test(LIVE_LINK))toast('Chưa có link Apps Script');   else if(!navigator.onLine)toast('Không có mạng');   else{    allBusy=true;    const list=Array.from(need.entries());let done=0,ok=0,fail=0,idx=0;    const work=async()=>{while(idx<list.length){const [code,rows]=list[idx++];      try{const j=await liveFetch(code);       if(j&&j.success){const lv={n:j.tenHang||'',p:num(j.giaBan),k:num(j.giaKM),t:j.ton306,d:j.dateRange||''};        rows.forEach(r=>{r.live=lv;if(j.sku&&!r.s){r.s=j.sku;rememberSku(r.c,j.sku)}if(j.barcode&&!r.b&&cur&&cur.type==='tc')r.b=j.barcode});ok++}       else fail++}      catch(e){fail++}      done++;toast(`Đang tra ${done}/${list.length}...`)}};    await Promise.all([work(),work(),work()]);    allBusy=false;saveSS();renderD();    toast(`Tra xong: ${ok} mã có thông tin`+(fail?`, ${fail} mã lỗi/không thấy`:''));   }  }  const A=agg(cur);  $('dbody').innerHTML=`<b>Tra cứu tất cả (${A.length} SKU)</b>`+A.map(o=>{const L=o.l,lv=o.lv;   let info;   if(!L.found&&lv)info=`${lv.p?'Giá bán: '+fmt(lv.p)+'<br>':''}${lv.k?`<span style="color:var(--bad);font-weight:700">KM: ${fmt(lv.k)}${lv.d?' ('+esc(lv.d)+')':''}</span><br>`:''}${lv.t!==undefined&&lv.t!==''?'Tồn: '+esc(lv.t)+'<br>':''}🌐`;   else info=`${L.list?'Niêm yết: '+fmt(L.list)+'<br>':''}${L.promo?`<span style="color:var(--bad);font-weight:700">${L.pr.filter(p=>status(p.d)[2]==='on').map(p=>p.p>0?'KM: '+fmt(p.p):esc(p.t||'Có KM')).join(' | ')}</span>`:'<span class="mu">Không có KM đang chạy</span>'}`;   return`<div class="pb"><b>${esc(o.sku||'-')} • ${esc(o.n)}</b> × ${o.q}<br>${info}</div>`}).join('');  openDlg(dlg)}
 /* settings */
-function qtyVis(){const q=$('qty');q.readOnly=!!CFG.scanN;q.setAttribute('inputmode',CFG.scanN?'none':'numeric');q.placeholder='SL';if(!askBusy)q.value=CFG.scanN?'':(q.value||1)}
+function qtyVis(){const q=$('qty');q.readOnly=false;q.setAttribute('inputmode','numeric');q.placeholder='SL';if(!askBusy)q.value=CFG.scanN?'':(q.value||1)}
 function bind(){document.querySelectorAll('[data-k]').forEach(e=>{const k=e.dataset.k;if(e.type==='checkbox')e.checked=!!CFG[k];else if(e.type==='radio')e.checked=String(CFG[k])===e.value;else e.value=CFG[k]});renderStk();qtyVis()}
 document.addEventListener('input',e=>{const el=e.target;if(el.dataset&&el.dataset.k==='vol'){CFG.vol=+el.value;clearTimeout(window._vt);window._vt=setTimeout(()=>beep('ok'),150)}});
-document.addEventListener('change',e=>{const el=e.target,k=el.dataset&&el.dataset.k;if(!k)return;CFG[k]=el.type==='checkbox'?+el.checked:el.type==='radio'||el.type==='range'?+el.value:el.value.trim();saveCfg();qtyVis();if(k==='theme')applyTheme();if(k==='snk'){SND=null;audioOK=false;unlockAudio();setTimeout(()=>beep('ok'),350)}});
+document.addEventListener('change',e=>{const el=e.target,k=el.dataset&&el.dataset.k;if(!k)return;CFG[k]=el.type==='checkbox'?+el.checked:el.type==='radio'||el.type==='range'?+el.value:el.value.trim();saveCfg();qtyVis();refreshHold();if(k==='theme')applyTheme();if(k==='snk'){SND=null;audioOK=false;unlockAudio();setTimeout(()=>beep('ok'),350)}});
 function applyTheme(){const t=+CFG.theme||0,r=document.documentElement;if(t===1)r.setAttribute('data-theme','light');else if(t===2)r.setAttribute('data-theme','dark');else r.removeAttribute('data-theme');try{localStorage.setItem('qrtheme',String(t))}catch(e){}}
 function cycleTheme(){CFG.theme=((+CFG.theme||0)+1)%3;saveCfg();applyTheme();bind();toast(['Giao diện: tự động theo điện thoại','Giao diện: sáng','Giao diện: tối'][CFG.theme])}
 function reset(){if(confirm('Đặt lại cài đặt về mặc định?')){CFG={...DEF,link:CFG.link};saveCfg();bind();tierUI();applyTheme()}}
@@ -1117,10 +1131,11 @@ function closeDet(){const d=$('det');d.style.transition='transform .26s ease';d.
 function dragSheet(h,opening){let y0=0,dy=0,t0=0,on=false;
  h.addEventListener('touchstart',e=>{if(opening&&!cur)return;y0=e.touches[0].clientY;t0=Date.now();dy=0;on=true;if(opening)renderD();$('det').style.transition='none'},{passive:true});
  h.addEventListener('touchmove',e=>{if(!on)return;dy=e.touches[0].clientY-y0;const d=$('det'),H=d.offsetHeight||innerHeight;d.style.transform='translateY('+Math.max(0,opening?H+dy:dy)+'px)'},{passive:true});
- h.addEventListener('touchend',()=>{if(!on)return;on=false;const sp=Math.abs(dy)/(Date.now()-t0+1);if(opening)(dy<-60||(dy<-20&&sp>.4))?openDet():closeDet();else(dy>60||(dy>20&&sp>.4))?closeDet():openDet()})}
-dragSheet($('grab'),true);dragSheet($('grab2'),false);$('grab').onclick=openDet;
+ const end=()=>{if(!on)return;on=false;if(!opening&&Math.abs(dy)<8){$('det').style.transition='';return}const sp=Math.abs(dy)/(Date.now()-t0+1);if(opening)(dy<-60||(dy<-20&&sp>.4))?openDet():closeDet();else(dy>60||(dy>20&&sp>.4))?closeDet():openDet()};
+ h.addEventListener('touchend',end);h.addEventListener('touchcancel',end)}
+dragSheet($('grab'),true);dragSheet($('grab2'),false);dragSheet(document.querySelector('#det .hd2'),false);$('grab').onclick=openDet;
 /* init */
-(async()=>{const sv=(await kv('cfg'))||{};if(sv.ver!==3){if(!sv.ver||sv.ver<2)sv.hold=1;sv.hd=DEF.hd;sv.ver=3}CFG={...DEF,...sv};applyTheme();tierUI();try{navigator.storage&&navigator.storage.persist&&navigator.storage.persist()}catch(e){}DB=await kv('db')||DB;SS=await kv('ss')||[];CART=await kv('cart')||[];
+(async()=>{const sv=(await kv('cfg'))||{};if(sv.ver!==4){sv.hold=0;sv.holdN=0;sv.hd=DEF.hd;sv.ver=4}CFG={...DEF,...sv};CFG.scanN=0;applyTheme();tierUI();try{navigator.storage&&navigator.storage.persist&&navigator.storage.persist()}catch(e){}DB=await kv('db')||DB;SS=await kv('ss')||[];CART=await kv('cart')||[];
  if(DEFAULT_LINK)CFG.link=DEFAULT_LINK;Object.assign(CFG,TABS);const q=new URLSearchParams(location.search).get('l');if(q){CFG.link=q;history.replaceState(null,'',location.pathname)}
  saveCfg();index();bind();if(CFG.link&&navigator.onLine&&(!DB.cat.length||DB.sv!==2||Date.now()-DB.t>36e5))sync(!DB.cat.length)})();
 </script><script>
@@ -1141,8 +1156,9 @@ dragSheet($('grab'),true);dragSheet($('grab2'),false);$('grab').onclick=openDet;
   de.style.setProperty('--camh',ch+'px')
  }
  function upd(){
-  var ed=editable(document.activeElement),h=0,t=0;
-  if(ed&&vv&&vv.scale<1.05){t=Math.max(0,Math.round(vv.offsetTop));h=Math.max(0,Math.round(window.innerHeight-vv.height-vv.offsetTop));if(h<60)h=0}
+    var qh=(typeof QKH==='number'?QKH:0),ed=editable(document.activeElement)||qh>0,h=0,t=0;
+  if(qh>0){h=qh}
+  else if(ed&&vv&&vv.scale<1.05){t=Math.max(0,Math.round(vv.offsetTop));h=Math.max(0,Math.round(window.innerHeight-vv.height-vv.offsetTop));if(h<60)h=0}
   de.style.setProperty('--kb',h+'px');de.style.setProperty('--vt',t+'px');
   if(!ed)camRec();
   de.classList.toggle('kb',ed);
@@ -1170,4 +1186,4 @@ dragSheet($('grab'),true);dragSheet($('grab2'),false);$('grab').onclick=openDet;
  upd()
 })();
 </script>
-</body></html>
+<script> (function(){var x0=0,y0=0,dec=0;  document.addEventListener('touchstart',function(e){if(e.touches.length>1){dec=2;return}x0=e.touches[0].clientX;y0=e.touches[0].clientY;dec=0},{passive:true});  document.addEventListener('touchmove',function(e){   if(e.touches.length>1||dec===2)return;   var t=e.touches[0],dx=t.clientX-x0,dy=t.clientY-y0;   if(!dec){if(Math.abs(dx)<6&&Math.abs(dy)<6)return;dec=Math.abs(dx)>Math.abs(dy)?2:1;if(dec===2)return}   if(dy<=0)return;   if(e.target.closest&&e.target.closest('input[type=range]'))return;   var el=e.target;   while(el&&el!==document.body&&el!==document.documentElement){    if(el.scrollHeight>el.clientHeight+1&&el.scrollTop>0&&/(auto|scroll)/.test(getComputedStyle(el).overflowY))return;    el=el.parentElement}   if(e.cancelable)e.preventDefault()  },{passive:false}); })(); </script> </body></html>
