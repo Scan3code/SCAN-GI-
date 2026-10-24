@@ -1052,11 +1052,22 @@ function buildWB(s){const A=agg(s),wb=XLSX.utils.book_new();
  XLSX.utils.book_append_sheet(wb,mk(cd,[6,10,48,10,12,14],[4,5]),'CongDon');
  return wb}
 function xport(s){if(!s)return toast('Chưa có phiên nào');XLSX.writeFile(buildWB(s),xname(s))}
-async function share(s){s=s||cur;if(!s||!s.rows.length)return toast('Chưa có dữ liệu để chia sẻ');const nm=xname(s);let wb,buf;
+let shBusy=false;
+async function share(s){s=s||cur;if(!s||!s.rows.length)return toast('Chưa có dữ liệu để chia sẻ');if(shBusy)return;
+ const nm=xname(s);let wb,buf;
  try{wb=buildWB(s);buf=XLSX.write(wb,{type:'array',bookType:'xlsx'})}catch(e){return toast('Không tạo được file Excel')}
- if(navigator.share){for(const t of ['application/vnd.openxmlformats-officedocument.spreadsheetml.sheet','application/octet-stream']){let f;try{f=new File([buf],nm,{type:t})}catch(e){continue}
-  try{if(navigator.canShare&&!navigator.canShare({files:[f]}))continue;await navigator.share({files:[f],title:s.name});return}catch(e){if(e&&e.name==='AbortError')return}}}
- try{XLSX.writeFile(wb,nm);toast('Trình duyệt này không cho gửi file trực tiếp – đã tải file về, bạn mở Zalo gửi nhé')}catch(x){toast('Không tạo được file Excel')}}
+ let err='';
+ if(navigator.share){
+  shBusy=true;
+  try{
+   for(const t of ['application/vnd.openxmlformats-officedocument.spreadsheetml.sheet','application/octet-stream','']){
+    let f;try{f=new File([buf],nm,t?{type:t}:{})}catch(e){continue}
+    try{if(navigator.canShare&&!navigator.canShare({files:[f]}))continue;await navigator.share({files:[f]});return}
+    catch(e){if(e&&e.name==='AbortError')return;err=(e&&e.name)||'lỗi'}
+   }
+  }finally{shBusy=false}
+ }
+ try{XLSX.writeFile(wb,nm);toast(navigator.share?('Máy không gửi trực tiếp được ('+(err||'không hỗ trợ file')+') – đã tải file về, mở Zalo để gửi'):'Trình duyệt này không hỗ trợ gửi file – đã tải file về, mở Zalo để gửi')}catch(x){toast('Không tạo được file Excel')}}
 async function upload(q){try{const rows=cur.rows.map(r=>{const L=lookup(r.c);return[cur.name,fd(r.t),r.b!==undefined?(r.b||r.c):r.c,r.s||L.sku,L.name||(r.live&&r.live.n)||L.name,r.q,L.price||(r.live&&(r.live.k||r.live.p))||L.price]});if(!rows.length)return;
  await fetch(CFG.link,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({rows})});toast('Đã gửi lên Sheet "KiemKe"')}catch(e){toast('Gửi lên Sheet thất bại')}}
 let allBusy=false; async function liveFetch(code){const u=LIVE_LINK,ctl=new AbortController(),tm=setTimeout(()=>ctl.abort(),40000);  try{const res=await fetch(u+(u.includes('?')?'&':'?')+'live='+encodeURIComponent(code),{signal:ctl.signal});return await res.json()}finally{clearTimeout(tm)}} async function all(){  if(allBusy){toast('Đang tra, chờ chút...');return}  const need=new Map();  cur.rows.forEach(r=>{if(r.live||lookup(r.c).found)return;const code=String(r.s||r.b||r.c||'').replace(/\D/g,'');if(!code)return;if(!need.has(code))need.set(code,[]);need.get(code).push(r)});  if(need.size){   if(!/\/macros\//.test(LIVE_LINK))toast('Chưa có link Apps Script');   else if(!navigator.onLine)toast('Không có mạng');   else{    allBusy=true;    const list=Array.from(need.entries());let done=0,ok=0,fail=0,idx=0;    const work=async()=>{while(idx<list.length){const [code,rows]=list[idx++];      try{const j=await liveFetch(code);       if(j&&j.success){const lv={n:j.tenHang||'',p:num(j.giaBan),k:num(j.giaKM),t:j.ton306,d:j.dateRange||''};        rows.forEach(r=>{r.live=lv;if(j.sku&&!r.s){r.s=j.sku;rememberSku(r.c,j.sku)}if(j.barcode&&!r.b&&cur&&cur.type==='tc')r.b=j.barcode});ok++}       else fail++}      catch(e){fail++}      done++;toast(`Đang tra ${done}/${list.length}...`)}};    await Promise.all([work(),work(),work()]);    allBusy=false;saveSS();renderD();    toast(`Tra xong: ${ok} mã có thông tin`+(fail?`, ${fail} mã lỗi/không thấy`:''));   }  }  const A=agg(cur);  $('dbody').innerHTML=`<b>Tra cứu tất cả (${A.length} SKU)</b>`+A.map(o=>{const L=o.l,lv=o.lv;   let info;   if(!L.found&&lv)info=`${lv.p?'Giá bán: '+fmt(lv.p)+'<br>':''}${lv.k?`<span style="color:var(--bad);font-weight:700">KM: ${fmt(lv.k)}${lv.d?' ('+esc(lv.d)+')':''}</span><br>`:''}${lv.t!==undefined&&lv.t!==''?'Tồn: '+esc(lv.t)+'<br>':''}🌐`;   else info=`${L.list?'Niêm yết: '+fmt(L.list)+'<br>':''}${L.promo?`<span style="color:var(--bad);font-weight:700">${L.pr.filter(p=>status(p.d)[2]==='on').map(p=>p.p>0?'KM: '+fmt(p.p):esc(p.t||'Có KM')).join(' | ')}</span>`:'<span class="mu">Không có KM đang chạy</span>'}`;   return`<div class="pb"><b>${esc(o.sku||'-')} • ${esc(o.n)}</b> × ${o.q}<br>${info}</div>`}).join('');  openDlg(dlg)}
