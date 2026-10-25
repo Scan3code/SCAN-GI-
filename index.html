@@ -550,7 +550,7 @@ const $=id=>document.getElementById(id),dlg=$('dlg'),v=$('v');
 const TABS={s1:'04032026',s2:'Data_KhuyenMai',s3:'LichSuBanHang'}; // tên 3 tab trong Google Sheet (không hiện trong Cài đặt nữa)
 const DEFAULT_LINK='https://script.google.com/macros/s/AKfycbxrLbmWchZg6ASnSiAeHgK7oOZG_7pcrb3nXV0ti8U29HgyPtljO1WzQPMChrnu_FE/exec'; // <- dán link Apps Script (/exec) của bạn vào giữa 2 dấu nháy để mở web là có sẵn dữ liệu
 const LIVE_LINK='https://script.google.com/macros/s/AKfycby2rFzxcV4vgnkJyqIc4y9fN0bSWbHxP155wiWZ4u62UC5HZfm509kB-IVLVA8X33Y/exec'; // link Code.gs dùng cho nút tra cứu trực tiếp 🌐
-const DEF={snd:1,snk:'def',vol:100,vib:1,vp:1,cd:1500,hold:0,holdN:0,ocrTest:1,ocrScan:1,kkStrict:1,scanN:0,tier:'none',cam:'',camAuto:'',zoom:0,hd:((navigator.hardwareConcurrency||4)>=6?1:0),ver:3,theme:0,osku:1,np:1,sl1:1,link:'',s1:'04032026',s2:'Data_KhuyenMai',s3:'LichSuBanHang'};
+const DEF={snd:1,snk:'def',vol:100,vib:1,vp:1,cd:1500,hold:0,holdN:0,ocrTest:1,ocrScan:0,kkStrict:1,scanN:0,tier:'none',cam:'',camAuto:'',zoom:0,hd:((navigator.hardwareConcurrency||4)>=6?1:0),ver:3,theme:0,osku:1,np:1,sl1:1,link:'',s1:'04032026',s2:'Data_KhuyenMai',s3:'LichSuBanHang'};
 let CFG={...DEF},DB={cat:[],promo:[],t:0},SS=[],cur=null,catBar={},catSku={},proSku={},HS=['home'],tabN=2;
 const norm=s=>String(s==null?'':s).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/đ/g,'d').trim();
 const num=x=>{const n=parseInt(String(x).replace(/\D/g,''),10);return isNaN(n)?0:n};
@@ -1164,27 +1164,19 @@ function askName(s,def){
 async function upload(q){try{const rows=cur.rows.map(r=>{const L=lookup(r.c);return[cur.name,fd(r.t),r.b!==undefined?(r.b||r.c):r.c,r.s||L.sku,L.name||(r.live&&r.live.n)||L.name,r.q,L.list||(r.live&&(r.live.p||r.live.k))||L.list]});if(!rows.length)return;
  await fetch(CFG.link,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({rows})});toast('Đã gửi lên Sheet "KiemKe"')}catch(e){toast('Gửi lên Sheet thất bại')}}
 let allBusy=false; async function liveFetch(code){const u=LIVE_LINK,ctl=new AbortController(),tm=setTimeout(()=>ctl.abort(),40000);  try{const res=await fetch(u+(u.includes('?')?'&':'?')+'live='+encodeURIComponent(code),{signal:ctl.signal});return await res.json()}finally{clearTimeout(tm)}} async function tcAll(){  if(allBusy){toast('Đang tra, chờ chút...');return}  const need=new Map();  cur.rows.forEach(r=>{if(r.live||lookup(r.c).found)return;const code=String(r.s||r.b||r.c||'').replace(/\D/g,'');if(!code)return;if(!need.has(code))need.set(code,[]);need.get(code).push(r)});
-  const paint=(msg)=>{const A=agg(cur);$('dbody').innerHTML=`<b>Tra cứu tất cả (${A.length} SKU)</b>`+(msg?`<div class="mu" style="margin:6px 0 8px;font-size:13px">${msg}</div>`:'')+A.map(o=>{const L=o.l,lv=o.lv;   let info;   if(!L.found&&lv)info=`${lv.p?'Giá bán: '+fmt(lv.p)+'<br>':''}${lv.k?`<span style="color:var(--bad);font-weight:700">KM: ${fmt(lv.k)}${lv.d?' ('+esc(lv.d)+')':''}</span><br>`:''}${lv.t!==undefined&&lv.t!==''?'Tồn: '+esc(lv.t)+'<br>':''}🌐`;   else info=`${L.list?'Niêm yết: '+fmt(L.list)+'<br>':''}${L.promo?`<span style="color:var(--bad);font-weight:700">${L.pr.filter(p=>status(p.d)[2]==='on').map(p=>p.p>0?'KM: '+fmt(p.p):esc(p.t||'Có KM')).join(' | ')}</span>`:'<span class="mu">Không có KM đang chạy</span>'}`;   return`<div class="pb"><b>${esc(o.sku||o.raw||'')}${o.n?' • '+esc(o.n):''}</b> × ${o.q}<br>${info}</div>`}).join('');if(!dlg.open)openDlg(dlg)};
-  let msg='';
-  if(need.size){
-   if(!/\/macros\//.test(LIVE_LINK))msg='Chưa có link Apps Script – chỉ hiện thông tin có sẵn trong danh mục.';
-   else if(!navigator.onLine)msg='Không có mạng – chỉ hiện thông tin có sẵn trong danh mục.';
-   else{
-    allBusy=true;paint('⏳ Đang tra web 0/'+need.size+'…');
-    const list=Array.from(need.entries());let done=0,ok=0,fail=0,idx=0;
-    const work=async()=>{while(idx<list.length){const [code,rows]=list[idx++];
-      try{const j=await liveFetch(code);
-       if(j&&j.success){const lv={n:j.tenHang||'',p:num(j.giaBan),k:num(j.giaKM),t:j.ton306,d:j.dateRange||''};
-        rows.forEach(r=>{r.live=lv;if(j.sku&&!r.s){r.s=j.sku;rememberSku(r.c,j.sku)}if(j.barcode&&!r.b&&cur&&cur.type==='tc')r.b=j.barcode});ok++}
-       else fail++}
-      catch(e){fail++}
-      done++;paint('⏳ Đang tra web '+done+'/'+list.length+'…')}};
-    try{await Promise.all([work(),work(),work()])}finally{allBusy=false}
-    saveSS();renderD();
-    msg=`Tra xong: ${ok} mã có thông tin`+(fail?`, ${fail} mã lỗi/không thấy`:'')+'.';
-   }
-  }
-  paint(msg)}
+  if(!need.size){toast('Không có dòng nào cần tra thêm');return}
+  if(!/\/macros\//.test(LIVE_LINK)){toast('Chưa có link Apps Script');return}
+  if(!navigator.onLine){toast('Không có mạng');return}
+  allBusy=true;const list=Array.from(need.entries());let done=0,ok=0,fail=0,idx=0;toast('Đang tra 0/'+list.length+'…');
+  const work=async()=>{while(idx<list.length){const [code,rows]=list[idx++];
+    try{const j=await liveFetch(code);
+     if(j&&j.success){const lv={n:j.tenHang||'',p:num(j.giaBan),k:num(j.giaKM),t:j.ton306,d:j.dateRange||''};
+      rows.forEach(r=>{r.live=lv;if(j.sku&&!r.s){r.s=j.sku;rememberSku(r.c,j.sku)}if(j.barcode&&!r.b&&cur&&cur.type==='tc')r.b=j.barcode});ok++}
+     else fail++}
+    catch(e){fail++}
+    done++;saveSS();try{renderD()}catch(e){}toast('Đang tra '+done+'/'+list.length+'…')}};
+  try{await Promise.all([work(),work(),work()])}finally{allBusy=false}
+  saveSS();renderD();toast('Tra xong: '+ok+' mã có thông tin'+(fail?', '+fail+' mã không thấy/lỗi':''))}
 /* settings */
 function qtyVis(){const q=$('qty');q.readOnly=false;q.setAttribute('inputmode','numeric');q.placeholder='SL';if(!askBusy)q.value=CFG.scanN?'':(q.value||1)}
 function bind(){document.querySelectorAll('[data-k]').forEach(e=>{const k=e.dataset.k;if(e.type==='checkbox')e.checked=!!CFG[k];else if(e.type==='radio')e.checked=String(CFG[k])===e.value;else e.value=CFG[k]});renderStk();qtyVis()}
@@ -1270,7 +1262,7 @@ function resumeScan(){if(!cur)return;lastAct=Date.now();closeDet();if(HS[HS.leng
 ['touchstart','pointerdown','keydown','click'].forEach(ev=>document.addEventListener(ev,()=>{lastAct=Date.now()},{capture:true,passive:true}));
 setInterval(()=>{if(!stream||askBusy)return;const id=HS[HS.length-1];if(id!=='ses'&&id!=='price')return;if(Date.now()-lastAct<60000)return;stopCam();camMsg('⏸ Camera tạm dừng vì 1 phút không dùng. Chạm vào đây để quét tiếp')},3000);
 /* init */
-(async()=>{const sv=(await kv('cfg'))||{};if(sv.ver!==4){sv.hold=0;sv.holdN=0;sv.hd=DEF.hd;sv.ver=4}CFG={...DEF,...sv};CFG.scanN=0;applyTheme();tierUI();try{navigator.storage&&navigator.storage.persist&&navigator.storage.persist()}catch(e){}DB=await kv('db')||DB;SS=await kv('ss')||[];SS.forEach(s=>{if(s.type!=='kk')s.name=String(s.name).replace(/^Phiên Tra Cứu/,'Scan hàng')});SS=SS.filter(s=>!isJunk(s));saveSS();CART=await kv('cart')||[];
+(async()=>{const sv=(await kv('cfg'))||{};if(!(sv.ver>=4)){sv.hold=0;sv.holdN=0;sv.hd=DEF.hd;sv.ver=4}if(!(sv.ver>=5)){sv.ocrScan=0;sv.ver=5}CFG={...DEF,...sv};CFG.scanN=0;applyTheme();tierUI();try{navigator.storage&&navigator.storage.persist&&navigator.storage.persist()}catch(e){}DB=await kv('db')||DB;SS=await kv('ss')||[];SS.forEach(s=>{if(s.type!=='kk')s.name=String(s.name).replace(/^Phiên Tra Cứu/,'Scan hàng')});SS=SS.filter(s=>!isJunk(s));saveSS();CART=await kv('cart')||[];
  if(DEFAULT_LINK)CFG.link=DEFAULT_LINK;Object.assign(CFG,TABS);const q=new URLSearchParams(location.search).get('l');if(q){CFG.link=q;history.replaceState(null,'',location.pathname)}
  saveCfg();index();bind();if(CFG.link&&navigator.onLine&&(!DB.cat.length||DB.sv!==2||Date.now()-DB.t>36e5))sync(!DB.cat.length)})();
 </script><script>
