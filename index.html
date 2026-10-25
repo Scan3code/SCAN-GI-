@@ -431,6 +431,38 @@ html.kb .scr.on .cam{height:var(--camh,160px)!important;min-height:var(--camh,16
 /* tên sản phẩm / mã vạch */
 #pout .card{padding:16px;border-radius:24px}
 #pout .nm{font-size:19px;line-height:1.3;font-weight:800;margin-bottom:8px}
+
+/* ===== bảng chi tiết: gọn trên dưới, chữ to rõ, các cột thẳng hàng ===== */
+#det{top:calc(env(safe-area-inset-top,0px) + 6px)!important}
+#det .grab{padding:9px 0 3px!important;min-height:0!important}
+#det .grab::before{top:-8px;height:8px}
+#det .hd2{padding:0 12px 8px!important;gap:10px;align-items:center}
+#det .hd2 b{font-size:16px;line-height:1.2;white-space:normal;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+#det #dsum{text-align:right;line-height:1.25;flex:none}
+#det .sm{font-size:13px;font-weight:600;color:var(--mu);white-space:nowrap}
+#det .sm b{font-size:20px;font-weight:800;color:var(--tx);margin-left:2px;display:inline;-webkit-line-clamp:unset}
+#det .hd2 .ib{width:40px;height:40px;flex:none}
+#det .acts{padding:0 12px 6px;gap:6px}
+#det .acts button{padding:7px 2px;font-size:13px;font-weight:800;border-radius:12px;min-height:44px;line-height:1.15}
+#det .tabs{margin:0 12px 6px}
+#det .tabs button{padding:9px 4px!important;font-size:12.5px}
+#det #dlist{padding:0 0 env(safe-area-inset-bottom,0px)!important}
+#det .th.gn,.ag{display:grid;grid-template-columns:20px 44px 58px minmax(0,1fr) 26px 62px;column-gap:6px;align-items:center}
+#det .th.gn{padding:9px 10px;font-size:11.5px;position:sticky;top:0;z-index:3;border-bottom:1px solid #8883}
+.ag{padding:12px 10px;border-bottom:1px solid #8883;row-gap:6px}
+.ag.z{background:rgba(128,128,128,.08)}
+.ag .no{text-align:center;color:var(--mu);font-size:13px;font-weight:600}
+.ag .sk{font-size:14.5px;font-weight:800;color:var(--ac);letter-spacing:.2px}
+.ag .nm{padding:0 2px;min-width:0;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;font-size:14.5px;font-weight:500;line-height:1.28}
+.ag .q{text-align:center;font-size:22px;font-weight:800;color:var(--bad);line-height:1}
+.ag .pr{text-align:right;font-size:14.5px;font-weight:800;color:var(--ok);white-space:nowrap}
+.ag .bc{display:flex;align-items:center;justify-content:center;min-height:18px;min-width:0}
+.ag .bc[data-t]{cursor:pointer}
+.ag .bc svg{display:block;width:32px;max-width:100%;height:15px;border-radius:2px;background:#fff}
+.ag .bc .d{font-size:8.5px;font-weight:700;color:var(--mu);word-break:break-all;line-height:1.1;text-align:center}
+.ag .bx{grid-column:1/-1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:6px 0 2px}
+.ag .bx svg{display:block;width:220px;max-width:90%;height:48px;border-radius:4px;background:#fff}
+.ag .bx .d{font-size:15px;font-weight:800;letter-spacing:2px;color:var(--tx);font-variant-numeric:tabular-nums}
 </style>
 </head><body>
 
@@ -465,7 +497,7 @@ html.kb .scr.on .cam{height:var(--camh,160px)!important;min-height:var(--camh,16
 <section class="sheet" id="det"><div class="grab" id="grab2"><i></i></div>
 <div class="hd2"><b id="dname"></b><span id="dsum" style="text-align:right;line-height:1.3;font-size:15px;font-weight:800"></span><button class="ib" onclick="closeDet()" aria-label="Đóng"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
 <div class="acts"><button class="o" onclick="all()">Tra cứu</button><button class="g" onclick="xport(cur)">Excel</button><button onclick="share(cur)" style="line-height:1.15">Tạo Excel &amp; chia sẻ</button><button class="dk" id="up" onclick="upload()">Sheet</button></div>
-<div style="padding:0 12px 8px"><button onclick="resumeScan()" style="width:100%;padding:13px;border-radius:14px;font-size:16px;font-weight:800;background:var(--ok);color:#fff;border:0">▶ Tiếp tục scan phiên này</button></div>
+<div style="padding:0 12px 6px"><button onclick="resumeScan()" style="width:100%;padding:10px;border-radius:12px;font-size:15px;font-weight:800;background:var(--ok);color:#fff;border:0">▶ Tiếp tục scan phiên này</button></div>
 <div class="tabs"><button class="on" id="t2" onclick="tab(2)">CỘNG DỒN (SKU)</button><button id="t1" onclick="tab(1)">DATA THÔ (LOG)</button></div>
 <div class="sc" id="dlist" style="padding:0"></div></section>
 
@@ -510,7 +542,8 @@ html.kb .scr.on .cam{height:var(--camh,160px)!important;min-height:var(--camh,16
 <div id="toast"></div><video id="v" playsinline webkit-playsinline muted autoplay style="display:none"></video>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jsbarcode/3.11.6/JsBarcode.all.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
+<script>if(!window.XLSX)document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"><\/script>')</script>
 <script src="https://cdn.jsdelivr.net/npm/@zxing/library@0.21.3/umd/index.min.js"></script>
 <script>
 const $=id=>document.getElementById(id),dlg=$('dlg'),v=$('v');
@@ -1036,10 +1069,16 @@ function bindRows(el,s){const re=()=>el===$('slist')?renderS():renderD();el.oncl
  else if(b.dataset.w!==undefined){liveRow(s,+b.dataset.w,re)}  else if(b.dataset.s!==undefined){const r=s.rows[+b.dataset.s],q=prompt('Nhập SKU 7 số in trên tem','');if(q===null)return;const d=q.replace(/\D/g,'');if(d.length===7){r.s=d;rememberSku(r.c,d);saveSS();re()}else toast('Cần đúng 7 chữ số')}}}
 function renderS(){const s=cur;$('sname').textContent=s.name;$('tot').textContent='Tổng: '+s.rows.reduce((a,r)=>a+r.q,0);
  const el=$('slist');el.innerHTML=s.rows.map((r,i)=>rowHTML(r,i,i===s.rows.length-1)).reverse().join('');bindRows(el,s)}
-function agg(s){const m=new Map();s.rows.forEach(r=>{const L=lookup(r.c),lv=r.live,sk=r.s||L.sku,k=sk||r.c;const o=m.get(k)||{k,sku:sk,n:L.name||'(không có trong DM)',q:0,p:L.list||0,l:L};if(lv&&lv.n&&!L.name&&!o.lv){o.lv=lv;o.n=lv.n;o.p=lv.p||lv.k||0}o.q+=r.q;m.set(k,o)});return Array.from(m.values())}
-function renderD(){const s=cur,A=agg(s);$('dname').textContent=s.name;$('dsum').innerHTML=`Tổng SKU: <b style="font-size:18px">${A.length}</b><br>Tổng số lượng: <b style="font-size:18px">${s.rows.reduce((a,r)=>a+r.q,0)}</b>`;$('up').style.display=/\/macros\//.test(CFG.link)?'':'none';const el=$('dlist');
+function agg(s){const m=new Map();s.rows.forEach(r=>{const L=lookup(r.c),lv=r.live,sk=r.s||L.sku,k=sk||r.c;const o=m.get(k)||{k,sku:sk,n:L.name||'',q:0,p:L.list||0,l:L};if(lv&&lv.n&&!L.name&&!o.lv){o.lv=lv;o.n=lv.n;o.p=lv.p||lv.k||0}const bi=bcOf(r,L,sk||'');if(!o.b&&bi.ok)o.b=bi.ok;if(!o.raw&&bi.raw)o.raw=bi.raw;o.q+=r.q;m.set(k,o)});return Array.from(m.values())}
+function bcOf(r,L,sk){let raw='';for(const c of [r.b,r.c,L.cat&&L.cat.b]){const d=String(c||'').replace(/\D/g,'');if(!d||d===sk)continue;if(/^\d{13}$/.test(d)&&eanOK(d))return{ok:d,raw:d};if(!raw)raw=d}return{ok:'',raw}}
+function bcSVG(code){if(typeof JsBarcode==='undefined')return '';const fm=(/^\d{13}$/.test(code)&&eanOK(code))?'EAN13':'CODE128';
+ try{const s=document.createElementNS('http://www.w3.org/2000/svg','svg');JsBarcode(s,code,{format:fm,width:1,height:16,displayValue:false,margin:2,background:'#ffffff',lineColor:'#000000'});
+  const w=parseFloat(s.getAttribute('width')),h=parseFloat(s.getAttribute('height'));if(!s.getAttribute('viewBox')&&w&&h)s.setAttribute('viewBox','0 0 '+w+' '+h);
+  s.setAttribute('preserveAspectRatio','none');s.setAttribute('shape-rendering','crispEdges');s.removeAttribute('width');s.removeAttribute('height');return s.outerHTML}catch(e){return ''}}
+function renderD(){const s=cur,A=agg(s);$('dname').textContent=s.name;$('dsum').innerHTML=`<div class="sm">Tổng SKU: <b>${A.length}</b></div><div class="sm">Tổng số lượng: <b>${s.rows.reduce((a,r)=>a+r.q,0)}</b></div>`;$('up').style.display=/\/macros\//.test(CFG.link)?'':'none';const el=$('dlist');
  if(tabN===1){el.innerHTML=`<div class="th"><span style="width:42px">STT</span><span style="flex:1">Barcode / Tên hàng</span><span>Số lượng</span></div>`+s.rows.map((r,i)=>rowHTML(r,i,i===s.rows.length-1)).join('');bindRows(el,s)}
- else{el.onclick=null;el.innerHTML=`<div class="th gn"><span style="width:30px;text-align:center">STT</span><span style="width:76px">SKU</span><span style="flex:1">Tên sản phẩm</span><span style="width:64px;text-align:center">Số lượng</span><span style="width:76px;text-align:right">Đơn giá</span></div>`+A.map((o,i)=>`<div class="it"><b style="width:30px;color:var(--mu);text-align:center">${i+1}</b><b style="width:76px;color:var(--ac)">${esc(o.sku||'-')}</b><span class="m">${esc(o.n)}</span><b style="width:64px;text-align:center;color:var(--bad);font-size:20px">${o.q}</b><b style="width:76px;text-align:right;color:var(--ok)">${o.p?o.p.toLocaleString('vi-VN'):'-'}</b></div>`).join('')}}
+ else{el.innerHTML=`<div class="th gn"><span style="text-align:center;font-size:9px;letter-spacing:0">STT</span><span style="text-align:center;font-size:9px;letter-spacing:0;white-space:nowrap;overflow:hidden">Barcode</span><span>SKU</span><span>Tên sản phẩm</span><span style="text-align:center">SL</span><span style="text-align:right">Đơn giá</span></div>`+A.map((o,i)=>{const bv=o.b||o.raw||'',g=bv?bcSVG(bv):'',bc=g?`<div class="bc" data-t="1" data-b="${bv}">${g}</div>`:(o.raw?`<div class="bc"><span class="d">${esc(o.raw)}</span></div>`:'<div class="bc"></div>');return`<div class="ag${i%2?' z':''}"><b class="no">${i+1}</b>${bc}<b class="sk">${esc(o.sku||'')}</b><span class="nm">${esc(o.n)}</span><b class="q">${o.q}</b><b class="pr">${o.p?o.p.toLocaleString('vi-VN'):''}</b></div>`}).join('');
+  el.onclick=e=>{const b=e.target.closest('.bc[data-t]');if(!b)return;const row=b.closest('.ag'),x=row.querySelector('.bx');if(x){x.remove();return}const d=document.createElement('div');d.className='bx';d.innerHTML=bcSVG(b.dataset.b)+'<span class="d">'+esc(b.dataset.b)+'</span>';row.appendChild(d)}}}
 function tab(n){tabN=n;$('t1').className=n===1?'on':'';$('t2').className=n===2?'on':'';renderD()}
 function renameSes(){if(!cur)return;const sp=$('sname'),inp=$('snin');inp.value=cur.name;sp.style.display='none';inp.style.display='block';inp.focus();inp.select()}
 function renameDone(save){const sp=$('sname'),inp=$('snin');if(inp.style.display==='none')return;const t=inp.value.trim();inp.style.display='none';sp.style.display='';if(save&&t&&cur){cur.name=t;saveSS()}sp.textContent=cur?cur.name:''}
@@ -1053,12 +1092,23 @@ function delAll(){const s=lastSes();s&&confirm('Xóa dữ liệu phiên "'+s.nam
 /* ===== TRA CỨU TRỰC TIẾP (không lưu lịch sử): mã 13 số hoặc SKU ===== */ async function liveRow(s,i,re){   const r=s.rows[i];if(!r)return;   const u=LIVE_LINK;   if(!/\/macros\//.test(u)){toast('Chưa có link Apps Script');return}   if(!navigator.onLine){toast('Không có mạng');return}   const code=String(r.s||r.b||r.c||'').replace(/\D/g,'');   if(!code){toast('Dòng này chưa có mã');return}   toast('Đang tra trực tiếp trên web...');   try{     const ctl=new AbortController(),tm=setTimeout(()=>ctl.abort(),40000);     const res=await fetch(u+(u.includes('?')?'&':'?')+'live='+encodeURIComponent(code),{signal:ctl.signal});     const j=await res.json();clearTimeout(tm);     if(!j.success){toast('❌ '+(j.message||'Không tra được'));return}     r.live={n:j.tenHang||'',p:num(j.giaBan),k:num(j.giaKM),t:j.ton306,d:j.dateRange||''};     if(j.sku&&!r.s){r.s=j.sku;rememberSku(r.c,j.sku)}     if(j.barcode&&!r.b&&cur&&cur.type==='tc')r.b=j.barcode;     saveSS();re();fb(true,'sku');toast('✓ Đã lấy thông tin trực tiếp');   }catch(e){toast(e&&e.name==='AbortError'?'❌ Quá thời gian chờ':'❌ Không tra được, kiểm tra mạng / link')} } /* export / share */
 const xname=s=>s.name.replace(/[\/:*?"<>|]/g,'-')+'.xlsx';
 function buildWB(s){const A=agg(s),wb=XLSX.utils.book_new();
- const mk=(aoa,w,money)=>{const ws=XLSX.utils.aoa_to_sheet(aoa);ws['!cols']=w.map(x=>({wch:x}));money.forEach(c=>{for(let r=1;r<aoa.length;r++){const a=ws[XLSX.utils.encode_cell({r:r,c:c})];if(a&&typeof a.v==='number')a.z='#,##0'}});return ws};
- const lg=[['STT','Barcode','SKU','Tên hàng','Số lượng','Giá','Thời gian']].concat(s.rows.map((r,i)=>{const L=lookup(r.c);return[i+1,r.b!==undefined?(r.b||r.c):r.c,r.s||L.sku,L.name||(r.live&&r.live.n)||L.name,r.q,L.list||(r.live&&(r.live.p||r.live.k))||L.list,fd(r.t)]}));
- XLSX.utils.book_append_sheet(wb,mk(lg,[6,16,10,48,10,12,18],[5]),'Log');
- const tq=A.reduce((a,o)=>a+o.q,0),tt=A.reduce((a,o)=>a+o.p*o.q,0);
- const cd=[['STT','SKU','Tên sản phẩm','Số lượng','Đơn giá','Thành tiền']].concat(A.map((o,i)=>[i+1,o.sku,o.n,o.q,o.p,o.p*o.q])).concat([['','','TỔNG ('+A.length+' SKU)',tq,'',tt]]);
- XLSX.utils.book_append_sheet(wb,mk(cd,[6,10,48,10,12,14],[4,5]),'CongDon');
+ const lines=(v,w)=>String(v==null?'':v).split('\n').reduce((a,t)=>a+Math.max(1,Math.ceil(t.length/Math.max(1,w-1))),0);
+ const mk=(aoa,cols,wrapCol,numCols,moneyCols,last)=>{const ws=XLSX.utils.aoa_to_sheet(aoa);ws['!cols']=cols.map(x=>({wch:x}));const rows=[{hpt:22}];
+  for(let r=0;r<aoa.length;r++){let ln=1;if(r>0)aoa[r].forEach((v,c)=>{if(typeof v==='string')ln=Math.max(ln,lines(v,cols[c]))});if(r>0)rows.push({hpt:Math.max(20,ln*16+4)});
+   for(let c=0;c<cols.length;c++){const a=ws[XLSX.utils.encode_cell({r:r,c:c})];if(!a)continue;
+    const al={vertical:'center',wrapText:true,horizontal:r===0?'center':(numCols.indexOf(c)>=0?'right':(c===0?'center':'left'))};
+    const bd={top:{style:'thin',color:{rgb:'BFBFBF'}},bottom:{style:'thin',color:{rgb:'BFBFBF'}},left:{style:'thin',color:{rgb:'BFBFBF'}},right:{style:'thin',color:{rgb:'BFBFBF'}}};
+    a.s={alignment:al,border:bd};
+    if(r===0){a.s.font={bold:true,color:{rgb:'FFFFFF'}};a.s.fill={patternType:'solid',fgColor:{rgb:'1E3A8A'}}}
+    else if(last&&r===aoa.length-1){a.s.font={bold:true};a.s.fill={patternType:'solid',fgColor:{rgb:'E8EEF7'}}}
+    if(r>0&&moneyCols.indexOf(c)>=0&&typeof a.v==='number')a.z='#,##0'}}
+  ws['!rows']=rows;ws['!views']=[{state:'frozen',ySplit:1}];ws['!margins']={left:.4,right:.4,top:.5,bottom:.5,header:.3,footer:.3};return ws};
+ const tq=A.reduce((a,o)=>a+o.q,0),tt=A.reduce((a,o)=>a+(o.p?o.p*o.q:0),0);
+ const cd=[['STT','Barcode','SKU','Tên sản phẩm','Số lượng','Đơn giá','Thành tiền']].concat(A.map((o,i)=>[i+1,String(o.b||o.raw||''),o.sku||'',o.n||'',o.q,o.p||'',o.p?o.p*o.q:''])).concat([['','','','TỔNG ('+A.length+' SKU)',tq,'',tt||'']]);
+ XLSX.utils.book_append_sheet(wb,mk(cd,[6,16,10,40,10,13,15],3,[4,5,6],[5,6],true),'CongDon');
+ const lg=[['STT','Barcode','SKU','Tên hàng','Số lượng','Giá','Thời gian']].concat(s.rows.map((r,i)=>{const L=lookup(r.c);return[i+1,String(r.b!==undefined?(r.b||r.c):r.c),r.s||L.sku||'',L.name||(r.live&&r.live.n)||'',r.q,L.list||(r.live&&(r.live.p||r.live.k))||'',fd(r.t)]}));
+ XLSX.utils.book_append_sheet(wb,mk(lg,[6,16,10,40,10,12,17],3,[4,5],[5],false),'Log');
+ wb.Workbook={Views:[{activeTab:0}]};
  return wb}
 function xport(s){if(!s)return toast('Chưa có phiên nào');XLSX.writeFile(buildWB(s),xname(s))}
 function modal(h,ok,onOk,after){const o=document.createElement('div');
@@ -1150,7 +1200,7 @@ document.querySelectorAll('#pmode button').forEach(b=>b.onclick=()=>setMode(+b.d
 document.addEventListener('keydown',e=>{if(!askBusy||$('qk').style.display!=='block')return;if(/^\d$/.test(e.key))qkPress(e.key);else if(e.key==='Backspace')qkPress('del');else if(e.key==='Enter')qkPress('ok');else return;e.preventDefault()});
 /* ===== bảng chi tiết: kéo lên để mở, kéo xuống để đóng; mặc định tab Cộng dồn ===== */
 let SHEET=false;
-function openDet(){if(!cur)return toast('Chưa có phiên nào');renderD();const d=$('det');d.style.transition='transform .3s cubic-bezier(.2,.8,.2,1)';d.style.transform='translateY(0)';d.classList.add('open');SHEET=true;scanning=false}
+function openDet(){if(!cur)return toast('Chưa có phiên nào');tab(2);const d=$('det');d.style.transition='transform .3s cubic-bezier(.2,.8,.2,1)';d.style.transform='translateY(0)';d.classList.add('open');SHEET=true;scanning=false}
 function closeDet(){const d=$('det');d.style.transition='transform .26s ease';d.style.transform='translateY(105%)';d.classList.remove('open');SHEET=false;if(HS[HS.length-1]==='ses'||HS[HS.length-1]==='list')armScan()}
 function dragSheet(h,opening,sc){let y0=0,dy=0,on=false,live=false,raf=0,H=0,base=0,ly=0,lt=0,vel=0;const d=$('det');
  const paint=()=>{raf=0;let y=base+dy;if(y<0)y=y/4;if(y>H*1.05)y=H*1.05;d.style.transform='translate3d(0,'+y+'px,0)'};
