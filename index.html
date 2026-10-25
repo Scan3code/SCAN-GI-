@@ -49,7 +49,7 @@ input,select{font:inherit;color:var(--tx);background:var(--in);border:1px solid 
 .msg{padding:12px;border-radius:14px;background:var(--in);text-align:center;font-weight:700;font-size:14px}
 .set .card{margin:8px 0}.set h4{margin:0 0 8px}.set .r{display:flex;justify-content:space-between;align-items:center;gap:10px}.set .r input{width:auto}.set .r input[type=text]{width:100%}.mu{color:var(--mu);font-size:13px}
 .set button{width:100%;margin:5px 0}
-#toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:#000c;color:#fff;padding:10px 16px;border-radius:20px;opacity:0;transition:.3s;pointer-events:none;z-index:9;max-width:90%}
+#toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:#000c;color:#fff;padding:10px 16px;border-radius:20px;opacity:0;transition:.3s;pointer-events:none;z-index:99999;max-width:90%}
 dialog{width:94%;max-width:520px;max-height:85dvh;border:0;border-radius:18px;background:var(--card);color:var(--tx);padding:14px}
 :root{--pr:#2563eb;--bg:#eef2f8;--line:#e2e8f0;--in:#f1f5f9}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0b1020;--card:#151c2f;--in:#1e2740;--line:#27324f;--hl:#3d3615}}
@@ -449,11 +449,11 @@ html.kb .scr.on .cam{height:var(--camh,160px)!important;min-height:var(--camh,16
 #det #dlist{padding:0 0 env(safe-area-inset-bottom,0px)!important}
 #det .th.gn,.ag{display:grid;grid-template-columns:20px 44px 58px minmax(0,1fr) 26px 62px;column-gap:6px;align-items:center}
 #det .th.gn{padding:9px 10px;font-size:11.5px;position:sticky;top:0;z-index:3;border-bottom:1px solid #8883}
-.ag{padding:12px 10px;border-bottom:1px solid #8883;row-gap:6px}
+.ag{padding:10px 10px;min-height:68px;box-sizing:border-box;border-bottom:1px solid #8883;row-gap:6px}
 .ag.z{background:rgba(128,128,128,.08)}
 .ag .no{text-align:center;color:var(--mu);font-size:13px;font-weight:600}
 .ag .sk{font-size:14.5px;font-weight:800;color:var(--ac);letter-spacing:.2px}
-.ag .nm{padding:0 2px;min-width:0;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;font-size:14.5px;font-weight:500;line-height:1.28}
+.ag .nm{padding:0 2px;min-width:0;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;font-size:14.5px;font-weight:500;line-height:1.28}
 .ag .q{text-align:center;font-size:22px;font-weight:800;color:var(--bad);line-height:1}
 .ag .pr{text-align:right;font-size:14.5px;font-weight:800;color:var(--ok);white-space:nowrap}
 .ag .bc{display:flex;align-items:center;justify-content:center;min-height:18px;min-width:0}
@@ -786,8 +786,25 @@ async function decodeROI(r,C){
   const P=(res.getResultPoints?res.getResultPoints():[]).map(p=>[p.getX(),p.getY()]);let box=null;
   if(P.length){const xs=P.map(p=>p[0]),ys=P.map(p=>p[1]),x0=Math.min.apply(null,xs),x1=Math.max.apply(null,xs),y=ys.reduce((a,b)=>a+b)/ys.length,bw=Math.max(40,x1-x0);box={x:r.x+x0*k,y:r.y+(y-.2*bw)*k,w:bw*k,h:.4*bw*k}}
   return{t:res.getText(),box:box||{x:r.x+r.w*.25,y:r.y+r.h*.3,w:r.w*.5,h:r.h*.2}}}catch(e){return null}}
+/* ===== Tự lấy nét lại: khi khung hình đổi cảnh rồi đứng yên, hoặc khi ảnh bị mờ ===== */
+const fwC=document.createElement('canvas');fwC.width=160;fwC.height=90;const fwX=fwC.getContext('2d',{willReadFrequently:true});
+let fwAt=0,fwPrev=null,fwMoved=0,fwDone=true,fwShMax=0,fwRF=0;
+async function refocus(){const m=(CAPS&&CAPS.focusMode)||[];if(!track||!m.length||Date.now()-fwRF<1200)return;fwRF=Date.now();focusAt=fwRF;
+ try{if(m.indexOf('single-shot')>=0){await track.applyConstraints({advanced:[{focusMode:'single-shot',pointsOfInterest:[{x:.5,y:.5}]}]});await sleep(300)}
+  else if(m.indexOf('manual')>=0&&m.indexOf('continuous')>=0){await track.applyConstraints({advanced:[{focusMode:'manual'}]});await sleep(80)}
+  if(m.indexOf('continuous')>=0)await track.applyConstraints({advanced:[{focusMode:'continuous'}]})}catch(e){}}
+function focusWatch(){if(!scanning||!track||v.readyState<2||!v.videoWidth)return;const now=Date.now();if(now-fwAt<200)return;fwAt=now;
+ try{const vw=v.videoWidth,vh=v.videoHeight;fwX.drawImage(v,vw*.2,vh*.3,vw*.6,vh*.4,0,0,160,90);const d=fwX.getImageData(0,0,160,90).data,n=160*90,g=new Uint8Array(n);
+  for(let i=0;i<n;i++)g[i]=(d[i*4]*.3+d[i*4+1]*.59+d[i*4+2]*.11)|0;
+  let sh=0,df=0;for(let y=0;y<89;y++)for(let x=0;x<159;x++){const i=y*160+x;sh+=Math.abs(g[i]-g[i+1])+Math.abs(g[i]-g[i+160])}
+  sh/=n;if(fwPrev){for(let i=0;i<n;i++)df+=Math.abs(g[i]-fwPrev[i]);df/=n}
+  fwPrev=g;
+  if(df>9){fwMoved=now;fwDone=false}
+  else if(!fwDone&&now-fwMoved>350){fwDone=true;fwShMax=0;refocus();return}
+  fwShMax=Math.max(sh,fwShMax*.97);
+  if(fwShMax>6&&sh<fwShMax*.55&&now-lastAct>1200&&now-fwRF>2200){fwShMax=sh;refocus()}}catch(e){}}
 function startLoop(){if(looping)return;looping=true;(async()=>{while(looping&&stream){
-  const t0=performance.now();let did=false;
+  const t0=performance.now();let did=false;focusWatch();
   if(scanning&&!askBusy&&v.readyState>=2&&v.videoWidth){try{const r=roi();if(r){const d=await decodeROI(r);if(d)accept(d);did=true}}catch(e){}}
   await sleep(did?Math.max(60,(performance.now()-t0)*1.5):140)}looping=false})()}
 /* ===== ZOOM theo khả năng thật của điện thoại (bước nhân ×1.3, kẹp trong khoảng máy hỗ trợ, không xuống dưới 1× để tránh góc rộng) ===== */
@@ -834,7 +851,7 @@ async function startCam(){if(stream)return true;
   if('BarcodeDetector' in window){try{bd=new BarcodeDetector({formats:['ean_13','upc_a']})}catch(e){bd=null}}
   if(!bd&&typeof ZXing==='undefined')toast('Chưa tải được thư viện đọc mã – kiểm tra mạng');
   if(!bd&&typeof ZXing!=='undefined'){const M=new Map();M.set(ZXing.DecodeHintType.POSSIBLE_FORMATS,['EAN_13','UPC_A'].map(f=>ZXing.BarcodeFormat[f]));M.set(ZXing.DecodeHintType.TRY_HARDER,true);zr=new ZXing.MultiFormatReader();zr.setHints(M)}
-  camMsg('');shMax=0;ROIC=null;try{if(navigator.wakeLock&&!WL)navigator.wakeLock.request('screen').then(l=>{WL=l;l.addEventListener('release',()=>{WL=null})}).catch(()=>{})}catch(e){}startLoop();return true
+  camMsg('');shMax=0;fwPrev=null;fwDone=true;fwShMax=0;ROIC=null;setTimeout(refocus,500);try{if(navigator.wakeLock&&!WL)navigator.wakeLock.request('screen').then(l=>{WL=l;l.addEventListener('release',()=>{WL=null})}).catch(()=>{})}catch(e){}startLoop();return true
  }catch(e){stream=null;camMsg(e&&e.name==='NotAllowedError'?'🔒 Chưa cấp quyền camera. Vào Cài đặt trình duyệt → Camera → Cho phép, rồi chạm vào đây':e&&e.name==='NotFoundError'?'Không tìm thấy camera':'📷 Chạm vào đây để bật camera');return false}}
 async function nextLens(){if(LENS.length<2)return;const c0=track&&track.getSettings?track.getSettings().deviceId:'',i=LENS.findIndex(d=>d.deviceId===c0),n=LENS[(i+1)%LENS.length];CFG.cam=n.deviceId;CFG.zoom=0;saveCfg();stopCam();toast('Ống kính '+(((i<0?0:i)+1)%LENS.length+1)+'/'+LENS.length);if(await startCam())armScan()}
 function stopCam(){looping=false;scanning=false;if(WL){try{WL.release()}catch(e){}WL=null}on=false;document.querySelectorAll('.tcb').forEach(b=>b.classList.remove('lit'));if(stream){stream.getTracks().forEach(t=>t.stop());stream=null}track=null}
@@ -1021,7 +1038,11 @@ const lastSes=()=>SS.filter(s=>!isJunk(s)).pop();
 function newSes(type){SS=SS.filter(s=>!isJunk(s));CFG.scanN=0;const base=(type==='kk'?'Phiên Kiểm Kê ':'Scan hàng ')+fd(Date.now());let nm=base,i=2;while(SS.some(x=>x.name===nm))nm=base+' ('+(i++)+')';cur={id:Date.now(),type,name:nm,t:Date.now(),rows:[]};SS.push(cur);saveSS();go('ses')}
 function newHere(){if(!cur)return;if(askBusy)return;renameDone(true);if(!cur.rows.length){toast('Phiên này còn trống – cứ quét tiếp nhé');return}newSes(cur.type);$('code').value='';toast('Đã tạo phiên mới')}
 function contSes(){CFG.scanN=0;cur=lastSes();cur?go('ses'):toast('Chưa có phiên nào')}
-function onSes(c,box){if(askBusy||cool(c)||ocrCtl.code===c)return;if(ocrCtl.code)ocrCancel();if(CFG.scanN){askQty(c,box);return}add(c,+$('qty').value||1,0,box)}
+function onSes(c,box){if(askBusy||cool(c)||ocrCtl.code===c)return;if(ocrCtl.code)ocrCancel();if(CFG.scanN){askQty(c,box);return}const q0=+$('qty').value||1,L0=lookup(c);
+ if(cur&&cur.type==='tc'&&CFG.ocrScan&&CFG.np&&/^\d{13}$/.test(c)&&!L0.found&&!L0.sku&&box&&stream){
+  lastC=c;lastT=Date.now();
+  resolve7(c,box,false).then(sku=>{if(sku)rememberSku(c,sku);if(cur)add(c,q0,1,null)});return}
+ add(c,q0,0,box)}
 /* Scan N: iPhone dùng bàn phím số web; Android thử bàn phím máy, không lên thì tự chuyển sang bàn phím web; PC dùng bàn phím vật lý */
 let QK={c:'',box:null,s:'',manual:false},QKH=0,askTok=0;
 const COARSE=matchMedia('(pointer:coarse)').matches||(navigator.maxTouchPoints>0&&!matchMedia('(pointer:fine)').matches);
@@ -1133,7 +1154,28 @@ function askName(s,def){
   i.onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();o.querySelector('[data-x="1"]').click()}}})}
 async function upload(q){try{const rows=cur.rows.map(r=>{const L=lookup(r.c);return[cur.name,fd(r.t),r.b!==undefined?(r.b||r.c):r.c,r.s||L.sku,L.name||(r.live&&r.live.n)||L.name,r.q,L.list||(r.live&&(r.live.p||r.live.k))||L.list]});if(!rows.length)return;
  await fetch(CFG.link,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({rows})});toast('Đã gửi lên Sheet "KiemKe"')}catch(e){toast('Gửi lên Sheet thất bại')}}
-let allBusy=false; async function liveFetch(code){const u=LIVE_LINK,ctl=new AbortController(),tm=setTimeout(()=>ctl.abort(),40000);  try{const res=await fetch(u+(u.includes('?')?'&':'?')+'live='+encodeURIComponent(code),{signal:ctl.signal});return await res.json()}finally{clearTimeout(tm)}} async function all(){  if(allBusy){toast('Đang tra, chờ chút...');return}  const need=new Map();  cur.rows.forEach(r=>{if(r.live||lookup(r.c).found)return;const code=String(r.s||r.b||r.c||'').replace(/\D/g,'');if(!code)return;if(!need.has(code))need.set(code,[]);need.get(code).push(r)});  if(need.size){   if(!/\/macros\//.test(LIVE_LINK))toast('Chưa có link Apps Script');   else if(!navigator.onLine)toast('Không có mạng');   else{    allBusy=true;    const list=Array.from(need.entries());let done=0,ok=0,fail=0,idx=0;    const work=async()=>{while(idx<list.length){const [code,rows]=list[idx++];      try{const j=await liveFetch(code);       if(j&&j.success){const lv={n:j.tenHang||'',p:num(j.giaBan),k:num(j.giaKM),t:j.ton306,d:j.dateRange||''};        rows.forEach(r=>{r.live=lv;if(j.sku&&!r.s){r.s=j.sku;rememberSku(r.c,j.sku)}if(j.barcode&&!r.b&&cur&&cur.type==='tc')r.b=j.barcode});ok++}       else fail++}      catch(e){fail++}      done++;toast(`Đang tra ${done}/${list.length}...`)}};    await Promise.all([work(),work(),work()]);    allBusy=false;saveSS();renderD();    toast(`Tra xong: ${ok} mã có thông tin`+(fail?`, ${fail} mã lỗi/không thấy`:''));   }  }  const A=agg(cur);  $('dbody').innerHTML=`<b>Tra cứu tất cả (${A.length} SKU)</b>`+A.map(o=>{const L=o.l,lv=o.lv;   let info;   if(!L.found&&lv)info=`${lv.p?'Giá bán: '+fmt(lv.p)+'<br>':''}${lv.k?`<span style="color:var(--bad);font-weight:700">KM: ${fmt(lv.k)}${lv.d?' ('+esc(lv.d)+')':''}</span><br>`:''}${lv.t!==undefined&&lv.t!==''?'Tồn: '+esc(lv.t)+'<br>':''}🌐`;   else info=`${L.list?'Niêm yết: '+fmt(L.list)+'<br>':''}${L.promo?`<span style="color:var(--bad);font-weight:700">${L.pr.filter(p=>status(p.d)[2]==='on').map(p=>p.p>0?'KM: '+fmt(p.p):esc(p.t||'Có KM')).join(' | ')}</span>`:'<span class="mu">Không có KM đang chạy</span>'}`;   return`<div class="pb"><b>${esc(o.sku||'-')} • ${esc(o.n)}</b> × ${o.q}<br>${info}</div>`}).join('');  openDlg(dlg)}
+let allBusy=false; async function liveFetch(code){const u=LIVE_LINK,ctl=new AbortController(),tm=setTimeout(()=>ctl.abort(),40000);  try{const res=await fetch(u+(u.includes('?')?'&':'?')+'live='+encodeURIComponent(code),{signal:ctl.signal});return await res.json()}finally{clearTimeout(tm)}} async function all(){  if(allBusy){toast('Đang tra, chờ chút...');return}  const need=new Map();  cur.rows.forEach(r=>{if(r.live||lookup(r.c).found)return;const code=String(r.s||r.b||r.c||'').replace(/\D/g,'');if(!code)return;if(!need.has(code))need.set(code,[]);need.get(code).push(r)});
+  const paint=(msg)=>{const A=agg(cur);$('dbody').innerHTML=`<b>Tra cứu tất cả (${A.length} SKU)</b>`+(msg?`<div class="mu" style="margin:6px 0 8px;font-size:13px">${msg}</div>`:'')+A.map(o=>{const L=o.l,lv=o.lv;   let info;   if(!L.found&&lv)info=`${lv.p?'Giá bán: '+fmt(lv.p)+'<br>':''}${lv.k?`<span style="color:var(--bad);font-weight:700">KM: ${fmt(lv.k)}${lv.d?' ('+esc(lv.d)+')':''}</span><br>`:''}${lv.t!==undefined&&lv.t!==''?'Tồn: '+esc(lv.t)+'<br>':''}🌐`;   else info=`${L.list?'Niêm yết: '+fmt(L.list)+'<br>':''}${L.promo?`<span style="color:var(--bad);font-weight:700">${L.pr.filter(p=>status(p.d)[2]==='on').map(p=>p.p>0?'KM: '+fmt(p.p):esc(p.t||'Có KM')).join(' | ')}</span>`:'<span class="mu">Không có KM đang chạy</span>'}`;   return`<div class="pb"><b>${esc(o.sku||o.raw||'')}${o.n?' • '+esc(o.n):''}</b> × ${o.q}<br>${info}</div>`}).join('');if(!dlg.open)openDlg(dlg)};
+  let msg='';
+  if(need.size){
+   if(!/\/macros\//.test(LIVE_LINK))msg='Chưa có link Apps Script – chỉ hiện thông tin có sẵn trong danh mục.';
+   else if(!navigator.onLine)msg='Không có mạng – chỉ hiện thông tin có sẵn trong danh mục.';
+   else{
+    allBusy=true;paint('⏳ Đang tra web 0/'+need.size+'…');
+    const list=Array.from(need.entries());let done=0,ok=0,fail=0,idx=0;
+    const work=async()=>{while(idx<list.length){const [code,rows]=list[idx++];
+      try{const j=await liveFetch(code);
+       if(j&&j.success){const lv={n:j.tenHang||'',p:num(j.giaBan),k:num(j.giaKM),t:j.ton306,d:j.dateRange||''};
+        rows.forEach(r=>{r.live=lv;if(j.sku&&!r.s){r.s=j.sku;rememberSku(r.c,j.sku)}if(j.barcode&&!r.b&&cur&&cur.type==='tc')r.b=j.barcode});ok++}
+       else fail++}
+      catch(e){fail++}
+      done++;paint('⏳ Đang tra web '+done+'/'+list.length+'…')}};
+    try{await Promise.all([work(),work(),work()])}finally{allBusy=false}
+    saveSS();renderD();
+    msg=`Tra xong: ${ok} mã có thông tin`+(fail?`, ${fail} mã lỗi/không thấy`:'')+'.';
+   }
+  }
+  paint(msg)}
 /* settings */
 function qtyVis(){const q=$('qty');q.readOnly=false;q.setAttribute('inputmode','numeric');q.placeholder='SL';if(!askBusy)q.value=CFG.scanN?'':(q.value||1)}
 function bind(){document.querySelectorAll('[data-k]').forEach(e=>{const k=e.dataset.k;if(e.type==='checkbox')e.checked=!!CFG[k];else if(e.type==='radio')e.checked=String(CFG[k])===e.value;else e.value=CFG[k]});renderStk();qtyVis()}
