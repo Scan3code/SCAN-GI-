@@ -340,6 +340,11 @@ body{font-size:16px;line-height:1.4;background:var(--bg);color:var(--tx)}
 .cfw.okc .cfb:not(.sel){opacity:.7}
 .ci .mh{font-size:12.5px;font-weight:700}
 
+
+.grab{position:relative;padding:20px 0 16px!important;min-height:48px}
+.grab::before{content:"";position:absolute;left:0;right:0;top:-22px;height:22px}
+#det .hd2{padding-top:4px;padding-bottom:10px;touch-action:none}
+#dlist{overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
 </style><style id="kbfix"> html,body{overscroll-behavior:none;overscroll-behavior-y:none}
 /* Bàn phím điện thoại: màn hình luôn nằm gọn phía trên bàn phím (--kb, --vt do JS tính từ visualViewport) */
 html .scr.on{top:var(--vt,0px);bottom:var(--kb,0px)}
@@ -442,7 +447,7 @@ html.kb .scr.on .cam{height:var(--camh,160px)!important;min-height:var(--camh,16
 <button class="big" onclick="newSes('kk')">Phiên kiểm kê mới</button>
 <button class="big" onclick="contSes()">Tiếp tục phiên</button>
 <button class="big" onclick="go('list')">Danh sách phiên</button>
-<button class="big" onclick="xport(SS[SS.length-1])">Xuất file Excel (phiên gần nhất)</button>
+<button class="big" onclick="xport(lastSes())">Xuất file Excel (phiên gần nhất)</button>
 <button class="big" onclick="delAll()">Xóa dữ liệu phiên</button>
 <button class="big" onclick="go('set')">Cài đặt</button></div></section>
 
@@ -459,7 +464,8 @@ html.kb .scr.on .cam{height:var(--camh,160px)!important;min-height:var(--camh,16
 
 <section class="sheet" id="det"><div class="grab" id="grab2"><i></i></div>
 <div class="hd2"><b id="dname"></b><span id="dsum" style="text-align:right;line-height:1.3;font-size:15px;font-weight:800"></span><button class="ib" onclick="closeDet()" aria-label="Đóng"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
-<div class="acts"><button class="o" onclick="all()">Tra cứu</button><button class="g" onclick="xport(cur)">Excel</button><button onclick="share(cur)">Zalo</button><button class="dk" id="up" onclick="upload()">Sheet</button></div>
+<div class="acts"><button class="o" onclick="all()">Tra cứu</button><button class="g" onclick="xport(cur)">Excel</button><button onclick="share(cur)" style="line-height:1.15">Tạo Excel &amp; chia sẻ</button><button class="dk" id="up" onclick="upload()">Sheet</button></div>
+<div style="padding:0 12px 8px"><button onclick="resumeScan()" style="width:100%;padding:13px;border-radius:14px;font-size:16px;font-weight:800;background:var(--ok);color:#fff;border:0">▶ Tiếp tục scan phiên này</button></div>
 <div class="tabs"><button class="on" id="t2" onclick="tab(2)">CỘNG DỒN (SKU)</button><button id="t1" onclick="tab(1)">DATA THÔ (LOG)</button></div>
 <div class="sc" id="dlist" style="padding:0"></div></section>
 
@@ -522,7 +528,7 @@ function toast(t){const e=$('toast');e.textContent=t;e.style.opacity=1;clearTime
 /* storage */
 let _db;const idb=()=>_db=_db||new Promise((res,rej)=>{try{const r=indexedDB.open('qrapp',1);r.onupgradeneeded=()=>r.result.createObjectStore('k');r.onsuccess=()=>res(r.result);r.onerror=()=>rej()}catch(e){rej(e)}});
 const kv=(k,val)=>new Promise(res=>{idb().then(d=>{const o=d.transaction('k',val===undefined?'readonly':'readwrite').objectStore('k'),r=val===undefined?o.get(k):o.put(val,k);r.onsuccess=()=>res(r.result);r.onerror=()=>res()}).catch(()=>res())});
-const saveCfg=()=>kv('cfg',CFG),saveSS=()=>kv('ss',SS),saveDB=()=>kv('db',DB);
+const saveCfg=()=>kv('cfg',CFG),saveSS=()=>kv('ss',SS.filter(s=>!isJunk(s))),saveDB=()=>kv('db',DB);
 function index(){catBar={};catSku={};proSku={};DB.cat.forEach(r=>{if(r.b)catBar[key(r.b)]=r;if(r.s)catSku[r.s]=r});DB.promo.forEach(r=>(proSku[r.s]=proSku[r.s]||[]).push(r));buildVend();
  const t=`Đã có ${DB.cat.length} sản phẩm | ${DB.promo.length} dòng KM${DB.t?' | Cập nhật '+fd(DB.t):''}`;$('stat').textContent=t;$('stat2').textContent=t;const s3=$('stat3');if(s3){const nv=DB.cat.filter(r=>r.v).length;s3.innerHTML=`Sản phẩm có vendor: <b>${nv}</b> / ${DB.cat.length}<br>Luật giảm theo vendor: <b>${(DB.vr||[]).length}</b><br>Đầu mã 893 đã ghép vendor: <b>${Object.keys(PFX).length}</b>`}}
 /* data import */
@@ -718,6 +724,7 @@ function beep(k){if(!CFG.snd)return;
 function haptic(ok){if(!CFG.vib)return;try{if(navigator.vibrate){navigator.vibrate(ok?(CFG.vp==2?[80,50,80]:100):[280]);return}
  if(!HL){HL=document.createElement('label');HL.style.cssText='position:fixed;left:-99px;top:-99px;opacity:0;pointer-events:none';const i=document.createElement('input');i.type='checkbox';i.setAttribute('switch','');HL.appendChild(i);document.body.appendChild(HL)}HL.click()}catch(e){}}
 function fb(ok,k){haptic(ok);beep(k||(ok?'ok':'bad'))}
+let lastAct=Date.now();
 const camMsg=t=>document.querySelectorAll('.camov').forEach(e=>{e.textContent=t;e.style.display=t?'flex':'none'});
 const ocrSt=t=>{try{OCRD.st=t;detUp()}catch(e){}document.querySelectorAll('.ocrb').forEach(e=>{e.textContent=t;e.style.display=t?'block':'none'})};
 const cool=c=>c===lastC&&Date.now()-lastT<CFG.cd;
@@ -725,7 +732,7 @@ const holdOn=()=>!!CFG.hold&&(!CFG.scanN||!!CFG.holdN); function refreshHold(){c
 function enableCam(){camMsg('');startCam().then(ok=>{if(ok)armScan()})}
 function need(c){return CFG.kkStrict?3:2}
 function accept(d){let c=String(d.t).trim();if(/^\d{12}$/.test(c))c='0'+c;if(!c||!scanning||!H||askBusy)return;if(/^\d{13}$/.test(c)&&!eanOK(c))return;
- const n=Date.now();if(c!==last||n-lastAt>1500){last=c;cnt=0}lastAt=n;if(++cnt<need(c))return;last='';cnt=0;H(c,d.box)}
+ const n=Date.now();if(c!==last||n-lastAt>1500){last=c;cnt=0}lastAt=n;if(++cnt<need(c))return;last='';cnt=0;lastAct=Date.now();H(c,d.box)}
 function roi(){const vw=v.videoWidth,vh=v.videoHeight,p=v.parentElement,w=p.clientWidth,h=p.clientHeight;if(!vw||!w||!h)return null;
  const k=vw+'x'+vh+'_'+w+'x'+h+'_'+DZ.toFixed(2);if(ROIC&&ROIC.k===k)return ROIC.r;
  const sc=Math.max(w/vw,h/vh),ox=(w-vw*sc)/2,oy=(h-vh*sc)/2,X=q=>((q-w/2)/DZ+w/2-ox)/sc,Y=q=>((q-h/2)/DZ+h/2-oy)/sc,x0=Math.max(0,X(w*.08)),x1=Math.min(vw,X(w*.92)),y0=Math.max(0,Y(h*.14)),y1=Math.min(vh,Y(h*.86)),r={x:x0,y:y0,w:x1-x0,h:y1-y0};ROIC={k,r};return r}
@@ -976,9 +983,11 @@ function pagain(){showSeq++;ocrCancel();$('pq').value='';$('pinfo').textContent=
 $('pgo').onclick=()=>{const c=$('pq').value.trim();if(!c)return;if(PM===2){cartAdd(c,1);$('pq').value=''}else showP(c)};$('pq').onkeydown=e=>{if(e.key==='Enter')$('pgo').click()};
 
 /* sessions */
-function newSes(type){CFG.scanN=0;const base=(type==='kk'?'Phiên Kiểm Kê ':'Phiên Tra Cứu ')+fd(Date.now());let nm=base,i=2;while(SS.some(x=>x.name===nm))nm=base+' ('+(i++)+')';cur={id:Date.now(),type,name:nm,t:Date.now(),rows:[]};SS.push(cur);saveSS();go('ses')}
+function isJunk(s){return !s.rows.length&&/^(Phiên Tra Cứu|Phiên Kiểm Kê|Scan hàng) \d{2}\/\d{2}\/\d{4} \d{2}:\d{2}( \(\d+\))?$/.test(s.name||'')}
+const lastSes=()=>SS.filter(s=>!isJunk(s)).pop();
+function newSes(type){SS=SS.filter(s=>!isJunk(s));CFG.scanN=0;const base=(type==='kk'?'Phiên Kiểm Kê ':'Scan hàng ')+fd(Date.now());let nm=base,i=2;while(SS.some(x=>x.name===nm))nm=base+' ('+(i++)+')';cur={id:Date.now(),type,name:nm,t:Date.now(),rows:[]};SS.push(cur);saveSS();go('ses')}
 function newHere(){if(!cur)return;if(askBusy)return;renameDone(true);if(!cur.rows.length){toast('Phiên này còn trống – cứ quét tiếp nhé');return}newSes(cur.type);$('code').value='';toast('Đã tạo phiên mới')}
-function contSes(){CFG.scanN=0;cur=SS[SS.length-1];cur?go('ses'):toast('Chưa có phiên nào')}
+function contSes(){CFG.scanN=0;cur=lastSes();cur?go('ses'):toast('Chưa có phiên nào')}
 function onSes(c,box){if(askBusy||cool(c)||ocrCtl.code===c)return;if(ocrCtl.code)ocrCancel();if(CFG.scanN){askQty(c,box);return}add(c,+$('qty').value||1,0,box)}
 /* Scan N: iPhone dùng bàn phím số web; Android thử bàn phím máy, không lên thì tự chuyển sang bàn phím web; PC dùng bàn phím vật lý */
 let QK={c:'',box:null,s:'',manual:false},QKH=0,askTok=0;
@@ -1037,10 +1046,10 @@ function renameDone(save){const sp=$('sname'),inp=$('snin');if(inp.style.display
 $('snin').onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();renameDone(true)}else if(e.key==='Escape')renameDone(false)};$('snin').onblur=()=>renameDone(true);
 function promptRename(s){const n=prompt('Tên phiên',s.name);if(n&&n.trim()){s.name=n.trim();saveSS();return true}return false}
 $('dname').onclick=()=>{if(cur&&promptRename(cur))renderD()};
-function renderL(){const el=$('llist');el.innerHTML=SS.length?SS.slice().reverse().map(s=>`<div class="card"><div class="nm">${esc(s.name)}</div><div class="mu">${s.rows.length} dòng | SL: ${s.rows.reduce((a,r)=>a+r.q,0)}</div><div style="display:flex;gap:6px;margin-top:8px"><button data-a="c" data-i="${s.id}">Tiếp tục</button><button class="g" data-a="d" data-i="${s.id}">Chi tiết</button><button class="gr" data-a="r" data-i="${s.id}">Đổi tên</button><button class="rd" data-a="x" data-i="${s.id}">Xóa</button></div></div>`).join(''):'<div class="msg">Chưa có phiên nào</div>';
+function renderL(){const el=$('llist');el.innerHTML=SS.some(s=>!isJunk(s))?SS.filter(s=>!isJunk(s)).reverse().map(s=>`<div class="card"><div class="nm">${esc(s.name)}</div><div class="mu">${s.rows.length} dòng | SL: ${s.rows.reduce((a,r)=>a+r.q,0)}</div><div style="display:flex;gap:6px;margin-top:8px"><button data-a="c" data-i="${s.id}">Tiếp tục</button><button class="g" data-a="d" data-i="${s.id}">Chi tiết</button><button class="gr" data-a="r" data-i="${s.id}">Đổi tên</button><button class="rd" data-a="x" data-i="${s.id}">Xóa</button></div></div>`).join(''):'<div class="msg">Chưa có phiên nào</div>';
  el.onclick=e=>{const b=e.target.closest('button');if(!b)return;const s=SS.find(x=>x.id==b.dataset.i);if(b.dataset.a==='x'){if(confirm('Xóa phiên này?')){SS=SS.filter(x=>x!==s);if(cur===s)cur=null;saveSS();renderL()}}else if(b.dataset.a==='r'){if(promptRename(s))renderL()}else{cur=s;if(b.dataset.a==='c')go('ses');else openDet()}}}
 function clr(){confirm('Xóa toàn bộ dòng của phiên?')&&(cur.rows=[],saveSS(),renderS())}
-function delAll(){const s=SS[SS.length-1];s&&confirm('Xóa dữ liệu phiên "'+s.name+'"?')?(s.rows=[],saveSS(),toast('Đã xóa')):0}
+function delAll(){const s=lastSes();s&&confirm('Xóa dữ liệu phiên "'+s.name+'"?')?(s.rows=[],saveSS(),toast('Đã xóa')):0}
 /* ===== TRA CỨU TRỰC TIẾP (không lưu lịch sử): mã 13 số hoặc SKU ===== */ async function liveRow(s,i,re){   const r=s.rows[i];if(!r)return;   const u=LIVE_LINK;   if(!/\/macros\//.test(u)){toast('Chưa có link Apps Script');return}   if(!navigator.onLine){toast('Không có mạng');return}   const code=String(r.s||r.b||r.c||'').replace(/\D/g,'');   if(!code){toast('Dòng này chưa có mã');return}   toast('Đang tra trực tiếp trên web...');   try{     const ctl=new AbortController(),tm=setTimeout(()=>ctl.abort(),40000);     const res=await fetch(u+(u.includes('?')?'&':'?')+'live='+encodeURIComponent(code),{signal:ctl.signal});     const j=await res.json();clearTimeout(tm);     if(!j.success){toast('❌ '+(j.message||'Không tra được'));return}     r.live={n:j.tenHang||'',p:num(j.giaBan),k:num(j.giaKM),t:j.ton306,d:j.dateRange||''};     if(j.sku&&!r.s){r.s=j.sku;rememberSku(r.c,j.sku)}     if(j.barcode&&!r.b&&cur&&cur.type==='tc')r.b=j.barcode;     saveSS();re();fb(true,'sku');toast('✓ Đã lấy thông tin trực tiếp');   }catch(e){toast(e&&e.name==='AbortError'?'❌ Quá thời gian chờ':'❌ Không tra được, kiểm tra mạng / link')} } /* export / share */
 const xname=s=>s.name.replace(/[\/:*?"<>|]/g,'-')+'.xlsx';
 function buildWB(s){const A=agg(s),wb=XLSX.utils.book_new();
@@ -1052,26 +1061,26 @@ function buildWB(s){const A=agg(s),wb=XLSX.utils.book_new();
  XLSX.utils.book_append_sheet(wb,mk(cd,[6,10,48,10,12,14],[4,5]),'CongDon');
  return wb}
 function xport(s){if(!s)return toast('Chưa có phiên nào');XLSX.writeFile(buildWB(s),xname(s))}
-let shBusy=false;
-async function share(s){s=s||cur;if(!s||!s.rows.length)return toast('Chưa có dữ liệu để chia sẻ');if(shBusy)return;
- const nm=xname(s);let wb,buf;
- try{wb=buildWB(s);buf=XLSX.write(wb,{type:'array',bookType:'xlsx'})}catch(e){return toast('Không tạo được file Excel')}
- const errs=[],XT='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
- if(navigator.share){
-  shBusy=true;
-  try{
-   for(const [t,txt] of [[XT,0],['application/octet-stream',0],['',0],[XT,1]]){
-    let f;try{f=new File([buf],nm,t?{type:t}:{})}catch(e){errs.push('File:'+e.name);continue}
-    const d={files:[f]};if(txt){d.title=nm;d.text=nm}
-    try{if(navigator.canShare&&!navigator.canShare(d)){errs.push('canShare=false');continue}await navigator.share(d);return}
-    catch(e){if(e&&e.name==='AbortError')return;errs.push((e&&e.name)+': '+(e&&e.message||'').slice(0,60))}
-   }
-  }finally{shBusy=false}
- }
- let ok=true;try{XLSX.writeFile(wb,nm)}catch(x){ok=false}
- if(!ok)return toast('Không tạo được file Excel');
- toast('Không gửi trực tiếp được – đã tải file về, mở Zalo để gửi');
- setTimeout(()=>alert('Không mở được bảng chia sẻ.\nTrình duyệt: '+(/SamsungBrowser/.test(navigator.userAgent)?'Samsung Internet':'khác')+'\nHTTPS: '+(window.isSecureContext?'có':'KHÔNG')+'\nnavigator.share: '+(navigator.share?'có':'KHÔNG')+'\nLỗi: '+(errs.join(' | ')||'không có')),300)}
+function modal(h,ok,onOk,after){const o=document.createElement('div');
+ o.style.cssText='position:fixed;left:0;top:0;right:0;bottom:0;z-index:99999;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;padding:20px';
+ const bs='flex:1;padding:12px;border-radius:12px;border:0;font-size:16px;font-weight:700;';
+ o.innerHTML='<div style="background:var(--card);color:var(--tx);border-radius:20px;padding:20px;width:100%;max-width:420px;box-shadow:0 10px 40px #0008;font-size:15px;line-height:1.5">'+h+'<div style="display:flex;gap:10px;margin-top:18px"><button data-x="0" style="'+bs+'background:var(--in);color:var(--tx)">Hủy</button><button data-x="1" style="'+bs+'background:var(--pr);color:#fff">'+ok+'</button></div></div>';
+ document.body.appendChild(o);const close=()=>o.remove();
+ o.onclick=e=>{if(e.target===o)close()};
+ o.querySelector('[data-x="0"]').onclick=close;
+ o.querySelector('[data-x="1"]').onclick=()=>{if(onOk(o)!==false)close()};
+ if(after)after(o)}
+/* nút "Tạo Excel & chia sẻ": hướng dẫn -> hỏi tên file (để sẵn, bôi đen) -> tải file về */
+function share(s){s=s||cur;if(!s||!s.rows.length)return toast('Chưa có dữ liệu để chia sẻ');
+ const def=s.name.replace(/[\/:*?"<>|]/g,'-');
+ modal('<div style="font-size:18px;font-weight:800;margin-bottom:8px">Tạo Excel &amp; chia sẻ</div><ol style="margin:0;padding-left:22px"><li>Tải file Excel về máy</li><li>Bấm <b>mở file</b> vừa tải</li><li>Trong file, bấm <b>Chia sẻ</b> → chọn Zalo → chọn người nhận</li></ol>','Tiếp tục',()=>{setTimeout(()=>askName(s,def),80)})}
+function askName(s,def){
+ modal('<div style="font-size:18px;font-weight:800;margin-bottom:8px">Tên file</div><input style="width:100%;box-sizing:border-box;padding:12px;border-radius:12px;border:2px solid var(--pr);background:var(--in);color:var(--tx);font-size:16px" maxlength="80" autocomplete="off"><div style="color:var(--mu);font-size:13px;margin-top:6px">Giữ nguyên thì bấm OK. File sẽ có đuôi .xlsx</div>','OK',o=>{
+  let n=(o.querySelector('input').value||'').replace(/\.xlsx$/i,'').replace(/[\/:*?"<>|]/g,'-').trim()||def;
+  try{XLSX.writeFile(buildWB(s),n+'.xlsx');toast('Đã tải file – bấm mở file rồi chọn Chia sẻ')}catch(e){toast('Không tạo được file Excel');return false}
+ },o=>{const i=o.querySelector('input');i.value=def;
+  const sel=()=>{try{i.focus();i.select();i.setSelectionRange(0,i.value.length)}catch(e){}};setTimeout(sel,60);setTimeout(sel,250);
+  i.onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();o.querySelector('[data-x="1"]').click()}}})}
 async function upload(q){try{const rows=cur.rows.map(r=>{const L=lookup(r.c);return[cur.name,fd(r.t),r.b!==undefined?(r.b||r.c):r.c,r.s||L.sku,L.name||(r.live&&r.live.n)||L.name,r.q,L.list||(r.live&&(r.live.p||r.live.k))||L.list]});if(!rows.length)return;
  await fetch(CFG.link,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({rows})});toast('Đã gửi lên Sheet "KiemKe"')}catch(e){toast('Gửi lên Sheet thất bại')}}
 let allBusy=false; async function liveFetch(code){const u=LIVE_LINK,ctl=new AbortController(),tm=setTimeout(()=>ctl.abort(),40000);  try{const res=await fetch(u+(u.includes('?')?'&':'?')+'live='+encodeURIComponent(code),{signal:ctl.signal});return await res.json()}finally{clearTimeout(tm)}} async function all(){  if(allBusy){toast('Đang tra, chờ chút...');return}  const need=new Map();  cur.rows.forEach(r=>{if(r.live||lookup(r.c).found)return;const code=String(r.s||r.b||r.c||'').replace(/\D/g,'');if(!code)return;if(!need.has(code))need.set(code,[]);need.get(code).push(r)});  if(need.size){   if(!/\/macros\//.test(LIVE_LINK))toast('Chưa có link Apps Script');   else if(!navigator.onLine)toast('Không có mạng');   else{    allBusy=true;    const list=Array.from(need.entries());let done=0,ok=0,fail=0,idx=0;    const work=async()=>{while(idx<list.length){const [code,rows]=list[idx++];      try{const j=await liveFetch(code);       if(j&&j.success){const lv={n:j.tenHang||'',p:num(j.giaBan),k:num(j.giaKM),t:j.ton306,d:j.dateRange||''};        rows.forEach(r=>{r.live=lv;if(j.sku&&!r.s){r.s=j.sku;rememberSku(r.c,j.sku)}if(j.barcode&&!r.b&&cur&&cur.type==='tc')r.b=j.barcode});ok++}       else fail++}      catch(e){fail++}      done++;toast(`Đang tra ${done}/${list.length}...`)}};    await Promise.all([work(),work(),work()]);    allBusy=false;saveSS();renderD();    toast(`Tra xong: ${ok} mã có thông tin`+(fail?`, ${fail} mã lỗi/không thấy`:''));   }  }  const A=agg(cur);  $('dbody').innerHTML=`<b>Tra cứu tất cả (${A.length} SKU)</b>`+A.map(o=>{const L=o.l,lv=o.lv;   let info;   if(!L.found&&lv)info=`${lv.p?'Giá bán: '+fmt(lv.p)+'<br>':''}${lv.k?`<span style="color:var(--bad);font-weight:700">KM: ${fmt(lv.k)}${lv.d?' ('+esc(lv.d)+')':''}</span><br>`:''}${lv.t!==undefined&&lv.t!==''?'Tồn: '+esc(lv.t)+'<br>':''}🌐`;   else info=`${L.list?'Niêm yết: '+fmt(L.list)+'<br>':''}${L.promo?`<span style="color:var(--bad);font-weight:700">${L.pr.filter(p=>status(p.d)[2]==='on').map(p=>p.p>0?'KM: '+fmt(p.p):esc(p.t||'Có KM')).join(' | ')}</span>`:'<span class="mu">Không có KM đang chạy</span>'}`;   return`<div class="pb"><b>${esc(o.sku||'-')} • ${esc(o.n)}</b> × ${o.q}<br>${info}</div>`}).join('');  openDlg(dlg)}
@@ -1143,14 +1152,24 @@ document.addEventListener('keydown',e=>{if(!askBusy||$('qk').style.display!=='bl
 let SHEET=false;
 function openDet(){if(!cur)return toast('Chưa có phiên nào');renderD();const d=$('det');d.style.transition='transform .3s cubic-bezier(.2,.8,.2,1)';d.style.transform='translateY(0)';d.classList.add('open');SHEET=true;scanning=false}
 function closeDet(){const d=$('det');d.style.transition='transform .26s ease';d.style.transform='translateY(105%)';d.classList.remove('open');SHEET=false;if(HS[HS.length-1]==='ses'||HS[HS.length-1]==='list')armScan()}
-function dragSheet(h,opening){let y0=0,dy=0,t0=0,on=false;
- h.addEventListener('touchstart',e=>{if(opening&&!cur)return;y0=e.touches[0].clientY;t0=Date.now();dy=0;on=true;if(opening)renderD();$('det').style.transition='none'},{passive:true});
- h.addEventListener('touchmove',e=>{if(!on)return;dy=e.touches[0].clientY-y0;const d=$('det'),H=d.offsetHeight||innerHeight;d.style.transform='translateY('+Math.max(0,opening?H+dy:dy)+'px)'},{passive:true});
- const end=()=>{if(!on)return;on=false;if(!opening&&Math.abs(dy)<8){$('det').style.transition='';return}const sp=Math.abs(dy)/(Date.now()-t0+1);if(opening)(dy<-60||(dy<-20&&sp>.4))?openDet():closeDet();else(dy>60||(dy>20&&sp>.4))?closeDet():openDet()};
+function dragSheet(h,opening,sc){let y0=0,dy=0,on=false,live=false,raf=0,H=0,base=0,ly=0,lt=0,vel=0;const d=$('det');
+ const paint=()=>{raf=0;let y=base+dy;if(y<0)y=y/4;if(y>H*1.05)y=H*1.05;d.style.transform='translate3d(0,'+y+'px,0)'};
+ h.addEventListener('touchstart',e=>{if(e.touches.length>1||(opening&&!cur))return;y0=ly=e.touches[0].clientY;lt=Date.now();dy=0;vel=0;on=true;live=false;H=d.offsetHeight||innerHeight;base=opening?H*1.05:0;if(opening&&!SHEET)renderD()},{passive:true});
+ h.addEventListener('touchmove',e=>{if(!on)return;const y=e.touches[0].clientY,n=Date.now();dy=y-y0;
+  if(!live){if(Math.abs(dy)<5)return;if(sc&&(dy<0||sc.scrollTop>0)){on=false;return}live=true;d.style.transition='none';y0=y;dy=0}
+  const iv=(y-ly)/Math.max(1,n-lt);vel=vel*.4+iv*.6;ly=y;lt=n;
+  if(e.cancelable)e.preventDefault();if(!raf)raf=requestAnimationFrame(paint)},{passive:false});
+ const end=()=>{if(!on)return;on=false;if(!live)return;live=false;if(raf){cancelAnimationFrame(raf);raf=0}paint();
+  const go=opening?(dy<-45||vel<-.3):!(dy>60||vel>.3);go?openDet():closeDet()};
  h.addEventListener('touchend',end);h.addEventListener('touchcancel',end)}
-dragSheet($('grab'),true);dragSheet($('grab2'),false);dragSheet(document.querySelector('#det .hd2'),false);$('grab').onclick=openDet;
+dragSheet($('grab'),true);dragSheet($('grab2'),false);dragSheet(document.querySelector('#det .hd2'),false);dragSheet($('dlist'),false,$('dlist'));$('grab').onclick=openDet;
+/* tiếp tục scan từ trình xem chi tiết */
+function resumeScan(){if(!cur)return;lastAct=Date.now();closeDet();if(HS[HS.length-1]!=='ses')go('ses');else{if(!stream)enableCam();armScan()}}
+/* tự tạm dừng camera sau 1 phút không dùng; chạm vào màn camera để quét tiếp */
+['touchstart','pointerdown','keydown','click'].forEach(ev=>document.addEventListener(ev,()=>{lastAct=Date.now()},{capture:true,passive:true}));
+setInterval(()=>{if(!stream||askBusy)return;const id=HS[HS.length-1];if(id!=='ses'&&id!=='price')return;if(Date.now()-lastAct<60000)return;stopCam();camMsg('⏸ Camera tạm dừng vì 1 phút không dùng. Chạm vào đây để quét tiếp')},3000);
 /* init */
-(async()=>{const sv=(await kv('cfg'))||{};if(sv.ver!==4){sv.hold=0;sv.holdN=0;sv.hd=DEF.hd;sv.ver=4}CFG={...DEF,...sv};CFG.scanN=0;applyTheme();tierUI();try{navigator.storage&&navigator.storage.persist&&navigator.storage.persist()}catch(e){}DB=await kv('db')||DB;SS=await kv('ss')||[];CART=await kv('cart')||[];
+(async()=>{const sv=(await kv('cfg'))||{};if(sv.ver!==4){sv.hold=0;sv.holdN=0;sv.hd=DEF.hd;sv.ver=4}CFG={...DEF,...sv};CFG.scanN=0;applyTheme();tierUI();try{navigator.storage&&navigator.storage.persist&&navigator.storage.persist()}catch(e){}DB=await kv('db')||DB;SS=await kv('ss')||[];SS.forEach(s=>{if(s.type!=='kk')s.name=String(s.name).replace(/^Phiên Tra Cứu/,'Scan hàng')});SS=SS.filter(s=>!isJunk(s));saveSS();CART=await kv('cart')||[];
  if(DEFAULT_LINK)CFG.link=DEFAULT_LINK;Object.assign(CFG,TABS);const q=new URLSearchParams(location.search).get('l');if(q){CFG.link=q;history.replaceState(null,'',location.pathname)}
  saveCfg();index();bind();if(CFG.link&&navigator.onLine&&(!DB.cat.length||DB.sv!==2||Date.now()-DB.t>36e5))sync(!DB.cat.length)})();
 </script><script>
