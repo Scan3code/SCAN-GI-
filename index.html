@@ -452,7 +452,7 @@ html.kb .scr.on .cam{height:var(--camh,160px)!important;min-height:var(--camh,16
 .ag{padding:10px 10px;min-height:68px;box-sizing:border-box;border-bottom:1px solid #8883;row-gap:6px}
 .ag.z{background:rgba(128,128,128,.08)}
 .vh{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:8px 12px;background:var(--in);color:var(--ac);font-size:13px;border-bottom:1px solid #8883;position:sticky;top:36px;z-index:2}.vh span{color:var(--mu);font-size:12px;white-space:nowrap}
-.acts button.on{outline:2px solid var(--ac);outline-offset:-2px}
+.vbar{display:flex;justify-content:flex-end;gap:6px;padding:0 12px 6px}.vbar button{padding:4px 10px;font-size:12px;font-weight:700;border-radius:999px;min-height:0;background:var(--in);color:var(--mu);border:1px solid var(--line);box-shadow:none;display:inline-flex;align-items:center;gap:4px}.vbar button.on{background:var(--ac);color:#fff;border-color:var(--ac)}
 .ag .no{text-align:center;color:var(--mu);font-size:13px;font-weight:600}
 .ag .sk{font-size:14.5px;font-weight:800;color:var(--ac);letter-spacing:.2px}
 .ag .nm{padding:0 2px;min-width:0;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;font-size:14.5px;font-weight:500;line-height:1.28}
@@ -498,9 +498,10 @@ html.kb .scr.on .cam{height:var(--camh,160px)!important;min-height:var(--camh,16
 
 <section class="sheet" id="det"><div class="grab" id="grab2"><i></i></div>
 <div class="hd2"><b id="dname"></b><span id="dsum" style="text-align:right;line-height:1.3;font-size:15px;font-weight:800"></span><button class="ib" onclick="closeDet()" aria-label="Đóng"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
-<div class="acts"><button class="o" onclick="tcAll()">Tra cứu</button><button onclick="share(cur)" style="line-height:1.15">Tạo Excel &amp; chia sẻ</button><button id="bvd" onclick="togV('vshow')">Vendor</button><button id="bvs" onclick="togV('vsort')" style="display:none;line-height:1.15">Xếp theo vendor</button><button class="dk" id="up" onclick="upload()">Sheet</button></div>
+<div class="acts"><button class="o" onclick="tcAll()">Tra cứu</button><button onclick="share(cur)" style="line-height:1.15">Tạo Excel &amp; chia sẻ</button><button class="dk" id="up" onclick="upload()">Sheet</button></div>
 <div style="padding:0 12px 6px"><button onclick="resumeScan()" style="width:100%;padding:10px;border-radius:12px;font-size:15px;font-weight:800;background:var(--ok);color:#fff;border:0">▶ Tiếp tục scan phiên này</button></div>
 <div class="tabs"><button class="on" id="t2" onclick="tab(2)">CỘNG DỒN (SKU)</button><button id="t1" onclick="tab(1)">DATA THÔ (LOG)</button></div>
+<div class="vbar" id="vbar"><button id="bvd" onclick="togV('vshow')"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M4 6h16M7 12h10M10 18h4"/></svg> Vendor</button><button id="bvs" onclick="togV('vsort')" style="display:none">Xếp theo vendor</button></div>
 <div class="sc" id="dlist" style="padding:0"></div></section>
 
 <section class="scr" id="list"><div class="hd"><button class="bk ib"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button><span>Danh sách phiên</span></div><div class="sc" id="llist"></div></section>
@@ -1103,17 +1104,17 @@ function renderS(){const s=cur;$('sname').textContent=s.name;$('tot').textConten
  const el=$('slist');el.innerHTML=s.rows.map((r,i)=>rowHTML(r,i,i===s.rows.length-1)).reverse().join('');bindRows(el,s)}
 function vendOf(r,L){const c2=r.s&&catSku[r.s];if(c2&&c2.v)return c2.v;if(L.cat&&L.cat.v)return L.cat.v;
  const b=[r.b,r.c,L.cat&&L.cat.b].map(x=>String(x||'').replace(/\D/g,'')).find(x=>/^893\d{10}$/.test(x));if(b){const a=PFX[b.slice(0,7)];if(a&&a.length)return a[0]}return ''}
-function togV(k){CFG[k]=CFG[k]?0:1;if(k==='vsort'&&CFG.vsort)CFG.vshow=1;saveCfg();renderD()}
+function togV(k){CFG[k]=CFG[k]?0:1;if(k==='vshow'&&!CFG.vshow)CFG.vsort=0;saveCfg();renderD()}
 function agg(s){const m=new Map();s.rows.forEach(r=>{const L=lookup(r.c),lv=r.live,sk=r.s||L.sku,k=sk||r.c;const o=m.get(k)||{k,sku:sk,n:L.name||'',q:0,p:L.list||0,l:L};if(lv&&lv.n&&!L.name&&!o.lv){o.lv=lv;o.n=lv.n;o.p=lv.p||lv.k||0}const bi=bcOf(r,L,sk||'');if(!o.v){const vv=vendOf(r,L);if(vv)o.v=vv}if(!o.b&&bi.ok)o.b=bi.ok;if(!o.raw&&bi.raw)o.raw=bi.raw;o.q+=r.q;m.set(k,o)});return Array.from(m.values())}
 function bcOf(r,L,sk){let raw='';for(const c of [r.b,r.c,L.cat&&L.cat.b]){const d=String(c||'').replace(/\D/g,'');if(!d||d===sk)continue;if(/^\d{13}$/.test(d)&&eanOK(d))return{ok:d,raw:d};if(!raw)raw=d}return{ok:'',raw}}
 function bcSVG(code){if(typeof JsBarcode==='undefined')return '';const fm=(/^\d{13}$/.test(code)&&eanOK(code))?'EAN13':'CODE128';
  try{const s=document.createElementNS('http://www.w3.org/2000/svg','svg');JsBarcode(s,code,{format:fm,width:1,height:16,displayValue:false,margin:2,background:'#ffffff',lineColor:'#000000'});
   const w=parseFloat(s.getAttribute('width')),h=parseFloat(s.getAttribute('height'));if(!s.getAttribute('viewBox')&&w&&h)s.setAttribute('viewBox','0 0 '+w+' '+h);
   s.setAttribute('preserveAspectRatio','none');s.setAttribute('shape-rendering','crispEdges');s.removeAttribute('width');s.removeAttribute('height');return s.outerHTML}catch(e){return ''}}
-function renderD(){const s=cur;let A=agg(s);$('dname').textContent=s.name;$('dsum').innerHTML=`<div class="sm">Tổng SKU: <b>${A.length}</b></div><div class="sm">Tổng số lượng: <b>${s.rows.reduce((a,r)=>a+r.q,0)}</b></div>`;$('up').style.display=/\/macros\//.test(CFG.link)?'':'none';const el=$('dlist');
+function renderD(){const s=cur;let A=agg(s);const vb=$('vbar');if(vb)vb.style.display=tabN===2?'':'none';$('dname').textContent=s.name;$('dsum').innerHTML=`<div class="sm">Tổng SKU: <b>${A.length}</b></div><div class="sm">Tổng số lượng: <b>${s.rows.reduce((a,r)=>a+r.q,0)}</b></div>`;$('up').style.display=/\/macros\//.test(CFG.link)?'':'none';const el=$('dlist');
  if(tabN===1){el.innerHTML=`<div class="th"><span style="width:42px">STT</span><span style="flex:1">Barcode / Tên hàng</span><span>Số lượng</span></div>`+s.rows.map((r,i)=>rowHTML(r,i,i===s.rows.length-1)).join('');bindRows(el,s)}
- else{const nv=new Set(A.map(o=>o.v).filter(Boolean)).size,multi=nv>=2,sortOn=!!CFG.vsort&&multi;
-  const bs=$('bvs'),bv=$('bvd');if(bs){bs.style.display=multi?'':'none';bs.classList.toggle('on',sortOn)}if(bv)bv.classList.toggle('on',!!CFG.vshow);
+ else{const nv=new Set(A.map(o=>o.v).filter(Boolean)).size,multi=nv>=2,sortOn=!!CFG.vsort&&!!CFG.vshow&&multi;
+  const bs=$('bvs'),bv=$('bvd');if(bs){bs.style.display=multi&&CFG.vshow?'':'none';bs.classList.toggle('on',sortOn)}if(bv)bv.classList.toggle('on',!!CFG.vshow);
   let VL=A,k0=0;if(sortOn){const g=new Map();A.forEach(o=>{const k=o.v||'';if(!g.has(k))g.set(k,[]);g.get(k).push(o)});const ks=Array.from(g.keys()).sort((a,b)=>!a?1:!b?-1:a.localeCompare(b,'en',{numeric:true}));VL=[];ks.forEach(k=>{const L2=g.get(k);if(k)VL.push({hd:k,n:L2.length,q:L2.reduce((a,o)=>a+o.q,0)});else VL.push({hd:'chưa rõ',n:L2.length,q:L2.reduce((a,o)=>a+o.q,0)});L2.forEach(o=>VL.push(o))})}
   let ri=0;VL.forEach(o=>{if(!o.hd)o.ri=ri++});
   el.innerHTML=`<div class="th gn"><span style="text-align:center;font-size:9px;letter-spacing:0">STT</span><span style="text-align:center;font-size:9px;letter-spacing:0;white-space:nowrap;overflow:hidden">Barcode</span><span>SKU</span><span>Tên sản phẩm</span><span style="text-align:center">SL</span><span style="text-align:right">${CFG.vshow?'Vendor':'Đơn giá'}</span></div>`+VL.map((o,i)=>{if(o.hd)return`<div class="vh"><b>Vendor ${esc(o.hd)}${vname(o.hd)?' · '+esc(vname(o.hd)):''}</b><span>${o.n} SKU · SL ${o.q}</span></div>`;const bv=o.b||o.raw||'',g=bv?bcSVG(bv):'',bc=g?`<div class="bc" data-t="1" data-b="${bv}">${g}</div>`:(o.raw?`<div class="bc"><span class="d">${esc(o.raw)}</span></div>`:'<div class="bc"></div>');return`<div class="ag${o.ri%2?' z':''}"><b class="no">${o.ri+1}</b>${bc}<b class="sk">${esc(o.sku||'')}</b><span class="nm">${esc(o.n)}</span><b class="q">${o.q}</b><b class="pr">${CFG.vshow?esc(o.v||''):(o.p?o.p.toLocaleString('vi-VN'):'')}</b></div>`}).join('');
