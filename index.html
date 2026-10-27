@@ -1041,7 +1041,20 @@ async function showP(c,box){const seq=++showSeq,is13=/^\d{13}$/.test(c);let L=lo
  scanning=false;$('cam2').style.display='none';idleT=setTimeout(stopCam,20000);
  $('pinfo').textContent=`MÃ VẠCH: ${is13?c:(L.cat&&L.cat.b)||'-'} | SKU: ${L.sku||'-'}${L.viaOcr?' (đọc từ tem)':''}`;
  const wasOpen=!!($('lvd')&&$('lvd').open);$('pout').innerHTML=card(L)+(tried?detHTML():'');if(tried){if(wasOpen)$('lvd').open=true;shownIv=-1;detUp()}
- drawBc();fb(L.found||!!L.sku,L.viaOcr?'sku':undefined)}
+ drawBc();fb(L.found||!!L.sku,L.viaOcr?'sku':undefined);
+ if(!L.found){$('pout').insertAdjacentHTML('beforeend','<div class="card" id="wlive"><div class="nm">Không có thông tin trong danh mục</div><div class="mu">⏳ Đợi một lát để lấy dữ liệu…</div></div>');webFill(L.sku||c,seq)}}
+const LIVEC={};
+function liveHTML(j){const p=num(j.giaBan),k=num(j.giaKM);return`<div class="card"><div class="nm">${esc(j.tenHang||'')}</div><div class="pl"><small>Giá bán:</small><div class="v${k?' cut':''}">${p?fmt(p):''}</div></div>${k?`<div class="pl"><small>Giá KM${j.dateRange?' ('+esc(j.dateRange)+')':''}:</small><div class="v" style="color:var(--bad)">${fmt(k)}</div></div>`:''}${j.ton306!==undefined&&j.ton306!==''?`<div class="mu">Tồn: ${esc(j.ton306)}</div>`:''}<div class="mu">🌐 Lấy từ web</div></div>`}
+async function webFill(code,seq){code=String(code||'').replace(/\D/g,'');const el=()=>seq===showSeq&&$('wlive');if(!code)return;
+ const set=h=>{const e=el();if(e)e.outerHTML=h};
+ if(!/\/macros\//.test(LIVE_LINK))return set('<div class="mu" id="wlive">Chưa có link tra web</div>');
+ if(!navigator.onLine)return set('<div class="mu" id="wlive">Không có mạng để lấy dữ liệu</div>');
+ try{const j=LIVEC[code]||await liveFetch(code);if(seq!==showSeq)return;if(j&&j.success){LIVEC[code]=j;if(j.sku&&code.length===13)rememberSku(code,j.sku);set(liveHTML(j))}else set('<div class="mu" id="wlive">Không tìm thấy thông tin trên web</div>')}
+ catch(e){set('<div class="mu" id="wlive">Không lấy được dữ liệu – kiểm tra mạng</div>')}}
+async function webCart(it){if(it.live||it.wait)return;const code=String(it.c||'').replace(/\D/g,'');const L0=lookup(it.c);const cd=String(L0.sku||code);if(!cd)return;
+ it.wait=1;it.nf=0;renderCart();
+ try{if(!/\/macros\//.test(LIVE_LINK)||!navigator.onLine)throw 0;const j=LIVEC[cd]||await liveFetch(cd);if(j&&j.success){LIVEC[cd]=j;it.live={n:j.tenHang||'',p:num(j.giaBan),k:num(j.giaKM),t:j.ton306,d:j.dateRange||''};if(j.sku&&/^\d{13}$/.test(code))rememberSku(code,j.sku)}else it.nf=1}catch(e){it.nf=1}
+ it.wait=0;kv('cart',CART);renderCart()}
 function onPrice(c,box){if(ocrCtl.code===c)return;if(ocrCtl.code)ocrCancel();PM===2?cartAdd(c,0,box):showP(c,box)}
 function pagain(){showSeq++;ocrCancel();$('pq').value='';$('pinfo').textContent='MÃ VẠCH: - | SKU: -';$('pout').innerHTML='<div class="card nm">Vui lòng quét mã để kiểm tra giá...</div>';resume()}
 $('pgo').onclick=()=>{const c=$('pq').value.trim();if(!c)return;if(PM===2){cartAdd(c,1);$('pq').value=''}else showP(c)};$('pq').onkeydown=e=>{if(e.key==='Enter')$('pgo').click()};
@@ -1099,7 +1112,7 @@ function rowHTML(r,i,hl){const L=lookup(r.c),tc=r.b!==undefined,nm=CFG.np?(L.fou
  const sub=[tc?'<b style="color:var(--ac)">'+esc(r.s||'—')+'</b>':'',nm].filter(Boolean).join(' · ');
  return`<div class="it${hl?' new':''}"><b class="n">${i+1}</b><div class="m"><b class="cd${hl?' hl':''}">${esc(tc?(r.b||r.c):r.c)}</b><span class="qt">×${r.q}</span>${sub?`<span class="sub">${sub}</span>`:''}</div><button class="ic" data-e="${i}">${PEN}</button>${tc&&!L.found?`<button class="ic" data-w="${i}" title="Tra trực tiếp trên web"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 0 1 0 20M12 2a15 15 0 0 0 0 20"/></svg></button>`:''}${tc&&!r.s?`<button class="ic" data-s="${i}">${TAG}</button>`:''}<button class="ic" data-d="${i}">${TRS}</button></div>`}
 function bindRows(el,s){const re=()=>el===$('slist')?renderS():renderD();el.onclick=e=>{const b=e.target.closest('button');if(!b)return;
- if(b.dataset.d!==undefined){s.rows.splice(+b.dataset.d,1);saveSS();re()}
+ if(b.dataset.d!==undefined){const rr=s.rows[+b.dataset.d];if(!rr||!confirm('Xóa dòng này?\n'+(rr.b||rr.c)+' ×'+rr.q))return;s.rows.splice(+b.dataset.d,1);saveSS();re()}
  else if(b.dataset.e!==undefined){const r=s.rows[+b.dataset.e],q=prompt('Số lượng cho '+r.c,r.q);if(q&&+q>0){r.q=+q;saveSS();re()}}
  else if(b.dataset.w!==undefined){liveRow(s,+b.dataset.w,re)}  else if(b.dataset.s!==undefined){const r=s.rows[+b.dataset.s],q=prompt('Nhập SKU 7 số in trên tem','');if(q===null)return;const d=q.replace(/\D/g,'');if(d.length===7){r.s=d;rememberSku(r.c,d);saveSS();re()}else toast('Cần đúng 7 chữ số')}}}
 function renderS(){const s=cur;$('sname').textContent=s.name;$('tot').textContent='Tổng: '+s.rows.reduce((a,r)=>a+r.q,0);
@@ -1233,13 +1246,13 @@ function calc(L,n,tier,pick){const l=L.list||0,cf=conf(L),pk=cf.some(g=>g.p===pi
  return b}
 async function cartAdd(c,force,box){c=String(c).trim();if(!c)return;if(!force&&cool(c))return;lastC=c;lastT=Date.now();let L=lookup(c);
  if(!L.found&&!L.sku&&/^\d{13}$/.test(c)&&CFG.ocrTest&&box&&stream){const sku=await resolve7(c,box,false);if(sku){rememberSku(c,sku);L=lookup(c)}}
- const k=L.sku||c;let r=CART.find(x=>x.k===k);if(r)r.q++;else CART.unshift({k,c,q:1});fb(L.found||!!L.sku);kv('cart',CART);renderCart();{const it=CART.find(x=>x.k===k);if(conf(L).length&&!(it&&it.pick))toast('⚠️ Trùng CTKM – vào giỏ để chọn giá')}}
+ const k=L.sku||c;let r=CART.find(x=>x.k===k);if(r)r.q++;else CART.unshift({k,c,q:1});fb(L.found||!!L.sku);kv('cart',CART);renderCart();{const it=CART.find(x=>x.k===k);if(conf(L).length&&!(it&&it.pick))toast('⚠️ Trùng CTKM – vào giỏ để chọn giá');if(it&&!L.found)webCart(it)}}
 function renderCart(){let tot=0,cnt=0,sav=0,unres=0;const tier=CFG.tier||'none';
- const h=CART.map((r,i)=>{const L=lookup(r.c),cf=conf(L),pk=cf.some(g=>g.p===r.pick)?r.pick:0,cc=calc(L,r.q,tier,pk);if(cf.length&&!pk)unres++;tot+=cc.t;cnt+=r.q;sav+=Math.max(0,(L.list||0)*r.q-cc.t);
-  return`<div class="ci"><div class="cm"><b class="${L.found?'':'bad'}">${esc(L.found?L.name:'Không có: '+r.c)}</b><div class="mu">${esc(L.sku||r.c)} · ${L.list?fmt(L.list):'-'}${cc.note?` · <span class="nt">${esc(cc.note)}</span>`:''}</div>${stk(L.sku)}</div><div class="cq"><button data-i="${i}" data-a="-">−</button><input class="qi" type="number" inputmode="numeric" min="1" max="9999" data-i="${i}" value="${r.q}" aria-label="Số lượng"><button data-i="${i}" data-a="+">+</button></div><div class="cp"><span>${fmt(cc.t)}</span><button class="ic" data-i="${i}" data-a="x">${TRS}</button></div>${cfHTML(cf,pk,i)}${memLine(L)}</div>`}).join('');
+ const h=CART.map((r,i)=>{const L=lookup(r.c),cf=conf(L),pk=cf.some(g=>g.p===r.pick)?r.pick:0,lv=!L.found&&r.live?r.live:null,lp=lv?(lv.k||lv.p||0):0;let cc=calc(L,r.q,tier,pk);if(lp)cc={t:lp*r.q,note:''};if(cf.length&&!pk)unres++;tot+=cc.t;cnt+=r.q;sav+=Math.max(0,(L.list||0)*r.q-cc.t);
+  return`<div class="ci"><div class="cm"><b class="${L.found||lv?'':'bad'}">${esc(L.found?L.name:lv?lv.n:'Không có thông tin trong danh mục')}</b>${r.wait?'<div class="mu">⏳ Đợi một lát để lấy dữ liệu…</div>':''}${r.nf&&!lv?'<div class="mu">Không tìm thấy thông tin trên web</div>':''}<div class="mu">${esc(L.sku||r.c)} · ${L.list?fmt(L.list):lp?fmt(lp)+(lv.k?' (KM)':'')+' 🌐':''}${cc.note?` · <span class="nt">${esc(cc.note)}</span>`:''}</div>${stk(L.sku)}</div><div class="cq"><button data-i="${i}" data-a="-">−</button><input class="qi" type="number" inputmode="numeric" min="1" max="9999" data-i="${i}" value="${r.q}" aria-label="Số lượng"><button data-i="${i}" data-a="+">+</button></div><div class="cp"><span>${fmt(cc.t)}</span><button class="ic" data-i="${i}" data-a="x">${TRS}</button></div>${cfHTML(cf,pk,i)}${memLine(L)}</div>`}).join('');
  $('pout').innerHTML=CART.length?h:'<div class="card nm">🛒 Giỏ trống – quét mã để thêm sản phẩm</div>';
  $('ctn').textContent=`${CART.length} SP · SL ${cnt}`+(tier!=='none'?' · Thẻ '+TIERS[tier]:'');$('ctv').textContent=fmt(tot);$('csv').textContent=sav>0?'Tiết kiệm '+fmt(sav):'';$('cwn').textContent=unres?'⚠️ '+unres+' SP trùng CTKM chưa chọn giá (đang tạm tính giá thấp nhất)':''}
-$('pout').onclick=e=>{const b=e.target.closest('button[data-a]');if(!b||PM!==2)return;const i=+b.dataset.i,r=CART[i];if(b.dataset.a==='pick')r.pick=+b.dataset.v;else if(b.dataset.a==='+')r.q++;else if(b.dataset.a==='-'){if(--r.q<1)CART.splice(i,1)}else CART.splice(i,1);kv('cart',CART);renderCart()};
+$('pout').onclick=e=>{const b=e.target.closest('button[data-a]');if(!b||PM!==2)return;const i=+b.dataset.i,r=CART[i];if(b.dataset.a==='pick')r.pick=+b.dataset.v;else if(b.dataset.a==='+')r.q++;else if(b.dataset.a==='-'){if(r.q<=1){if(!confirm('Xóa sản phẩm này khỏi giỏ?'))return;CART.splice(i,1)}else r.q--}else{if(!confirm('Xóa sản phẩm này khỏi giỏ?'))return;CART.splice(i,1)}kv('cart',CART);renderCart()};
 $('pout').onchange=e=>{const t=e.target;if(!t.classList||!t.classList.contains('qi'))return;const r=CART[+t.dataset.i];if(!r)return;let v=parseInt(t.value,10);if(!(v>=1))v=r.q;if(v>9999)v=9999;r.q=v;kv('cart',CART);renderCart()};
 $('pout').onfocusin=e=>{if(e.target.classList&&e.target.classList.contains('qi'))setTimeout(()=>{try{e.target.select()}catch(x){}},0)};
 $('pout').onkeydown=e=>{if(e.key==='Enter'&&e.target.classList&&e.target.classList.contains('qi')){e.preventDefault();e.target.blur()}};
@@ -1274,7 +1287,7 @@ function resumeScan(){if(!cur)return;VPREV=undefined;lastAct=Date.now();closeDet
 ['touchstart','pointerdown','keydown','click'].forEach(ev=>document.addEventListener(ev,()=>{lastAct=Date.now()},{capture:true,passive:true}));
 setInterval(()=>{if(!stream||askBusy)return;const id=HS[HS.length-1];if(id!=='ses'&&id!=='price')return;if(Date.now()-lastAct<60000)return;stopCam();camMsg('⏸ Camera tạm dừng vì 1 phút không dùng. Chạm vào đây để quét tiếp')},3000);
 /* init */
-(async()=>{const sv=(await kv('cfg'))||{};if(!(sv.ver>=4)){sv.hold=0;sv.holdN=0;sv.hd=DEF.hd;sv.ver=4}if(!(sv.ver>=5)){sv.ocrScan=0;sv.ver=5}CFG={...DEF,...sv};CFG.scanN=0;applyTheme();tierUI();try{navigator.storage&&navigator.storage.persist&&navigator.storage.persist()}catch(e){}DB=await kv('db')||DB;SS=await kv('ss')||[];SS.forEach(s=>{if(s.type!=='kk')s.name=String(s.name).replace(/^Phiên Tra Cứu/,'Scan hàng')});SS=SS.filter(s=>!isJunk(s));saveSS();CART=await kv('cart')||[];
+(async()=>{const sv=(await kv('cfg'))||{};if(!(sv.ver>=4)){sv.hold=0;sv.holdN=0;sv.hd=DEF.hd;sv.ver=4}if(!(sv.ver>=5)){sv.ocrScan=0;sv.ver=5}CFG={...DEF,...sv};CFG.scanN=0;applyTheme();tierUI();try{navigator.storage&&navigator.storage.persist&&navigator.storage.persist()}catch(e){}DB=await kv('db')||DB;SS=await kv('ss')||[];SS.forEach(s=>{if(s.type!=='kk')s.name=String(s.name).replace(/^Phiên Tra Cứu/,'Scan hàng')});SS=SS.filter(s=>!isJunk(s));saveSS();CART=await kv('cart')||[];CART.forEach(r=>{r.wait=0});
  if(DEFAULT_LINK)CFG.link=DEFAULT_LINK;Object.assign(CFG,TABS);const q=new URLSearchParams(location.search).get('l');if(q){CFG.link=q;history.replaceState(null,'',location.pathname)}
  saveCfg();index();bind();if(CFG.link&&navigator.onLine&&(!DB.cat.length||DB.sv!==2||Date.now()-DB.t>36e5))sync(!DB.cat.length)})();
 </script><script>
