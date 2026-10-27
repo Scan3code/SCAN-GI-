@@ -452,6 +452,7 @@ html.kb .scr.on .cam{height:var(--camh,160px)!important;min-height:var(--camh,16
 .ag{padding:10px 10px;min-height:68px;box-sizing:border-box;border-bottom:1px solid #8883;row-gap:6px}
 .ag.z{background:rgba(128,128,128,.08)}
 .vh{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:8px 12px;background:var(--in);color:var(--ac);font-size:13px;border-bottom:1px solid #8883;position:sticky;top:36px;z-index:2}.vh span{color:var(--mu);font-size:12px;white-space:nowrap}
+.wl{margin-top:8px;padding:10px 12px;border-radius:12px;background:rgba(245,158,11,.16);color:#f59e0b;font-weight:800;font-size:14px;animation:wlp 1.1s ease-in-out infinite}.wl.bad{animation:none;background:rgba(239,68,68,.14);color:#ef4444}@keyframes wlp{50%{opacity:.45}}
 .vbar{display:flex;justify-content:flex-end;gap:6px;padding:0 12px 6px}.vbar button{padding:4px 10px;font-size:12px;font-weight:700;border-radius:999px;min-height:0;background:var(--in);color:var(--mu);border:1px solid var(--line);box-shadow:none;display:inline-flex;align-items:center;gap:4px}.vbar button.on{background:var(--ac);color:#fff;border-color:var(--ac)}
 .ag .no{text-align:center;color:var(--mu);font-size:13px;font-weight:600}
 .ag .sk{font-size:14.5px;font-weight:800;color:var(--ac);letter-spacing:.2px}
@@ -1042,15 +1043,15 @@ async function showP(c,box){const seq=++showSeq,is13=/^\d{13}$/.test(c);let L=lo
  $('pinfo').textContent=`MÃ VẠCH: ${is13?c:(L.cat&&L.cat.b)||'-'} | SKU: ${L.sku||'-'}${L.viaOcr?' (đọc từ tem)':''}`;
  const wasOpen=!!($('lvd')&&$('lvd').open);$('pout').innerHTML=card(L)+(tried?detHTML():'');if(tried){if(wasOpen)$('lvd').open=true;shownIv=-1;detUp()}
  drawBc();fb(L.found||!!L.sku,L.viaOcr?'sku':undefined);
- if(!L.found){$('pout').insertAdjacentHTML('beforeend','<div class="card" id="wlive"><div class="nm">Không có thông tin trong danh mục</div><div class="mu">⏳ Đợi một lát để lấy dữ liệu…</div></div>');webFill(L.sku||c,seq)}}
+ if(!L.found){const c0=$('pout').querySelector('.card');if(c0){c0.id='wcard';const m=c0.querySelector('.mu');if(m)m.outerHTML='<div class="wl" id="wlive">⏳ Không có thông tin trong danh mục – đợi một lát để lấy dữ liệu…</div>';const hl=c0.querySelector('.hintl');hl&&hl.remove();webFill(L.sku||c,seq,is13?c:'')}}}
 const LIVEC={};
-function liveHTML(j){const p=num(j.giaBan),k=num(j.giaKM);return`<div class="card"><div class="nm">${esc(j.tenHang||'')}</div><div class="pl"><small>Giá bán:</small><div class="v${k?' cut':''}">${p?fmt(p):''}</div></div>${k?`<div class="pl"><small>Giá KM${j.dateRange?' ('+esc(j.dateRange)+')':''}:</small><div class="v" style="color:var(--bad)">${fmt(k)}</div></div>`:''}${j.ton306!==undefined&&j.ton306!==''?`<div class="mu">Tồn: ${esc(j.ton306)}</div>`:''}<div class="mu">🌐 Lấy từ web</div></div>`}
-async function webFill(code,seq){code=String(code||'').replace(/\D/g,'');const el=()=>seq===showSeq&&$('wlive');if(!code)return;
- const set=h=>{const e=el();if(e)e.outerHTML=h};
- if(!/\/macros\//.test(LIVE_LINK))return set('<div class="mu" id="wlive">Chưa có link tra web</div>');
- if(!navigator.onLine)return set('<div class="mu" id="wlive">Không có mạng để lấy dữ liệu</div>');
- try{const j=LIVEC[code]||await liveFetch(code);if(seq!==showSeq)return;if(j&&j.success){LIVEC[code]=j;if(j.sku&&code.length===13)rememberSku(code,j.sku);set(liveHTML(j))}else set('<div class="mu" id="wlive">Không tìm thấy thông tin trên web</div>')}
- catch(e){set('<div class="mu" id="wlive">Không lấy được dữ liệu – kiểm tra mạng</div>')}}
+function liveHTML(j,bc){const p=num(j.giaBan),k=num(j.giaKM);return`<div class="card">${bc?`<svg id="bc" data-v="${bc}"></svg>`:''}<div class="nm">${esc(j.tenHang||'')}</div><div class="pl"><small>Giá bán:</small><div class="v${k?' cut':''}">${p?fmt(p):''}</div></div>${k?`<div class="pl"><small>Giá KM${j.dateRange?' ('+esc(j.dateRange)+')':''}:</small><div class="v" style="color:var(--bad)">${fmt(k)}</div></div>`:''}${j.ton306!==undefined&&j.ton306!==''?`<div class="mu">Tồn: ${esc(j.ton306)}</div>`:''}<div class="mu">🌐 Lấy từ web</div></div>`}
+async function webFill(code,seq,bc){code=String(code||'').replace(/\D/g,'');const el=()=>seq===showSeq&&$('wlive');if(!code)return;
+ const set=h=>{const e=el();if(e)e.outerHTML=h},ok=j=>{const w=$('wcard');if(w&&seq===showSeq){w.outerHTML=liveHTML(j,bc);drawBc()}};
+ if(!/\/macros\//.test(LIVE_LINK))return set('<div class="wl bad" id="wlive">Chưa có link tra web</div>');
+ if(!navigator.onLine)return set('<div class="wl bad" id="wlive">Không có mạng để lấy dữ liệu</div>');
+ try{const j=LIVEC[code]||await liveFetch(code);if(seq!==showSeq)return;if(j&&j.success){LIVEC[code]=j;if(j.sku&&code.length===13)rememberSku(code,j.sku);ok(j)}else set('<div class="wl bad" id="wlive">Không tìm thấy thông tin trên web</div>')}
+ catch(e){set('<div class="wl bad" id="wlive">Không lấy được dữ liệu – kiểm tra mạng</div>')}}
 async function webCart(it){if(it.live||it.wait)return;const code=String(it.c||'').replace(/\D/g,'');const L0=lookup(it.c);const cd=String(L0.sku||code);if(!cd)return;
  it.wait=1;it.nf=0;renderCart();
  try{if(!/\/macros\//.test(LIVE_LINK)||!navigator.onLine)throw 0;const j=LIVEC[cd]||await liveFetch(cd);if(j&&j.success){LIVEC[cd]=j;it.live={n:j.tenHang||'',p:num(j.giaBan),k:num(j.giaKM),t:j.ton306,d:j.dateRange||''};if(j.sku&&/^\d{13}$/.test(code))rememberSku(code,j.sku)}else it.nf=1}catch(e){it.nf=1}
