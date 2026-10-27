@@ -140,9 +140,9 @@ dialog:not([open]){display:none}dialog[open]{position:fixed;left:50%;top:50%;tra
 .cam{border-radius:0;box-shadow:none}
 .frame{border:none;box-shadow:none;border-radius:0;top:15%;bottom:15%;left:9%;right:9%;
  background:linear-gradient(#fff,#fff) top left/26px 3px no-repeat,linear-gradient(#fff,#fff) top left/3px 26px no-repeat,linear-gradient(#fff,#fff) top right/26px 3px no-repeat,linear-gradient(#fff,#fff) top right/3px 26px no-repeat,linear-gradient(#fff,#fff) bottom left/26px 3px no-repeat,linear-gradient(#fff,#fff) bottom left/3px 26px no-repeat,linear-gradient(#fff,#fff) bottom right/26px 3px no-repeat,linear-gradient(#fff,#fff) bottom right/3px 26px no-repeat}
-.frame i{animation:lzb 1.4s ease-in-out infinite;will-change:opacity;top:50%;height:1px;background:rgba(255,80,80,.7);box-shadow:none;transform:none}
-.frame::after{content:'';position:absolute;top:0;bottom:0;left:50%;width:1px;background:rgba(255,80,80,.7);animation:lzb 1.4s ease-in-out infinite;will-change:opacity;pointer-events:none}
-@keyframes lzb{0%,100%{opacity:.75}50%{opacity:.15}}
+.frame i{animation:lzb 1.4s ease-in-out infinite;will-change:opacity;top:50%;height:1.5px;background:rgba(255,50,50,.92);box-shadow:0 0 3px rgba(255,50,50,.6);transform:none}
+.frame::after{content:'';position:absolute;top:0;bottom:0;left:50%;width:1.5px;margin-left:-.75px;background:rgba(255,50,50,.92);box-shadow:0 0 3px rgba(255,50,50,.6);animation:lzb 1.4s ease-in-out infinite;will-change:opacity;pointer-events:none}
+@keyframes lzb{0%,100%{opacity:1}50%{opacity:.35}}
 .ctl{top:10px;right:10px;background:rgba(0,0,0,.45);border:1px solid #ffffff22;padding:3px;gap:3px}
 /* màn Scan / Kiểm kê gọn */
 .row2{display:flex;gap:8px;padding:8px 12px 0}.row2 input{height:44px;font-size:17px;border-radius:14px}.row2 #code{flex:1;min-width:0}.row2 #qty{width:78px;flex:none;text-align:center;font-weight:800}
