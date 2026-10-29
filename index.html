@@ -1158,7 +1158,7 @@ function isJunk(s){return !s.rows.length&&/^(Phiên Tra Cứu|Phiên Kiểm Kê|
 let LT='kk';const tyOf=s=>s.type||'kk';const lastSes=t=>SS.filter(s=>!isJunk(s)&&(!t||tyOf(s)===t)).pop();function openList(t){LT=t;go('list')}
 function newSes(type){SS=SS.filter(s=>!isJunk(s));const base=(type==='kk'?'Phiên Kiểm Kê ':'Scan hàng ')+fd(Date.now());let nm=base,i=2;while(SS.some(x=>x.name===nm))nm=base+' ('+(i++)+')';
  dlgForm('Tạo phiên mới',[{label:'Tên phiên',value:nm}],'Tạo',v=>{let n=v[0]||nm,k=2;const b0=n;while(SS.some(x=>x.name===n))n=b0+' ('+(k++)+')';cur={id:Date.now(),type,name:n,t:Date.now(),rows:[]};SS.push(cur);saveSS();go('ses')})}
-function newHere(){if(!cur)return;if(askBusy)return;renameDone(true);if(!cur.rows.length){toast('Phiên này còn trống – cứ quét tiếp nhé');return}newSes(cur.type);$('code').value=''}
+function newHere(){if(!cur)return;if(askBusy)return;renameDone(true);newSes(cur.type);$('code').value=''}
 function contSes(t){cur=lastSes(t);cur?go('ses'):toast('Chưa có phiên nào')}
 function onSes(c,box){if(askBusy||cool(c)||ocrCtl.code===c)return;if(ocrCtl.code)ocrCancel();if(CFG.scanN){askQty(c,box);return}const q0=+$('qty').value||1,L0=lookup(c);
  if(cur&&cur.type==='tc'&&CFG.ocrScan&&CFG.np&&/^\d{13}$/.test(c)&&!L0.found&&!L0.sku&&box&&stream){
@@ -1274,8 +1274,12 @@ function ovl(inner,okLabel,okColor,onOk,after){const o=document.createElement('d
  const bs='flex:1;padding:12px;border-radius:12px;border:0;font-size:16px;font-weight:700;';
  o.innerHTML='<div style="background:var(--card);color:var(--tx);border-radius:20px;padding:20px;width:100%;max-width:420px;box-shadow:0 10px 40px #0008;font-size:15px;line-height:1.5">'+inner+'<div style="display:flex;gap:10px;margin-top:18px"><button data-x="0" style="'+bs+'background:var(--in);color:var(--tx)">Hủy</button><button data-x="1" style="'+bs+'background:'+okColor+';color:#fff">'+okLabel+'</button></div></div>';
  document.body.appendChild(o);scanning=false;const close=()=>{o.remove();try{if(!SHEET)armScan()}catch(e){}};
- const yes=()=>{if(onOk(o)!==false)close()};
- o.onclick=e=>{const b=e.target.closest('button[data-x]');if(b){if(b.dataset.x==='1')yes();else close()}else if(e.target===o)close()};
+ let fin=0,lastP=0;
+ const yes=()=>{if(fin)return;let r;try{r=onOk(o)}catch(er){console.error(er);r=true}if(r!==false){fin=1;close()}};
+ const act=b=>{if(b.dataset.x==='1')yes();else{fin=1;close()}};
+ /* Chạm thật trên điện thoại: bàn phím đóng/mở làm nút xê dịch nên 'click' có thể rơi mất -> xử lý ngay lúc nhả tay, click chỉ là dự phòng */
+ o.addEventListener('pointerup',e=>{const b=e.target.closest&&e.target.closest('button[data-x]');if(!b||e.button>0)return;lastP=Date.now();e.preventDefault();act(b)});
+ o.onclick=e=>{const b=e.target.closest('button[data-x]');if(b){if(Date.now()-lastP<700)return;act(b)}else if(e.target===o){fin=1;close()}};
  o.onkeydown=e=>{if(e.key==='Enter'&&e.target.tagName==='INPUT'){e.preventDefault();yes()}else if(e.key==='Escape')close()};
  after&&after(o);return o}
 function cfm(msg,yesLabel,onYes){ovl('<div style="font-size:17px;font-weight:700;margin-bottom:4px">'+esc(String(msg)).replace(/\n/g,'<br>')+'</div>',yesLabel||'Xóa','var(--bad,#dc2626)',()=>{onYes()})}
