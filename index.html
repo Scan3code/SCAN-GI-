@@ -30,8 +30,7 @@ input,select{font:inherit;color:var(--tx);background:var(--in);border:1px solid 
 .cam{position:relative;background:#000;height:33dvh;min-height:180px;overflow:hidden;flex:none}
 .cam video{width:100%;height:100%;object-fit:cover}
 .frame{position:absolute;top:12%;bottom:12%;left:6%;right:6%;border:2px solid #fff;border-radius:14px;pointer-events:none}
-.frame i{position:absolute;left:0;right:0;top:50%;height:2px;background:#f33;animation:s 1.6s ease-in-out infinite alternate}
-@keyframes s{from{top:10%}to{top:90%}}
+.frame i{position:absolute;left:0;right:0;top:50%;height:2px;background:#f33}
 .row{display:flex;gap:8px;align-items:center;padding:8px 12px}.row label{font-weight:700;color:#c2185b}
 .ln{display:flex;justify-content:space-between;padding:0 12px;font-weight:700;font-size:14px}
 .tot{color:#c2185b;font-weight:800;font-size:20px;white-space:nowrap}
@@ -44,7 +43,6 @@ input,select{font:inherit;color:var(--tx);background:var(--in);border:1px solid 
 .it .ic{background:none;color:var(--mu);padding:6px;font-size:20px}
 .tabs{display:flex}.tabs button{flex:1;border-radius:0;background:#ddd;color:#555}.tabs button.on{color:#1a237e;background:#fff}
 .nm{font-size:18px;font-weight:700;margin-bottom:8px}.card{padding:16px;border-radius:18px;background:var(--card);box-shadow:0 2px 8px #0002;margin:10px 0}
-.pb{background:var(--in);border-radius:12px;padding:12px;margin-top:8px}.pb small{color:var(--mu);display:block;font-size:14px}
 .pr{font-size:30px;font-weight:800}
 .msg{padding:12px;border-radius:14px;background:var(--in);text-align:center;font-weight:700;font-size:14px}
 .set .card{margin:8px 0}.set h4{margin:0 0 8px}.set .r{display:flex;justify-content:space-between;align-items:center;gap:10px}.set .r input{width:auto}.set .r input[type=text]{width:100%}.mu{color:var(--mu);font-size:13px}
@@ -105,8 +103,7 @@ dialog:not([open]){display:none}dialog[open]{position:fixed;left:50%;top:50%;tra
 /* ===== hiệu năng camera + Scan N bàn phím số ===== */
 .cam video{-webkit-transform:translateZ(0);transform:translateZ(0)}
 .frame{box-shadow:none;border:2px solid #ffffffb3}
-.frame i{top:0;height:100%;background:linear-gradient(transparent 48.5%,rgba(255,60,60,.95) 48.5%,rgba(255,60,60,.95) 51.5%,transparent 51.5%);box-shadow:none;animation:s2 1.8s ease-in-out infinite alternate;will-change:transform}
-@keyframes s2{from{transform:translateY(-40%)}to{transform:translateY(40%)}}
+.frame i{top:0;height:100%;background:linear-gradient(transparent 48.5%,rgba(255,60,60,.95) 48.5%,rgba(255,60,60,.95) 51.5%,transparent 51.5%);box-shadow:none}
 .ctl{-webkit-backdrop-filter:none;backdrop-filter:none;background:#000a}
 .fring{position:absolute;width:56px;height:56px;margin:-28px 0 0 -28px;border:2px solid #fde047;border-radius:50%;pointer-events:none;animation:fr .7s ease-out forwards;z-index:3}
 @keyframes fr{from{transform:scale(1.6);opacity:1}to{transform:scale(.8);opacity:0}}
@@ -266,7 +263,7 @@ body{font-size:16px;line-height:1.4;background:var(--bg);color:var(--tx)}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 
 /* ===== GIAO DIỆN v3: màu chữ nổi bật, ô giá to rõ, trùng CTKM, thẻ thành viên ===== */
-:root:root{--wn-bg:#fff4d6;--wn-bd:#f59e0b;--wn-tx:#6b3a05;--wn-hd:#b45309;--pcard:#0f172a}
+:root:root{--wn-bg:#fff4d6;--wn-bd:#f59e0b;--wn-tx:#6b3a05;--wn-hd:#b45309}
 @media (prefers-color-scheme:dark){:root:root:not([data-theme="light"]){--wn-bg:#3a2a06;--wn-bd:#f59e0b;--wn-tx:#fde9a8;--wn-hd:#fcd34d}}
 :root:root[data-theme="dark"]{--wn-bg:#3a2a06;--wn-bd:#f59e0b;--wn-tx:#fde9a8;--wn-hd:#fcd34d}
 /* thẻ sản phẩm */
@@ -470,14 +467,17 @@ html.kb .scr.on .cam{height:var(--camh,160px)!important;min-height:var(--camh,16
 .ag .bx svg{display:block;width:220px;max-width:90%;height:48px;border-radius:4px;background:#fff}
 .ag .bx .d{font-size:15px;font-weight:800;letter-spacing:2px;color:var(--tx);font-variant-numeric:tabular-nums}
 
-/* thanh tiêu đề đồng bộ màu với ô ở trang chủ: Kiểm kê xanh dương · Scan barcode xanh lá · Test giá cam */
+/* thanh tiêu đề đồng bộ màu với ô ở trang chủ: Kiểm kê xanh dương · ScanBarcode xanh lá · Test giá cam */
 #kk .hd,#ses .hd,#list .hd{background:linear-gradient(135deg,#1d4ed8,#2563eb)}
 #tcs .hd,#ses.tcm .hd,#list.tcm .hd{background:linear-gradient(135deg,#15803d,#16a34a)}
 #price .hd{background:linear-gradient(135deg,#c2410c,#ea580c)!important}
 .hm .act.sm{padding:13px 16px}.hm .act.sm i{width:46px;height:46px;border-radius:16px}.hm .act.sm i svg{width:24px;height:24px}.hm .act.sm b{font-size:17px}
 </style>
 <style id="themefix">
-/* ===== MÀU THEO TỪNG MỤC (khớp nút ngoài trang chủ): Kiểm kê = xanh lá · Scan barcode = xanh dương · Test giá = cam ===== */
+#totn{display:inline-block;min-width:1ch;text-align:left;font-variant-numeric:tabular-nums;transform-origin:50% 70%}
+#totn.pop{animation:totpop .42s cubic-bezier(.2,.9,.3,1.35)}
+@keyframes totpop{0%{transform:translateY(0) scale(1)}35%{transform:translateY(-4px) scale(1.4);color:var(--ac)}100%{transform:translateY(0) scale(1)}}
+/* ===== MÀU THEO TỪNG MỤC (khớp nút ngoài trang chủ): Kiểm kê = xanh lá · ScanBarcode = xanh dương · Test giá = cam ===== */
 :root{--gn-pr:#16a34a;--gn-ac:#15803d;--gn-1:#15803d;--gn-2:#22c55e;
  --bl-pr:#2563eb;--bl-ac:#1d4ed8;--bl-1:#1d4ed8;--bl-2:#3b82f6;
  --or-pr:#ea580c;--or-ac:#c2410c;--or-1:#c2410c;--or-2:#fb923c}
@@ -486,7 +486,7 @@ html.kb .scr.on .cam{height:var(--camh,160px)!important;min-height:var(--camh,16
 #kk,#ses,#list,#det{--pr:var(--gn-pr);--ac:var(--gn-ac);--c1:var(--gn-1);--c2:var(--gn-2)}
 #tcs,#ses.tcm,#list.tcm,#det.tcm{--pr:var(--bl-pr);--ac:var(--bl-ac);--c1:var(--bl-1);--c2:var(--bl-2)}
 #price{--pr:var(--or-pr);--ac:var(--or-ac);--c1:var(--or-1);--c2:var(--or-2)}
-/* trang chủ: đảo màu Kiểm kê ↔ Scan barcode */
+/* trang chủ: đảo màu Kiểm kê ↔ ScanBarcode */
 .a1{background:linear-gradient(135deg,#15803d,#22c55e)!important}
 .a2{background:linear-gradient(135deg,#1d4ed8,#3b82f6)!important}
 /* thanh tiêu đề + nền nhuộm nhẹ theo màu mục */
@@ -505,7 +505,7 @@ html.kb .scr.on .cam{height:var(--camh,160px)!important;min-height:var(--camh,16
 #price #pmode{padding:4px;gap:4px;background:var(--in);border:1px solid var(--line);border-radius:16px;overflow:visible}
 #price #pmode button{height:40px;padding:0;border-radius:12px;background:transparent;color:var(--mu);font-size:14.5px;box-shadow:none}
 #price #pmode button.on{background:linear-gradient(135deg,var(--c1),var(--pr));color:#fff;box-shadow:0 2px 6px #0002}
-/* Scan barcode: mọi nút cao bằng nhau, cách đều nhau */
+/* ScanBarcode: mọi nút cao bằng nhau, cách đều nhau */
 #ses .row2{display:flex;align-items:stretch;gap:8px;padding:10px 12px 0}
 #ses .row2>*{height:46px}
 #ses .row2 #code{flex:1;min-width:0;border-radius:14px}
@@ -536,6 +536,20 @@ html.kb .scr.on .cam{height:var(--camh,160px)!important;min-height:var(--camh,16
 #ses .grab::before{display:none}
 #ses .grab{padding:18px 0 18px!important;min-height:56px!important}
 #ses .tbar{padding-bottom:10px}
+/* nhãn "Đang hoạt động": chữ luôn đủ tương phản */
+.abg{color:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .abg{color:#052e16}}
+:root[data-theme="dark"] .abg{color:#052e16}
+/* Tổng Record: giữ màu cũ (hồng đỏ), không khung, chữ to vừa đủ để không chật */
+#ses .tbar{gap:6px;padding-left:10px;padding-right:10px}
+#ses .tbar .tot{display:inline-flex;align-items:center;height:36px;padding:0;font-size:15px;font-weight:800;line-height:1;white-space:nowrap;flex:none;color:var(--pc)}
+#ses .tbar .tot #totn{font-size:18px;font-weight:900;margin-left:5px;color:var(--pc)}
+#ses .chip span{padding:0 10px}
+/* hộp thoại nằm gọn phía trên bàn phím (--kb, --vt do JS tính từ visualViewport) */
+.ovl{top:var(--vt,0px)!important;bottom:var(--kb,0px)!important;overflow:auto;overscroll-behavior:contain}
+.ovl>div{max-height:100%;overflow:auto}
+html.kb .ovl{padding:10px!important}
+dialog[open]{top:calc(50% + (var(--vt,0px) - var(--kb,0px))/2);max-height:calc(100dvh - var(--vt,0px) - var(--kb,0px) - 16px);overflow:auto}
 </style>
 </head><body>
 
@@ -544,7 +558,7 @@ html.kb .scr.on .cam{height:var(--camh,160px)!important;min-height:var(--camh,16
 <div class="tb2"><button class="ib" onclick="cycleTheme()" aria-label="Đổi giao diện sáng/tối"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 3v18" /><path d="M12 3a9 9 0 0 1 0 18z" fill="currentColor"/></svg></button><button class="ib" id="syncb" onclick="sync(1)" aria-label="Đồng bộ online"><svg viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg></button><button class="ib" onclick="go('set')" aria-label="Cài đặt"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button></div></div>
 <div class="hm">
 <button class="act a1" onclick="go('kk')"><i><svg viewBox="0 0 24 24"><path d="M21 8l-9-5-9 5v8l9 5 9-5z"/><path d="M3 8l9 5 9-5M12 13v8"/></svg></i><div><b>Kiểm kê hàng hóa</b><small>Quét, đếm số lượng, xuất Excel</small></div></button>
-<button class="act a2" onclick="go('tcs')"><i><svg viewBox="0 0 24 24"><path d="M4 8V5a1 1 0 0 1 1-1h3M16 4h3a1 1 0 0 1 1 1v3M20 16v3a1 1 0 0 1-1 1h-3M8 20H5a1 1 0 0 1-1-1v-3"/><path d="M8 8v8M11 8v8M14 8v8M17 8v8"/></svg></i><div><b>Scan barcode</b><small>Ghi mã 13 số và SKU 7 số</small></div></button>
+<button class="act a2" onclick="go('tcs')"><i><svg viewBox="0 0 24 24"><path d="M4 8V5a1 1 0 0 1 1-1h3M16 4h3a1 1 0 0 1 1 1v3M20 16v3a1 1 0 0 1-1 1h-3M8 20H5a1 1 0 0 1-1-1v-3"/><path d="M8 8v8M11 8v8M14 8v8M17 8v8"/></svg></i><div><b>ScanBarcode</b><small>Ghi mã 13 số và SKU 7 số</small></div></button>
 <button class="act a3" onclick="go('price')"><i><svg viewBox="0 0 24 24"><path d="M20.6 13.4l-7.2 7.2a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8z"/><circle cx="7.5" cy="7.5" r="1.2"/></svg></i><div><b>Test giá sản phẩm</b><small>Giá, khuyến mãi, tồn, giỏ hàng</small></div></button>
 <div class="stat" id="stat"></div></div></section>
 
@@ -556,7 +570,7 @@ html.kb .scr.on .cam{height:var(--camh,160px)!important;min-height:var(--camh,16
 <button class="act a1 sm" onclick="delAll('kk')"><i><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></i><div><b>Xóa dữ liệu phiên</b><small>Xóa các dòng của phiên gần nhất</small></div></button>
 <button class="act a1 sm" onclick="go('set')"><i><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></i><div><b>Cài đặt</b><small>Âm thanh, camera, dữ liệu</small></div></button></div></section>
 
-<section class="scr" id="tcs"><div class="hd"><button class="bk ib"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button><span>Scan barcode</span></div><div class="hm">
+<section class="scr" id="tcs"><div class="hd"><button class="bk ib"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button><span>ScanBarcode</span></div><div class="hm">
 <button class="act a2" onclick="newSes('tc')"><i><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg></i><div><b>Phiên scan mới</b><small>Đặt tên rồi bắt đầu quét</small></div></button>
 <button class="act a2" onclick="contSes('tc')"><i><svg viewBox="0 0 24 24"><polygon points="7 4 20 12 7 20 7 4"/></svg></i><div><b>Tiếp tục phiên mới nhất</b><small>Quét tiếp phiên gần nhất</small></div></button>
 <button class="act a2" onclick="openList('tc')"><i><svg viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg></i><div><b>Danh sách phiên</b><small>Xem, đổi tên, xóa các phiên</small></div></button></div></section>
@@ -568,7 +582,7 @@ html.kb .scr.on .cam{height:var(--camh,160px)!important;min-height:var(--camh,16
 <div class="row2"><input id="code" inputmode="numeric" placeholder="Mã vừa quét / nhập tay" autocomplete="off" enterkeyhint="next"><button class="ib sbtn" id="codeok" aria-label="Xác nhận mã"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></button><input id="qty" type="number" value="1" min="1" placeholder="SL"></div>
 <div class="ln"><span id="sp" style="color:var(--ok)">SP: -</span><span id="gia" class="pc">Giá: -</span></div>
 <div class="row" id="holdrow" style="display:none"><button class="big" id="hold" style="margin:0">✋ GIỮ ĐỂ QUÉT MÃ</button></div>
-<div class="tbar"><span class="tot" id="tot">Tổng record: 0</span>
+<div class="tbar"><span class="tot" id="tot">Tổng Record: <b id="totn">0</b></span>
 <div class="chips2"><label class="chip"><input type="checkbox" data-k="np"><span>Tên&amp;giá</span></label><label class="chip"><input type="checkbox" data-k="sl1"><span>SL1</span></label><label class="chip"><input type="checkbox" data-k="scanN"><span>Scan N</span></label></div>
 <button class="ib clr" onclick="clr()" aria-label="Xóa tất cả" title="Xóa tất cả"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg><span>Xóa tất cả</span></button></div>
 <div class="panel"><div class="grab" id="grab"><i></i></div><div class="sc" id="slist"></div></div>
@@ -610,7 +624,7 @@ html.kb .scr.on .cam{height:var(--camh,160px)!important;min-height:var(--camh,16
 <div class="gt">Đọc 7 số (SKU) trên tem</div>
 <div class="grp"><div class="gi"><div class="gx"><small>Mã vạch 13 số và dãy 7 số (SKU) in trên tem là HAI thứ khác nhau, không liên quan gì đến nhau. App không lấy bất kỳ con số nào trong mã 13 số để làm SKU. Chỉ khi mã 13 số chưa có trong danh mục, app mới cố đọc chữ 7 số in trên tem; đọc được thì điền, không đọc được thì để trống. Số lạ (không có trong danh mục) phải đọc trùng 3 lần mới được nhận để tránh sai; số có trong danh mục chỉ cần 1–2 lần nên rất nhanh.</small></div></div>
 <div class="gi r"><div class="gx"><b>Tự đọc khi Test giá</b><small>Quét mã 13 số không có trong danh mục → đọc 7 số trên tem rồi hiện giá và khuyến mãi.</small></div><input type="checkbox" data-k="ocrTest"></div>
-<div class="gi r"><div class="gx"><b>Tự đọc khi Scan barcode</b><small>Chỉ chạy khi nút "Tên&giá" ở màn hình Scan barcode đang bật và mã 13 số chưa có trong danh mục. Đọc được thì tự điền 7 số vào cột SKU; đọc không được thì để trống – bạn bấm nút hình thẻ giá cạnh dòng để nhập tay.</small></div><input type="checkbox" data-k="ocrScan"></div>
+<div class="gi r"><div class="gx"><b>Tự đọc khi ScanBarcode</b><small>Chỉ chạy khi nút "Tên&giá" ở màn hình ScanBarcode đang bật và mã 13 số chưa có trong danh mục. Đọc được thì tự điền 7 số vào cột SKU; đọc không được thì để trống – bạn bấm nút hình thẻ giá cạnh dòng để nhập tay.</small></div><input type="checkbox" data-k="ocrScan"></div>
 
 <div class="gi"><div class="gx"><b>Bộ đọc chữ</b><small id="ocrst">…</small></div></div></div>
 <div class="gt">Độ chính xác khi quét mã vạch</div>
@@ -1101,7 +1115,6 @@ async function doOCR(bc,box,needData,my){OCRLOG='';
  stp('res','bad',OCRLOG);return''}
 const resolve7=(bc,box,needData)=>{const my=++ocrCtl.tok;ocrCtl.code=bc;return doOCR(bc,box,needData,my).catch(e=>{if(my===ocrCtl.tok)OCRLOG='Lỗi bộ đọc chữ: '+(e&&e.message||e);stp('res','bad',OCRLOG);dlog('✗ '+OCRLOG);return''}).then(r=>{if(my===ocrCtl.tok){ocrCtl.code='';ocrSt('')}return r})};
 const rememberSku=(bc,sku)=>{if(inData(sku)){DB.om=DB.om||{};DB.om[bc]=sku;saveDB()}else OM2[bc]=sku;try{learnPfx(bc,sku)}catch(e){}};
-function openDlg(d){d.showModal?d.showModal():d.setAttribute('open','')}
 function closeDlg(d){d.close?d.close():d.removeAttribute('open')}
 /* navigation */
 function go(id,keep){if(askBusy&&id!=='ses')qkCancel();try{var _a=document.activeElement;if(_a&&_a.blur&&/^(INPUT|TEXTAREA)$/.test(_a.tagName))_a.blur()}catch(e){}if(!keep&&HS[HS.length-1]!==id)HS.push(id);
@@ -1197,7 +1210,14 @@ function bindRows(el,s){const re=()=>el===$('slist')?renderS():renderD();el.oncl
  if(b.dataset.d!==undefined){const rr=s.rows[+b.dataset.d];if(!rr)return;cfm('Xóa dòng này?\n'+(rr.b||rr.c)+' ×'+rr.q,'Xóa',()=>{const k=s.rows.indexOf(rr);if(k>=0)s.rows.splice(k,1);saveSS();re()})}
  else if(b.dataset.e!==undefined){editRow(s,+b.dataset.e,re)}
  else if(b.dataset.w!==undefined){liveRow(s,+b.dataset.w,re)}  else if(b.dataset.s!==undefined){const r=s.rows[+b.dataset.s];dlgForm('Nhập SKU 7 số in trên tem',[{label:'SKU',value:'',mode:'numeric'}],'Lưu',v=>{const d=v[0].replace(/\D/g,'');if(d.length!==7){toast('Cần đúng 7 chữ số');return false}r.s=d;rememberSku(r.c,d);saveSS();re()})}}}
-function renderS(){const s=cur;$('sname').textContent=s.name;$('tot').textContent='Tổng record: '+s.rows.length;
+let TOTN=0,TOTS=null,TOTR=0;
+function setTot(n,anim){const el=$('totn');if(!el)return;cancelAnimationFrame(TOTR);const from=TOTN,d=n-from;TOTN=n;
+ if(!anim||!d||matchMedia('(prefers-reduced-motion:reduce)').matches){el.textContent=n;return}
+ el.classList.remove('pop');void el.offsetWidth;el.classList.add('pop');
+ if(Math.abs(d)<2){el.textContent=n;return}
+ const t0=performance.now(),du=Math.min(700,220+Math.abs(d)*35);
+ const st=t=>{const p=Math.min(1,(t-t0)/du);el.textContent=Math.round(from+d*(1-Math.pow(1-p,3)));if(p<1)TOTR=requestAnimationFrame(st)};TOTR=requestAnimationFrame(st)}
+function renderS(){const s=cur;$('sname').textContent=s.name;{const same=TOTS===s;TOTS=s;setTot(s.rows.length,same)}
  const el=$('slist');el.innerHTML=s.rows.map((r,i)=>rowHTML(r,i,i===s.rows.length-1)).reverse().join('');bindRows(el,s)}
 function vendOf(r,L){const c2=r.s&&catSku[r.s];if(c2&&c2.v)return c2.v;if(L.cat&&L.cat.v)return L.cat.v;
  const b=[r.b,r.c,L.cat&&L.cat.b].map(x=>String(x||'').replace(/\D/g,'')).find(x=>/^893\d{10}$/.test(x));if(b){const a=PFX[b.slice(0,7)];if(a&&a.length)return a[0]}return ''}
@@ -1222,7 +1242,7 @@ function renameDone(save){const sp=$('sname'),inp=$('snin');if(inp.style.display
 $('snin').onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();renameDone(true)}else if(e.key==='Escape')renameDone(false)};$('snin').onblur=()=>renameDone(true);
 function promptRename(s,done){dlgForm('Đổi tên phiên',[{label:'Tên phiên',value:s.name}],'Lưu',v=>{if(!v[0]){toast('Tên không được để trống');return false}s.name=v[0];saveSS();done&&done()})}
 $('dname').onclick=()=>{if(cur&&promptRename(cur))renderD()};
-function renderL(){const el=$('llist'),ls=SS.filter(s=>!isJunk(s)&&tyOf(s)===LT);$('ltitle').textContent=LT==='tc'?'Danh sách phiên scan barcode':'Danh sách phiên kiểm kê';el.innerHTML=ls.length?ls.slice().reverse().map(s=>{const on=!!(CFG.act&&CFG.act[LT]===s.id);return`<div class="card${on?' actv':''}"><div class="nm">${on?'<span class="abg">● Đang hoạt động</span>':''}${esc(s.name)}</div><div class="mu">${s.rows.length} dòng | SL: ${s.rows.reduce((a,r)=>a+r.q,0)}</div><div style="display:flex;gap:6px;margin-top:8px"><button data-a="c" data-i="${s.id}">Tiếp tục</button><button class="g" data-a="d" data-i="${s.id}">Chi tiết</button><button class="gr" data-a="r" data-i="${s.id}">Đổi tên</button><button class="rd" data-a="x" data-i="${s.id}">Xóa</button></div></div>`}).join(''):'<div class="msg">Chưa có phiên nào</div>';
+function renderL(){const el=$('llist'),ls=SS.filter(s=>!isJunk(s)&&tyOf(s)===LT);$('ltitle').textContent=LT==='tc'?'Danh sách phiên ScanBarcode':'Danh sách phiên kiểm kê';el.innerHTML=ls.length?ls.slice().reverse().map(s=>{const on=!!(CFG.act&&CFG.act[LT]===s.id);return`<div class="card${on?' actv':''}"><div class="nm">${on?'<span class="abg">● Đang hoạt động</span>':''}${esc(s.name)}</div><div class="mu">${s.rows.length} dòng | SL: ${s.rows.reduce((a,r)=>a+r.q,0)}</div><div style="display:flex;gap:6px;margin-top:8px"><button data-a="c" data-i="${s.id}">Tiếp tục</button><button class="g" data-a="d" data-i="${s.id}">Chi tiết</button><button class="gr" data-a="r" data-i="${s.id}">Đổi tên</button><button class="rd" data-a="x" data-i="${s.id}">Xóa</button></div></div>`}).join(''):'<div class="msg">Chưa có phiên nào</div>';
  el.onclick=e=>{const b=e.target.closest('button');if(!b)return;const s=SS.find(x=>x.id==b.dataset.i);if(b.dataset.a==='x'){cfm('Xóa phiên này?\n'+s.name,'Xóa',()=>{SS=SS.filter(x=>x!==s);if(cur===s)cur=null;saveSS();renderL()})}else if(b.dataset.a==='r'){promptRename(s,renderL)}else{if(b.dataset.a==='c'){VPREV=undefined;cur=s;go('ses')}else{VPREV=cur;cur=s;openDet()}}}}
 function clr(){cfm('Xóa toàn bộ dòng của phiên?','Xóa hết',()=>{cur.rows=[],saveSS(),renderS()})}
 function delAll(t){const s=lastSes(t);if(!s)return toast('Chưa có phiên nào');cfm('Xóa dữ liệu phiên "'+s.name+'"?','Xóa',()=>{s.rows=[],saveSS(),toast('Đã xóa')})}
@@ -1249,7 +1269,7 @@ function buildWB(s){const A=agg(s),wb=XLSX.utils.book_new();
  return wb}
 function xport(s){if(!s)return toast('Chưa có phiên nào');XLSX.writeFile(buildWB(s),xname(s))}
 /* ===== Hộp thoại riêng của app (không hiện tên trang web như hộp thoại mặc định của trình duyệt) ===== */
-function ovl(inner,okLabel,okColor,onOk,after){const o=document.createElement('div');
+function ovl(inner,okLabel,okColor,onOk,after){const o=document.createElement('div');o.className='ovl';
  o.style.cssText='position:fixed;left:0;top:0;right:0;bottom:0;z-index:100000;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;padding:20px';
  const bs='flex:1;padding:12px;border-radius:12px;border:0;font-size:16px;font-weight:700;';
  o.innerHTML='<div style="background:var(--card);color:var(--tx);border-radius:20px;padding:20px;width:100%;max-width:420px;box-shadow:0 10px 40px #0008;font-size:15px;line-height:1.5">'+inner+'<div style="display:flex;gap:10px;margin-top:18px"><button data-x="0" style="'+bs+'background:var(--in);color:var(--tx)">Hủy</button><button data-x="1" style="'+bs+'background:'+okColor+';color:#fff">'+okLabel+'</button></div></div>';
@@ -1269,7 +1289,7 @@ function editRow(s,i,re){const r=s.rows[i];if(!r)return;const tc=r.b!==undefined
   const ch=c!==(tc?(r.b||r.c):r.c);r.q=q;
   if(ch){r.c=c;if(tc){const L=lookup(c);r.b=/^\d{13}$/.test(c)?c:((L.cat&&L.cat.b)||'');r.s=L.sku||'';delete r.live}}
   saveSS();re()})}
-function modal(h,ok,onOk,after){const o=document.createElement('div');
+function modal(h,ok,onOk,after){const o=document.createElement('div');o.className='ovl';
  o.style.cssText='position:fixed;left:0;top:0;right:0;bottom:0;z-index:99999;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;padding:20px';
  const bs='flex:1;padding:12px;border-radius:12px;border:0;font-size:16px;font-weight:700;';
  o.innerHTML='<div style="background:var(--card);color:var(--tx);border-radius:20px;padding:20px;width:100%;max-width:420px;box-shadow:0 10px 40px #0008;font-size:15px;line-height:1.5">'+h+'<div style="display:flex;gap:10px;margin-top:18px"><button data-x="0" style="'+bs+'background:var(--in);color:var(--tx)">Hủy</button><button data-x="1" style="'+bs+'background:var(--pr);color:#fff">'+ok+'</button></div></div>';
@@ -1435,7 +1455,7 @@ setInterval(()=>{if(!stream||askBusy)return;const id=HS[HS.length-1];if(id!=='se
  /* Chạm ra ngoài ô nhập -> tự hạ bàn phím */
  document.addEventListener('pointerdown',function(e){
   var a=document.activeElement;if(!editable(a))return;
-  if(e.target.closest&&e.target.closest('input,textarea,select,label,#codeok'))return;
+  if(e.target.closest&&e.target.closest('input,textarea,select,label,#codeok,.ovl button'))return;
   a.blur()
  },true);
  upd()
