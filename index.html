@@ -477,7 +477,7 @@ html.kb .scr.on .cam{height:var(--camh,160px)!important;min-height:var(--camh,16
 <div class="tb2"><button class="ib" onclick="cycleTheme()" aria-label="Đổi giao diện sáng/tối"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 3v18" /><path d="M12 3a9 9 0 0 1 0 18z" fill="currentColor"/></svg></button><button class="ib" id="syncb" onclick="sync(1)" aria-label="Đồng bộ online"><svg viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg></button><button class="ib" onclick="go('set')" aria-label="Cài đặt"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button></div></div>
 <div class="hm">
 <button class="act a1" onclick="go('kk')"><i><svg viewBox="0 0 24 24"><path d="M21 8l-9-5-9 5v8l9 5 9-5z"/><path d="M3 8l9 5 9-5M12 13v8"/></svg></i><div><b>Kiểm kê hàng hóa</b><small>Quét, đếm số lượng, xuất Excel</small></div></button>
-<button class="act a2" onclick="newSes('tc')"><i><svg viewBox="0 0 24 24"><path d="M4 8V5a1 1 0 0 1 1-1h3M16 4h3a1 1 0 0 1 1 1v3M20 16v3a1 1 0 0 1-1 1h-3M8 20H5a1 1 0 0 1-1-1v-3"/><path d="M8 8v8M11 8v8M14 8v8M17 8v8"/></svg></i><div><b>Scan barcode</b><small>Ghi mã 13 số và SKU 7 số</small></div></button>
+<button class="act a2" onclick="go('tcs')"><i><svg viewBox="0 0 24 24"><path d="M4 8V5a1 1 0 0 1 1-1h3M16 4h3a1 1 0 0 1 1 1v3M20 16v3a1 1 0 0 1-1 1h-3M8 20H5a1 1 0 0 1-1-1v-3"/><path d="M8 8v8M11 8v8M14 8v8M17 8v8"/></svg></i><div><b>Scan barcode</b><small>Ghi mã 13 số và SKU 7 số</small></div></button>
 <button class="act a3" onclick="go('price')"><i><svg viewBox="0 0 24 24"><path d="M20.6 13.4l-7.2 7.2a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8z"/><circle cx="7.5" cy="7.5" r="1.2"/></svg></i><div><b>Test giá sản phẩm</b><small>Giá, khuyến mãi, tồn, giỏ hàng</small></div></button>
 <div class="stat" id="stat"></div></div></section>
 
@@ -488,6 +488,11 @@ html.kb .scr.on .cam{height:var(--camh,160px)!important;min-height:var(--camh,16
 <button class="big" onclick="xport(lastSes('kk'))">Xuất file Excel (phiên gần nhất)</button>
 <button class="big" onclick="delAll('kk')">Xóa dữ liệu phiên</button>
 <button class="big" onclick="go('set')">Cài đặt</button></div></section>
+
+<section class="scr" id="tcs"><div class="hd"><button class="bk ib"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button><span>Scan barcode</span></div><div class="sc">
+<button class="big" onclick="newSes('tc')">Phiên scan mới</button>
+<button class="big" onclick="contSes('tc')">Tiếp tục phiên mới nhất</button>
+<button class="big" onclick="openList('tc')">Danh sách phiên</button></div></section>
 
 
 
@@ -1071,9 +1076,10 @@ $('pgo').onclick=()=>{const c=$('pq').value.trim();if(!c)return;if(PM===2){cartA
 /* sessions */
 function isJunk(s){return !s.rows.length&&/^(Phiên Tra Cứu|Phiên Kiểm Kê|Scan hàng) \d{2}\/\d{2}\/\d{4} \d{2}:\d{2}( \(\d+\))?$/.test(s.name||'')}
 let LT='kk';const tyOf=s=>s.type||'kk';const lastSes=t=>SS.filter(s=>!isJunk(s)&&(!t||tyOf(s)===t)).pop();function openList(t){LT=t;go('list')}
-function newSes(type){SS=SS.filter(s=>!isJunk(s));CFG.scanN=0;const base=(type==='kk'?'Phiên Kiểm Kê ':'Scan hàng ')+fd(Date.now());let nm=base,i=2;while(SS.some(x=>x.name===nm))nm=base+' ('+(i++)+')';cur={id:Date.now(),type,name:nm,t:Date.now(),rows:[]};SS.push(cur);saveSS();go('ses')}
-function newHere(){if(!cur)return;if(askBusy)return;renameDone(true);if(!cur.rows.length){toast('Phiên này còn trống – cứ quét tiếp nhé');return}newSes(cur.type);$('code').value='';toast('Đã tạo phiên mới')}
-function contSes(t){CFG.scanN=0;cur=lastSes(t);cur?go('ses'):toast('Chưa có phiên nào')}
+function newSes(type){SS=SS.filter(s=>!isJunk(s));const base=(type==='kk'?'Phiên Kiểm Kê ':'Scan hàng ')+fd(Date.now());let nm=base,i=2;while(SS.some(x=>x.name===nm))nm=base+' ('+(i++)+')';
+ dlgForm('Tạo phiên mới',[{label:'Tên phiên',value:nm}],'Tạo',v=>{let n=v[0]||nm,k=2;const b0=n;while(SS.some(x=>x.name===n))n=b0+' ('+(k++)+')';cur={id:Date.now(),type,name:n,t:Date.now(),rows:[]};SS.push(cur);saveSS();go('ses')})}
+function newHere(){if(!cur)return;if(askBusy)return;renameDone(true);if(!cur.rows.length){toast('Phiên này còn trống – cứ quét tiếp nhé');return}newSes(cur.type);$('code').value=''}
+function contSes(t){cur=lastSes(t);cur?go('ses'):toast('Chưa có phiên nào')}
 function onSes(c,box){if(askBusy||cool(c)||ocrCtl.code===c)return;if(ocrCtl.code)ocrCancel();if(CFG.scanN){askQty(c,box);return}const q0=+$('qty').value||1,L0=lookup(c);
  if(cur&&cur.type==='tc'&&CFG.ocrScan&&CFG.np&&/^\d{13}$/.test(c)&&!L0.found&&!L0.sku&&box&&stream){
   lastC=c;lastT=Date.now();
@@ -1317,7 +1323,7 @@ function resumeScan(){if(!cur)return;VPREV=undefined;lastAct=Date.now();closeDet
 ['touchstart','pointerdown','keydown','click'].forEach(ev=>document.addEventListener(ev,()=>{lastAct=Date.now()},{capture:true,passive:true}));
 setInterval(()=>{if(!stream||askBusy)return;const id=HS[HS.length-1];if(id!=='ses'&&id!=='price')return;if(Date.now()-lastAct<60000)return;stopCam();camMsg('⏸ Camera tạm dừng vì 1 phút không dùng. Chạm vào đây để quét tiếp')},3000);
 /* init */
-(async()=>{const sv=(await kv('cfg'))||{};if(!(sv.ver>=4)){sv.hold=0;sv.holdN=0;sv.hd=DEF.hd;sv.ver=4}if(!(sv.ver>=5)){sv.ocrScan=0;sv.ver=5}CFG={...DEF,...sv};CFG.scanN=0;applyTheme();tierUI();try{navigator.storage&&navigator.storage.persist&&navigator.storage.persist()}catch(e){}DB=await kv('db')||DB;SS=await kv('ss')||[];SS.forEach(s=>{if(s.type!=='kk')s.name=String(s.name).replace(/^Phiên Tra Cứu/,'Scan hàng')});SS=SS.filter(s=>!isJunk(s));saveSS();CART=await kv('cart')||[];CART.forEach(r=>{r.wait=0});
+(async()=>{const sv=(await kv('cfg'))||{};if(!(sv.ver>=4)){sv.hold=0;sv.holdN=0;sv.hd=DEF.hd;sv.ver=4}if(!(sv.ver>=5)){sv.ocrScan=0;sv.ver=5}CFG={...DEF,...sv};applyTheme();tierUI();try{navigator.storage&&navigator.storage.persist&&navigator.storage.persist()}catch(e){}DB=await kv('db')||DB;SS=await kv('ss')||[];SS.forEach(s=>{if(s.type!=='kk')s.name=String(s.name).replace(/^Phiên Tra Cứu/,'Scan hàng')});SS=SS.filter(s=>!isJunk(s));saveSS();CART=await kv('cart')||[];CART.forEach(r=>{r.wait=0});
  if(DEFAULT_LINK)CFG.link=DEFAULT_LINK;Object.assign(CFG,TABS);const q=new URLSearchParams(location.search).get('l');if(q){CFG.link=q;history.replaceState(null,'',location.pathname)}
  saveCfg();index();bind();if(CFG.link&&navigator.onLine&&(!DB.cat.length||DB.sv!==2||Date.now()-DB.t>36e5))sync(!DB.cat.length)})();
 </script><script>
