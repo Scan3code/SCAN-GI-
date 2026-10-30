@@ -611,6 +611,14 @@ dialog[open]{top:calc(50% + (var(--vt,0px) - var(--kb,0px))/2);max-height:calc(1
 #det .th.gn,#det .vh{position:-webkit-sticky;position:sticky}
 #det .ag,#det .th.gn{min-width:0}#det .ag>*{min-width:0}
 input,select,textarea{font-size:max(16px,1em)}
+
+.it.rb{position:relative;flex-wrap:wrap}
+.it .rp{flex:0 0 100%;order:9;display:flex;align-items:center;gap:8px;padding:4px 4px 2px 42px}
+.it .rp i{flex:1;height:5px;border-radius:99px;background:color-mix(in srgb,var(--mu) 25%,transparent);position:relative;overflow:hidden}
+.it .rp i::after{content:'';position:absolute;top:0;bottom:0;width:40%;border-radius:99px;background:linear-gradient(90deg,#ea580c,#fb923c);animation:rpa 1.1s ease-in-out infinite}
+.it .rp span{font-size:12px;font-weight:700;color:var(--mu);white-space:nowrap}
+button.spin svg{animation:rps 1s linear infinite;color:#ea580c}button.spin{pointer-events:none}
+@keyframes rpa{0%{left:-40%}100%{left:100%}}@keyframes rps{to{transform:rotate(360deg)}}
 </style>
 </head><body>
 
@@ -1280,7 +1288,7 @@ function setTot(n,anim){const el=$('totn');if(!el)return;cancelAnimationFrame(TO
  if(Math.abs(d)<2){el.textContent=n;return}
  const t0=performance.now(),du=Math.min(700,220+Math.abs(d)*35);
  const st=t=>{const p=Math.min(1,(t-t0)/du);el.textContent=Math.round(from+d*(1-Math.pow(1-p,3)));if(p<1)TOTR=requestAnimationFrame(st)};TOTR=requestAnimationFrame(st)}
-function renderS(){const s=cur;$('sname').textContent=s.name;{const same=TOTS===s;TOTS=s;setTot(s.rows.length,same)}
+function renderS(){const s=cur;propLive(s);$('sname').textContent=s.name;{const same=TOTS===s;TOTS=s;setTot(s.rows.length,same)}
  const el=$('slist');el.innerHTML=s.rows.map((r,i)=>rowHTML(r,i,i===s.rows.length-1)).reverse().join('');bindRows(el,s)}
 function vendOf(r,L){const c2=r.s&&catSku[r.s];if(c2&&c2.v)return c2.v;if(L.cat&&L.cat.v)return L.cat.v;
  const b=[r.b,r.c,L.cat&&L.cat.b].map(x=>String(x||'').replace(/\D/g,'')).find(x=>/^893\d{10}$/.test(x));if(b){const a=PFX[b.slice(0,7)];if(a&&a.length)return a[0]}return ''}
@@ -1291,7 +1299,7 @@ function bcSVG(code){if(typeof JsBarcode==='undefined')return '';const fm=(/^\d{
  try{const s=document.createElementNS('http://www.w3.org/2000/svg','svg');JsBarcode(s,code,{format:fm,width:1,height:16,displayValue:false,margin:2,background:'#ffffff',lineColor:'#000000'});
   const w=parseFloat(s.getAttribute('width')),h=parseFloat(s.getAttribute('height'));if(!s.getAttribute('viewBox')&&w&&h)s.setAttribute('viewBox','0 0 '+w+' '+h);
   s.setAttribute('preserveAspectRatio','none');s.setAttribute('shape-rendering','crispEdges');s.removeAttribute('width');s.removeAttribute('height');return s.outerHTML}catch(e){return ''}}
-function renderD(){const s=cur;let A=agg(s);const vb=$('vbar');if(vb)vb.style.display=tabN===2?'':'none';$('dname').textContent=s.name;$('dsum').innerHTML=`<div class="sm">Tổng SKU: <b>${A.length}</b></div><div class="sm">Tổng số lượng: <b>${s.rows.reduce((a,r)=>a+r.q,0)}</b></div>`;$('up').style.display='';const el=$('dlist');
+function renderD(){const s=cur;propLive(s);let A=agg(s);const vb=$('vbar');if(vb)vb.style.display=tabN===2?'':'none';$('dname').textContent=s.name;$('dsum').innerHTML=`<div class="sm">Tổng SKU: <b>${A.length}</b></div><div class="sm">Tổng số lượng: <b>${s.rows.reduce((a,r)=>a+r.q,0)}</b></div>`;$('up').style.display='';const el=$('dlist');
  if(tabN===1){el.innerHTML=`<div class="th"><span style="width:42px">STT</span><span style="flex:1">Barcode / Tên hàng</span><span>Số lượng</span></div>`+s.rows.map((r,i)=>rowHTML(r,i,i===s.rows.length-1)).join('');bindRows(el,s)}
  else{const nv=new Set(A.map(o=>o.v).filter(Boolean)).size,multi=nv>=2,sortOn=!!CFG.vshow&&(nv===1||(!!CFG.vsort&&multi));
   const bs=$('bvs'),bv=$('bvd');if(bs){bs.style.display=multi&&CFG.vshow?'':'none';bs.classList.toggle('on',sortOn)}if(bv)bv.classList.toggle('on',!!CFG.vshow);
@@ -1323,7 +1331,7 @@ function renderL(){const el=$('llist'),ls=SS.filter(s=>!isJunk(s)&&tyOf(s)===LT)
   const b=e.target.closest('button');if(!b)return;const s=SS.find(x=>x.id==b.dataset.i);if(!s)return;if(b.dataset.a==='x'){cfm('Xóa phiên này?\n'+s.name,'Xóa',()=>{SS=SS.filter(x=>x!==s);if(cur===s)cur=null;saveSS();renderL()})}else if(b.dataset.a==='r'){promptRename(s,renderL)}else{if(b.dataset.a==='c'){VPREV=undefined;cur=s;go('ses')}else{VPREV=cur;cur=s;openDet()}}}}
 function clr(){cfm('Xóa toàn bộ dòng của phiên?','Xóa hết',()=>{cur.rows=[],saveSS(),renderS()})}
 function delAll(t){const s=lastSes(t);if(!s)return toast('Chưa có phiên nào');cfm('Xóa dữ liệu phiên "'+s.name+'"?','Xóa',()=>{s.rows=[],saveSS(),toast('Đã xóa')})}
-/* ===== TRA CỨU TRỰC TIẾP (không lưu lịch sử): mã 13 số hoặc SKU ===== */ async function liveRow(s,i,re){   const r=s.rows[i];if(!r)return;   const u=LIVE_LINK;   if(!/\/macros\//.test(u)){toast('Chưa có link Apps Script');return}   if(!navigator.onLine){toast('Không có mạng');return}   const code=String(r.s||r.b||r.c||'').replace(/\D/g,'');   if(!code){toast('Dòng này chưa có mã');return}   toast('Đang tra trực tiếp trên web...');   try{     const ctl=new AbortController(),tm=setTimeout(()=>ctl.abort(),40000);     const res=await fetch(u+(u.includes('?')?'&':'?')+'live='+encodeURIComponent(code),{signal:ctl.signal});     const j=await res.json();clearTimeout(tm);     if(!j.success){toast('❌ '+(j.message||'Không tra được'));return}     r.live={n:j.tenHang||'',p:num(j.giaBan),k:num(j.giaKM),t:j.ton306,d:j.dateRange||''};     if(j.sku&&!r.s){r.s=j.sku;rememberSku(r.c,j.sku)}     if(j.barcode&&!r.b&&cur&&cur.type==='tc')r.b=j.barcode;     saveSS();re();fb(true,'sku');toast('✓ Đã lấy thông tin trực tiếp');   }catch(e){toast(e&&e.name==='AbortError'?'❌ Quá thời gian chờ':'❌ Không tra được, kiểm tra mạng / link')} } /* export / share */
+/* ===== TRA CỨU TRỰC TIẾP (không lưu lịch sử): mã 13 số hoặc SKU ===== */ async function liveRow(s,i,re){   const r=s.rows[i];if(!r)return;   const u=LIVE_LINK;   if(!/\/macros\//.test(u)){toast('Chưa có link Apps Script');return}   if(!navigator.onLine){toast('Không có mạng');return}   const code=String(r.s||r.b||r.c||'').replace(/\D/g,'');   if(!code){toast('Dòng này chưa có mã');return}   toast('Đang tra trực tiếp trên web...');rowBusy(i,true);   try{     const ctl=new AbortController(),tm=setTimeout(()=>ctl.abort(),40000);     const res=await fetch(u+(u.includes('?')?'&':'?')+'live='+encodeURIComponent(code),{signal:ctl.signal});     const j=await res.json();clearTimeout(tm);     if(!j.success){toast('❌ '+(j.message||'Không tra được'));return}     r.live={n:j.tenHang||'',p:num(j.giaBan),k:num(j.giaKM),t:j.ton306,d:j.dateRange||''};     if(j.sku&&!r.s){r.s=j.sku;rememberSku(r.c,j.sku)}     if(j.barcode&&!r.b&&cur&&cur.type==='tc')r.b=j.barcode;     saveSS();re();fb(true,'sku');toast('✓ Đã lấy thông tin trực tiếp');   }catch(e){toast(e&&e.name==='AbortError'?'❌ Quá thời gian chờ':'❌ Không tra được, kiểm tra mạng / link')}finally{rowBusy(i,false)} } /* export / share */
 const xname=s=>s.name.replace(/[\/:*?"<>|]/g,'-')+'.xlsx';
 function buildWB(s){const A=agg(s),wb=XLSX.utils.book_new();
  const lines=(v,w)=>String(v==null?'':v).split('\n').reduce((a,t)=>a+Math.max(1,Math.ceil(t.length/Math.max(1,w-1))),0);
@@ -1408,6 +1416,21 @@ async function gopDo(ks){toast('Đang tải dữ liệu '+ks.length+' phiên…'
  if(!rows.length){toast('Các phiên đã chọn không có dòng nào');return}
  const base=(type==='kk'?'Kiểm Kê Gộp ':'Scan Gộp ')+fd(Date.now());let nm=base,i=2;while(SS.some(x=>x.name===nm))nm=base+' ('+(i++)+')';
  const m={id:Date.now(),type,name:nm,t:Date.now(),rows};SS.push(m);saveSS();renderL();toast('✓ Đã gộp '+ks.length+' phiên từ Sheet');VPREV=cur;cur=m;openDet()}
+
+
+/* Dòng cùng mã: 1 dòng đã lấy được thông tin (web/SKU) thì các dòng giống mã cũng tự có theo */
+function propLive(s){if(!s||!s.rows)return;const M=new Map();let ch=false;
+ s.rows.forEach(r=>{const k=String(r.c);const o=M.get(k)||{};if(r.live&&!o.live)o.live=r.live;if(r.s&&!o.s)o.s=r.s;if(r.b&&!o.b)o.b=r.b;M.set(k,o)});
+ s.rows.forEach(r=>{const o=M.get(String(r.c));if(!o)return;let L;try{L=lookup(r.c)}catch(e){return}if(L&&L.found)return;
+  if(!r.live&&o.live){r.live=o.live;ch=true}if(!r.s&&o.s){r.s=o.s;ch=true}if(r.b!==undefined&&!r.b&&o.b){r.b=o.b;ch=true}});
+ if(ch)saveSS()}
+function outerRefresh(){try{const id=HS[HS.length-1];if(id==='ses'&&cur)renderS();else if(id==='list')renderL()}catch(e){}}
+/* tiến trình nhỏ ở từng dòng khi bấm quả địa cầu */
+const RB={};
+function rowBusy(i,on){const btns=document.querySelectorAll('button[data-w="'+i+'"]');
+ if(!on){clearInterval(RB[i]);delete RB[i];btns.forEach(b=>{b.classList.remove('spin');const it=b.closest('.it');if(it){it.classList.remove('rb');const x=it.querySelector('.rp');if(x)x.remove()}});return}
+ const t0=Date.now();btns.forEach(b=>{b.classList.add('spin');const it=b.closest('.it');if(it){it.classList.add('rb');if(!it.querySelector('.rp')){const x=document.createElement('div');x.className='rp';x.innerHTML='<i></i><span>Đang tra web… 0s</span>';it.appendChild(x)}}});
+ clearInterval(RB[i]);RB[i]=setInterval(()=>{const sec=Math.round((Date.now()-t0)/1000);document.querySelectorAll('button[data-w="'+i+'"]').forEach(b=>{const x=b.closest('.it')&&b.closest('.it').querySelector('.rp span');if(x)x.textContent='Đang tra web… '+sec+'s'+(sec>=12?' (chờ thêm chút)':'')})},1000)}
 let allBusy=false,tcStopF=false,tcHide=0;
 function tcStop(){tcStopF=true;const b=$('tpx');if(b){b.disabled=true;b.textContent='Đang dừng…'}}
 function tcProg(d,n,ok,fail,end){const w=$('tprog');if(!w)return;clearTimeout(tcHide);w.style.display='block';w.classList.toggle('fin',!!end);const pc=n?Math.round(d*100/n):0;$('tpi').style.width=pc+'%';
@@ -1426,9 +1449,9 @@ function tcProg(d,n,ok,fail,end){const w=$('tprog');if(!w)return;clearTimeout(tc
       rows.forEach(r=>{r.live=lv;if(j.sku&&!r.s){r.s=j.sku;rememberSku(r.c,j.sku)}if(j.barcode&&!r.b&&cur&&cur.type==='tc')r.b=j.barcode});ok++}
      else fail++}
     catch(e){fail++}
-    done++;saveSS();try{renderD()}catch(e){}tcProg(done,list.length,ok,fail)}};
+    done++;saveSS();try{renderD()}catch(e){}outerRefresh();tcProg(done,list.length,ok,fail)}};
   try{await Promise.all([work(),work(),work()])}finally{allBusy=false}
-  saveSS();renderD();tcProg(done,list.length,ok,fail,tcStopF?2:1)}
+  saveSS();renderD();outerRefresh();tcProg(done,list.length,ok,fail,tcStopF?2:1)}
 /* settings */
 function qtyVis(){const q=$('qty');q.readOnly=false;q.setAttribute('inputmode','numeric');q.placeholder='SL';if(!askBusy)q.value=CFG.scanN?'':(q.value||1)}
 function bind(){document.querySelectorAll('[data-k]').forEach(e=>{const k=e.dataset.k;if(e.type==='checkbox')e.checked=!!CFG[k];else if(e.type==='radio')e.checked=String(CFG[k])===e.value;else e.value=CFG[k]});renderStk();qtyVis()}
@@ -1496,7 +1519,7 @@ document.addEventListener('keydown',e=>{if(!askBusy||$('qk').style.display!=='bl
 /* ===== bảng chi tiết: kéo lên để mở, kéo xuống để đóng; mặc định tab Cộng dồn ===== */
 let SHEET=false,VPREV;
 function openDet(){if(!cur)return toast('Chưa có phiên nào');try{$('det').classList.toggle('tcm',tyOf(cur)==='tc')}catch(e){}tab(2);const d=$('det');d.style.transition='transform .3s cubic-bezier(.2,.8,.2,1)';d.style.transform='translateY(0)';d.classList.add('open');SHEET=true;scanning=false}
-function closeDet(){if(VPREV!==undefined){cur=VPREV;VPREV=undefined}const d=$('det');d.style.transition='transform .26s ease';d.style.transform='translateY(105%)';d.classList.remove('open');SHEET=false;if(HS[HS.length-1]==='ses'||HS[HS.length-1]==='list')armScan()}
+function closeDet(){if(VPREV!==undefined){cur=VPREV;VPREV=undefined}const d=$('det');d.style.transition='transform .26s ease';d.style.transform='translateY(105%)';d.classList.remove('open');SHEET=false;outerRefresh();if(HS[HS.length-1]==='ses'||HS[HS.length-1]==='list')armScan()}
 function dragSheet(h,opening,sc){let y0=0,dy=0,on=false,live=false,raf=0,H=0,base=0,ly=0,lt=0,vel=0;const d=$('det');
  const paint=()=>{raf=0;let y=base+dy;if(y<0)y=y/4;if(y>H*1.05)y=H*1.05;d.style.transform='translate3d(0,'+y+'px,0)'};
  h.addEventListener('touchstart',e=>{if(e.touches.length>1||(opening&&!cur))return;y0=ly=e.touches[0].clientY;lt=Date.now();dy=0;vel=0;on=true;live=false;H=d.offsetHeight||innerHeight;base=opening?H*1.05:0;if(opening&&!SHEET)renderD()},{passive:true});
