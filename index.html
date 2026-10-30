@@ -455,7 +455,7 @@ html.kb .scr.on .cam{height:var(--camh,160px)!important;min-height:var(--camh,16
 .card.actv{border-left:4px solid var(--ok);box-shadow:0 0 0 1px var(--ok) inset}.abg{display:inline-block;margin-right:8px;padding:2px 9px;border-radius:999px;background:var(--ok);color:#fff;font-size:12px;font-weight:800;vertical-align:middle}
 .vbar{display:flex;justify-content:flex-end;gap:6px;padding:0 12px 6px}.vbar button{padding:4px 10px;font-size:12px;font-weight:700;border-radius:999px;min-height:0;background:var(--in);color:var(--mu);border:1px solid var(--line);box-shadow:none;display:inline-flex;align-items:center;gap:4px}.vbar button.on{background:var(--ac);color:#fff;border-color:var(--ac)}
 .ag .no{text-align:center;color:var(--mu);font-size:13px;font-weight:600}
-.ag .sk{font-size:13px;font-weight:800;color:var(--ac);letter-spacing:.2px}
+.ag .sk{font-size:12.5px;font-weight:800;color:var(--ac);letter-spacing:.2px}
 .ag .nm{padding:0 2px;min-width:0;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;font-size:14.5px;font-weight:500;line-height:1.28}
 .ag .q{text-align:center;font-size:22px;font-weight:800;color:var(--bad);line-height:1}
 .ag .pr{text-align:right;font-size:14.5px;font-weight:800;color:var(--ok);white-space:nowrap}
@@ -554,7 +554,7 @@ dialog[open]{top:calc(50% + (var(--vt,0px) - var(--kb,0px))/2);max-height:calc(1
 /* ===== RÀ SOÁT GIAO DIỆN: chi tiết phiên + danh sách phiên ===== */
 #det .acts{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
 #det .acts button{white-space:nowrap;padding:0 4px;font-size:14px;line-height:1;display:flex;align-items:center;justify-content:center;min-height:44px}
-#det .th.gn,.ag{grid-template-columns:24px 50px 54px minmax(0,1fr) 26px 60px}
+#det .th.gn,.ag{grid-template-columns:24px 50px 62px minmax(0,1fr) 28px 62px}
 #det .th.gn span{font-size:10px;font-weight:800;letter-spacing:0;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:clip;line-height:1.2}
 #det .th.gn span:last-child{text-align:right}
 #llist .card{padding:14px 14px 12px}
@@ -594,6 +594,23 @@ dialog[open]{top:calc(50% + (var(--vt,0px) - var(--kb,0px))/2);max-height:calc(1
 #llist .bt button[data-a="r"]{background:linear-gradient(135deg,#ea580c,#fb923c)!important}
 #llist .bt button[data-a="x"]{background:linear-gradient(135deg,#b91c1c,#ef4444)!important}
 #llist .bt button[data-a="x"],#llist .bt button[data-a="x"]:active{color:#fff!important;border:0!important}
+
+/* thanh tiến trình Tra cứu */
+.tprog{margin:0 12px 8px;padding:10px 12px;border-radius:14px;background:var(--in);border:1.5px solid var(--line)}
+.tprog .tpt{display:flex;align-items:center;gap:8px}.tprog .tpt b{flex:1;font-size:14px;font-weight:800;color:var(--tx)}.tprog .tpt span{font-size:14px;font-weight:800;color:var(--ac)}
+.tprog .tpt button{height:30px;padding:0 12px;border-radius:10px;border:0;font-size:13px;font-weight:800;background:var(--bad);color:#fff;box-shadow:none}
+.tprog .tpb{height:10px;border-radius:99px;background:color-mix(in srgb,var(--mu) 25%,transparent);margin-top:8px;overflow:hidden}
+.tprog .tpb i{display:block;height:100%;width:0;border-radius:99px;background:linear-gradient(90deg,#ea580c,#fb923c);transition:width .25s ease;background-size:200% 100%;animation:tpa 1.2s linear infinite}
+.tprog.fin .tpb i{background:linear-gradient(90deg,#15803d,#22c55e);animation:none}
+.tprog small{display:block;margin-top:6px;font-size:12.5px;color:var(--mu);font-weight:600}
+@keyframes tpa{from{background-position:0 0}to{background-position:-200% 0}}
+/* iPhone / Safari: cuộn mượt, không tràn, không rò bóng khi sheet đóng */
+.sheet{height:auto;max-height:calc(100vh - env(safe-area-inset-top,0px) - 6px);max-height:calc(100dvh - env(safe-area-inset-top,0px) - 6px);-webkit-backface-visibility:hidden;backface-visibility:hidden}
+.sheet:not(.open){box-shadow:none}
+.sheet .sc,#det #dlist,.scr .sc,#llist{min-height:0;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
+#det .th.gn,#det .vh{position:-webkit-sticky;position:sticky}
+#det .ag,#det .th.gn{min-width:0}#det .ag>*{min-width:0}
+input,select,textarea{font-size:max(16px,1em)}
 </style>
 </head><body>
 
@@ -635,6 +652,7 @@ dialog[open]{top:calc(50% + (var(--vt,0px) - var(--kb,0px))/2);max-height:calc(1
 <section class="sheet" id="det"><div class="grab" id="grab2"><i></i></div>
 <div class="hd2"><b id="dname"></b><span id="dsum" style="text-align:right;line-height:1.3;font-size:15px;font-weight:800"></span><button class="ib" onclick="closeDet()" aria-label="Đóng"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
 <div class="acts"><button class="o" onclick="tcAll()">Tra cứu</button><button onclick="share(cur)">Tạo Excel &amp; chia sẻ</button><button class="dk" id="up" onclick="upload()">Upload</button></div>
+<div class="tprog" id="tprog" style="display:none"><div class="tpt"><b id="tpl"></b><span id="tpp"></span><button id="tpx" onclick="tcStop()">Dừng</button></div><div class="tpb"><i id="tpi"></i></div><small id="tps"></small></div>
 <div style="padding:0 12px 6px"><button onclick="resumeScan()" style="width:100%;padding:10px;border-radius:12px;font-size:15px;font-weight:800;background:var(--ok);color:#fff;border:0">▶ Tiếp tục scan phiên này</button></div>
 <div class="tabs"><button class="on" id="t2" onclick="tab(2)">CỘNG DỒN (SKU)</button><button id="t1" onclick="tab(1)">DATA THÔ (LOG)</button></div>
 <div class="vbar" id="vbar"><button id="bvd" onclick="togV('vshow')"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M4 6h16M7 12h10M10 18h4"/></svg> Vendor</button><button id="bvs" onclick="togV('vsort')" style="display:none">Xếp theo vendor</button></div>
@@ -1390,20 +1408,27 @@ async function gopDo(ks){toast('Đang tải dữ liệu '+ks.length+' phiên…'
  if(!rows.length){toast('Các phiên đã chọn không có dòng nào');return}
  const base=(type==='kk'?'Kiểm Kê Gộp ':'Scan Gộp ')+fd(Date.now());let nm=base,i=2;while(SS.some(x=>x.name===nm))nm=base+' ('+(i++)+')';
  const m={id:Date.now(),type,name:nm,t:Date.now(),rows};SS.push(m);saveSS();renderL();toast('✓ Đã gộp '+ks.length+' phiên từ Sheet');VPREV=cur;cur=m;openDet()}
-let allBusy=false; async function liveFetch(code){const u=LIVE_LINK,ctl=new AbortController(),tm=setTimeout(()=>ctl.abort(),40000);  try{const res=await fetch(u+(u.includes('?')?'&':'?')+'live='+encodeURIComponent(code),{signal:ctl.signal});return await res.json()}finally{clearTimeout(tm)}} async function tcAll(){  if(allBusy){toast('Đang tra, chờ chút...');return}  const need=new Map();  cur.rows.forEach(r=>{if(r.live||lookup(r.c).found)return;const code=String(r.s||r.b||r.c||'').replace(/\D/g,'');if(!code)return;if(!need.has(code))need.set(code,[]);need.get(code).push(r)});
+let allBusy=false,tcStopF=false,tcHide=0;
+function tcStop(){tcStopF=true;const b=$('tpx');if(b){b.disabled=true;b.textContent='Đang dừng…'}}
+function tcProg(d,n,ok,fail,end){const w=$('tprog');if(!w)return;clearTimeout(tcHide);w.style.display='block';w.classList.toggle('fin',!!end);const pc=n?Math.round(d*100/n):0;$('tpi').style.width=pc+'%';
+ $('tpl').textContent=end?(end===2?'Đã dừng':'Tra xong')+' · '+d+'/'+n+' mã':'Đang tra '+d+'/'+n+' mã';$('tpp').textContent=pc+'%';
+ $('tps').textContent=(ok?'✓ '+ok+' có thông tin':'')+(ok&&fail?' · ':'')+(fail?'✗ '+fail+' không thấy/lỗi':'')+(!ok&&!fail?(end?'':'đang chạy…'):'');
+ const b=$('tpx');if(b){b.style.display=end?'none':'';b.disabled=false;b.textContent='Dừng'}
+ if(end)tcHide=setTimeout(()=>{w.style.display='none'},6000)}
+ async function liveFetch(code){const u=LIVE_LINK,ctl=new AbortController(),tm=setTimeout(()=>ctl.abort(),40000);  try{const res=await fetch(u+(u.includes('?')?'&':'?')+'live='+encodeURIComponent(code),{signal:ctl.signal});return await res.json()}finally{clearTimeout(tm)}} async function tcAll(){  if(allBusy){toast('Đang tra, chờ chút...');return}  const need=new Map();  cur.rows.forEach(r=>{if(r.live||lookup(r.c).found)return;const code=String(r.s||r.b||r.c||'').replace(/\D/g,'');if(!code)return;if(!need.has(code))need.set(code,[]);need.get(code).push(r)});
   if(!need.size){toast('Không có dòng nào cần tra thêm');return}
   if(!/\/macros\//.test(LIVE_LINK)){toast('Chưa có link Apps Script');return}
   if(!navigator.onLine){toast('Không có mạng');return}
-  allBusy=true;const list=Array.from(need.entries());let done=0,ok=0,fail=0,idx=0;toast('Đang tra 0/'+list.length+'…');
-  const work=async()=>{while(idx<list.length){const [code,rows]=list[idx++];
+  allBusy=true;tcStopF=false;const list=Array.from(need.entries());let done=0,ok=0,fail=0,idx=0;tcProg(0,list.length,0,0);
+  const work=async()=>{while(idx<list.length&&!tcStopF){const [code,rows]=list[idx++];
     try{const j=await liveFetch(code);
      if(j&&j.success){const lv={n:j.tenHang||'',p:num(j.giaBan),k:num(j.giaKM),t:j.ton306,d:j.dateRange||''};
       rows.forEach(r=>{r.live=lv;if(j.sku&&!r.s){r.s=j.sku;rememberSku(r.c,j.sku)}if(j.barcode&&!r.b&&cur&&cur.type==='tc')r.b=j.barcode});ok++}
      else fail++}
     catch(e){fail++}
-    done++;saveSS();try{renderD()}catch(e){}toast('Đang tra '+done+'/'+list.length+'…')}};
+    done++;saveSS();try{renderD()}catch(e){}tcProg(done,list.length,ok,fail)}};
   try{await Promise.all([work(),work(),work()])}finally{allBusy=false}
-  saveSS();renderD();toast('Tra xong: '+ok+' mã có thông tin'+(fail?', '+fail+' mã không thấy/lỗi':''))}
+  saveSS();renderD();tcProg(done,list.length,ok,fail,tcStopF?2:1)}
 /* settings */
 function qtyVis(){const q=$('qty');q.readOnly=false;q.setAttribute('inputmode','numeric');q.placeholder='SL';if(!askBusy)q.value=CFG.scanN?'':(q.value||1)}
 function bind(){document.querySelectorAll('[data-k]').forEach(e=>{const k=e.dataset.k;if(e.type==='checkbox')e.checked=!!CFG[k];else if(e.type==='radio')e.checked=String(CFG[k])===e.value;else e.value=CFG[k]});renderStk();qtyVis()}
