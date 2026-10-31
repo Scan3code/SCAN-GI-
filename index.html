@@ -621,6 +621,11 @@ button.spin svg{animation:rps 1s linear infinite;color:#ea580c}button.spin{point
 @keyframes rpa{0%{left:-40%}100%{left:100%}}@keyframes rps{to{transform:rotate(360deg)}}
 
 @media (max-width:400px){#det .th.gn,.ag{grid-template-columns:22px 46px 62px minmax(0,1fr) 26px 58px;column-gap:4px}.ag .sk{font-size:12px}#det .th.gn span{font-size:9.5px}}
+
+/* nhiều ô giá khuyến mãi: luôn cùng cỡ, không ô nào to hơn để khỏi nhầm là giá đang chạy */
+.g2.eq>.pbx,.g2.eq>.pbx:last-child:nth-child(odd){grid-column:auto!important}
+.pbx .bt{overflow-wrap:anywhere}
+#pout .cfl.nt{display:block!important}#pout .cfl.nt b,#pout .cfl.nt span{display:block!important;width:auto!important}
 </style>
 </head><body>
 
@@ -855,14 +860,16 @@ function cfHTML(cf,pk,i){if(!cf.length)return'';
 function card(L){if(!L.found){const b13=/^\d{13}$/.test(L.code)?L.code:'';return`<div class="card">${b13?`<svg id="bc" data-v="${b13}"></svg>`:''}<div class="nm">${L.sku?'Sản phẩm '+esc(L.sku):'Không tìm thấy mã '+esc(L.code)}</div><div class="mu">${DB.cat.length?'Mã này không có trong dữ liệu danh mục / khuyến mãi.':'Chưa có dữ liệu – vào ⚙️ Cài đặt để đồng bộ.'}</div>${b13&&!L.sku?'<div class="hintl"><b>Nhập SKU 7 số in trên tem</b> vào ô tra cứu phía trên rồi bấm Tìm.</div>':''}</div>`}
  const bc=/^\d{13}$/.test(L.code)?L.code:(L.cat&&/^\d{13}$/.test(L.cat.b)?L.cat.b:''),l=L.list,AP=L.pr.filter(p=>status(p.d)[2]==='on'),NP=L.pr.filter(p=>status(p.d)[2]!=='on'),hp=AP.some(p=>p.p>0),plain=[],ruled=[],MEM=[],CF=conf(L);
  AP.forEach(p=>{if(isMem(p))MEM.push(p);else(String(p.t||'').trim()?ruled:plain).push(p)});
- let h=`<div class="card">${bc?`<svg id="bc" data-v="${bc}"></svg>`:''}<div class="nm">${esc(L.name)}</div>${stk(L.sku)}<div class="pl"><small>Giá niêm yết${L.pr[0]&&L.pr[0].u?' / '+esc(L.pr[0].u):''}:</small><div class="v${hp?' cut':''}">${l?fmt(l):'-'}</div></div>`;
- if(CF.length){h+=`<div class="cfl"><b>⚠️ TRÙNG CTKM</b></div><div class="g2">${CF.map((g,j)=>pbox('c'+((j%4)+1),'🏷️ GIÁ KM '+(j+1)+(g.rows.some(x=>x.vr)?' · THEO VENDOR':''),g.p,g.rows,l)).join('')}</div>`}
- else{const byP=new Map();plain.forEach(p=>{if(!(p.p>0))return;(byP.get(p.p)||byP.set(p.p,[]).get(p.p)).push(p)});byP.forEach((rs,pr)=>{h+=pbox('km full','🏷️ GIÁ KHUYẾN MÃI',pr,rs,l)})}
- if(MEM.length)h+='<div class="sect">💳 Giá thẻ thành viên</div>'+memBoxes(MEM,l);
+ const PB=[];let h=`<div class="card">${bc?`<svg id="bc" data-v="${bc}"></svg>`:''}<div class="nm">${esc(L.name)}</div>${stk(L.sku)}<div class="pl"><small>Giá niêm yết${L.pr[0]&&L.pr[0].u?' / '+esc(L.pr[0].u):''}:</small><div class="v${hp?' cut':''}">${l?fmt(l):'-'}</div></div>`;
+ if(CF.length){h+=`<div class="cfl"><b>⚠️ TRÙNG CTKM</b></div><div class="g2 eq">${(()=>{let n=0;return CF.map((g,j)=>{const w=g.rows.every(x=>x.web);return pbox('c'+((j%4)+1),w?'🌐 GIÁ KM WEB':'🏷️ GIÁ KM '+(++n)+(g.rows.some(x=>x.vr)?' · THEO VENDOR':''),g.p,g.rows,l)}).join('')})()}</div>`}
+ else{const byP=new Map();plain.forEach(p=>{if(!(p.p>0))return;(byP.get(p.p)||byP.set(p.p,[]).get(p.p)).push(p)});byP.forEach((rs,pr)=>{PB.push(pbox('km','🏷️ GIÁ KHUYẾN MÃI',pr,rs,l))})}
+ let MEMH='',HR='';if(MEM.length)MEMH='<div class="sect">💳 Giá thẻ thành viên</div>'+memBoxes(MEM,l);
  const RL=CF.length?ruled.filter(p=>!(p.p>0)):ruled,G=new Map();RL.forEach(p=>{const k=p.t+'|'+p.d;(G.get(k)||G.set(k,[]).get(k)).push(p)});
  G.forEach(A=>{const sn0={};A=A.filter(p=>{const k=p.p+'|'+p.t;if(sn0[k])return false;sn0[k]=1;return true});const d=A[0].d,one=A.length===1&&A[0].p>0;
   const ln=A.map(p=>{const T=t2(p,l);return`<div class="bt">${esc(p.t)}${p.p>0&&!one?` · giá <b>${fmt(p.p)}</b>`:''}</div>`+(T?`<div class="bt hi">→ Mua 2 sản phẩm giá ${fmt(T)}</div>`:'')}).join('');
-  h+=`<div class="pbx ${one?'km':'rule'} full"><div class="bl">${one?(A[0].vr?'🏷️ GIÁ GIẢM THEO VENDOR':'🏷️ GIÁ KHUYẾN MÃI'):hp?'🎁 ƯU ĐÃI KHUYẾN MÃI':'🎁 THỂ LỆ KHUYẾN MÃI'}</div>${one?`<div class="bp">${pnum(A[0].p)}</div>`:''}${ln}${dtm(d)}</div>`});
+  const bx=`<div class="pbx ${one?'km':'rule full'}"><div class="bl">${one?(A[0].vr?'🏷️ GIÁ GIẢM THEO VENDOR':'🏷️ GIÁ KHUYẾN MÃI'):hp?'🎁 ƯU ĐÃI KHUYẾN MÃI':'🎁 THỂ LỆ KHUYẾN MÃI'}</div>${one?`<div class="bp">${pnum(A[0].p)}</div>`:''}${ln}${dtm(d)}</div>`;if(one)PB.push(bx);else HR+=bx});
+ if(PB.length)h+=PB.length===1?PB[0].replace('class="pbx km"','class="pbx km full"'):'<div class="g2 eq">'+PB.join('')+'</div>';
+ h+=MEMH+HR;
  const seenNP={};NP.forEach(p=>{const k=p.d+'|'+status(p.d)[0];if(seenNP[k])return;seenNP[k]=1;h+=`<div class="tm wa" style="margin-top:6px">⏳ ${status(p.d)[0]}: ${esc(p.d||'')}</div>`});
  return h+'</div>'}
 /* scanner */
@@ -1206,11 +1213,11 @@ function drawBc(){try{const b=$('bc');b&&JsBarcode(b,b.dataset.v,{format:'EAN13'
 const LIVEC={};
 /* ===== TEST GIÁ: mã không có trong danh mục -> web + đọc 7 số chạy SONG SONG; web có SKU thì tra danh mục bằng SKU đó rồi so khuyến mãi ===== */
 function wkOf(j){const k=num(j.giaKM),p=num(j.giaBan);return k>0&&(!p||k<p)?k:0}
-function cmpHTML(L,j){let h=card(L);if(!j)return h;const wk=wkOf(j),p=num(j.giaBan);if(!wk)return h;
- const cp=Array.from(new Set(L.pr.filter(x=>status(x.d)[2]==='on'&&x.p>0&&!isMem(x)).map(x=>x.p))),wr=[{d:j.dateRange||'',t:'',p:wk}];
- if(!cp.length)return h+'<div class="sect">🌐 Khuyến mãi trên web</div><div class="g2">'+pbox('km full','🏷️ GIÁ KHUYẾN MÃI',wk,wr,p||L.list)+'</div>';
- if(cp.some(x=>Math.abs(x-wk)<1))return h;
- return h+'<div class="cfl"><b>⚠️ Khuyến mãi danh mục và web khác nhau</b></div><div class="g2">'+pbox('c1','📋 DANH MỤC',Math.min.apply(null,cp),L.pr.filter(x=>status(x.d)[2]==='on'&&x.p===Math.min.apply(null,cp)),L.list)+pbox('c2','🌐 WEB',wk,wr,p||L.list)+'</div>'}
+function cmpHTML(L,j){if(!j)return card(L);const wk=wkOf(j);if(!wk)return card(L);
+ const cp=Array.from(new Set(L.pr.filter(x=>status(x.d)[2]==='on'&&x.p>0&&!isMem(x)).map(x=>x.p)));
+ if(cp.some(x=>Math.abs(x-wk)<1))return card(L);
+ /* web khác file: cho giá web vào cùng nhóm khuyến mãi -> card() tự hiện "TRÙNG CTKM" và các ô giá như logic gốc */
+ return card(Object.assign({},L,{pr:L.pr.concat([{s:L.sku,n:L.name,l:L.list,p:wk,t:'',d:j.dateRange||'',web:1}]),promo:true}))}
 function waitHTML(L,msg,bad){let h=card(L).replace('<div class="card">','<div class="card" id="wcard">').replace(/<div class="mu">[^<]*<\/div>/,'<div class="wl'+(bad?' bad':'')+'" id="wlive">'+msg+'</div>').replace(/<div class="hintl">.*?<\/div>/,'');return h}
 async function webGet(code){if(!/\/macros\//.test(LIVE_LINK))return{err:'Chưa có link tra web'};if(!navigator.onLine)return{err:'Không có mạng để lấy dữ liệu'};
  try{const j=LIVEC[code]||await liveFetch(code);if(j&&j.success){LIVEC[code]=j;return{j}}return{err:'Không tìm thấy thông tin trên web'}}catch(e){return{err:'Không lấy được dữ liệu – kiểm tra mạng'}}}
