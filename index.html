@@ -619,6 +619,8 @@ input,select,textarea{font-size:max(16px,1em)}
 .it .rp span{font-size:12px;font-weight:700;color:var(--mu);white-space:nowrap}
 button.spin svg{animation:rps 1s linear infinite;color:#ea580c}button.spin{pointer-events:none}
 @keyframes rpa{0%{left:-40%}100%{left:100%}}@keyframes rps{to{transform:rotate(360deg)}}
+
+@media (max-width:400px){#det .th.gn,.ag{grid-template-columns:22px 46px 62px minmax(0,1fr) 26px 58px;column-gap:4px}.ag .sk{font-size:12px}#det .th.gn span{font-size:9.5px}}
 </style>
 </head><body>
 
@@ -1012,7 +1014,7 @@ document.querySelectorAll('.cam').forEach(c=>{let d0=0,z0=1;
  c.addEventListener('click',e=>{if(!e.target.closest('.ctl')&&!e.target.closest('.camov'))tapFocus(e,c)})});
 async function startCam(){if(stream)return true;
  if(!window.isSecureContext||!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){camMsg('⚠️ Camera cần mở bằng HTTPS (địa chỉ bắt đầu bằng https://) và Safari/Chrome bản mới. Bạn vẫn nhập mã bằng tay được.');return false}
- const base={width:{ideal:CFG.hd?1920:1280},height:{ideal:CFG.hd?1080:720},frameRate:{ideal:30,max:30},resizeMode:{ideal:'none'},advanced:[{focusMode:'continuous'}]},get=c=>navigator.mediaDevices.getUserMedia({audio:false,video:c});
+ const base={width:{ideal:CFG.hd?1920:1280},height:{ideal:CFG.hd?1080:720},frameRate:{ideal:30,max:30},resizeMode:{ideal:'none'},advanced:[{focusMode:'continuous'}]},get=c=>{if(SOFT&&SOFT.getVideoTracks().some(t=>t.readyState==='live')){const o=SOFT;SOFT=null;o.getTracks().forEach(t=>t.enabled=true);return Promise.resolve(o)}SOFT=null;return navigator.mediaDevices.getUserMedia({audio:false,video:c})};
  try{let st=null;const pref=CFG.cam||CFG.camAuto;
   if(pref){try{st=await get(Object.assign({deviceId:{exact:pref}},base))}catch(e){}}
   if(!st)st=await get(Object.assign({facingMode:{ideal:'environment'}},base));
@@ -1033,8 +1035,10 @@ async function startCam(){if(stream)return true;
   if(!bd&&typeof ZXing!=='undefined'){const M=new Map();M.set(ZXing.DecodeHintType.POSSIBLE_FORMATS,['EAN_13','UPC_A'].map(f=>ZXing.BarcodeFormat[f]));M.set(ZXing.DecodeHintType.TRY_HARDER,true);zr=new ZXing.MultiFormatReader();zr.setHints(M)}
   resHi=false;camMsg('');shMax=0;fwPrev=null;fwDone=true;fwShMax=0;ROIC=null;setTimeout(refocus,500);try{if(navigator.wakeLock&&!WL)navigator.wakeLock.request('screen').then(l=>{WL=l;l.addEventListener('release',()=>{WL=null})}).catch(()=>{})}catch(e){}startLoop();return true
  }catch(e){stream=null;camMsg(e&&e.name==='NotAllowedError'?'🔒 Chưa cấp quyền camera. Vào Cài đặt trình duyệt → Camera → Cho phép, rồi chạm vào đây':e&&e.name==='NotFoundError'?'Không tìm thấy camera':'📷 Chạm vào đây để bật camera');return false}}
-async function nextLens(){if(LENS.length<2)return;const c0=track&&track.getSettings?track.getSettings().deviceId:'',i=LENS.findIndex(d=>d.deviceId===c0),n=LENS[(i+1)%LENS.length];CFG.cam=n.deviceId;CFG.zoom=0;saveCfg();stopCam();toast('Ống kính '+(((i<0?0:i)+1)%LENS.length+1)+'/'+LENS.length);if(await startCam())armScan()}
-function stopCam(){looping=false;scanning=false;if(WL){try{WL.release()}catch(e){}WL=null}on=false;document.querySelectorAll('.tcb').forEach(b=>b.classList.remove('lit'));if(stream){stream.getTracks().forEach(t=>t.stop());stream=null}track=null}
+async function nextLens(){if(LENS.length<2)return;const c0=track&&track.getSettings?track.getSettings().deviceId:'',i=LENS.findIndex(d=>d.deviceId===c0),n=LENS[(i+1)%LENS.length];CFG.cam=n.deviceId;CFG.zoom=0;saveCfg();stopCam(true);toast('Ống kính '+(((i<0?0:i)+1)%LENS.length+1)+'/'+LENS.length);if(await startCam())armScan()}
+let SOFT=null;
+/* iPhone: tạm tắt camera bằng cách 'ngủ' luồng (không đóng) để lần mở lại không bị hỏi quyền nữa */
+function stopCam(hard){looping=false;scanning=false;if(WL){try{WL.release()}catch(e){}WL=null}on=false;document.querySelectorAll('.tcb').forEach(b=>b.classList.remove('lit'));if(stream){if(IOS&&!hard){try{stream.getTracks().forEach(t=>t.enabled=false);SOFT=stream}catch(e){stream.getTracks().forEach(t=>t.stop())}}else{stream.getTracks().forEach(t=>t.stop())}stream=null}if(hard&&SOFT){SOFT.getTracks().forEach(t=>t.stop());SOFT=null}track=null}
 let on=false;function torch(){on=!on;document.querySelectorAll('.tcb').forEach(b=>b.classList.toggle('lit',on));track&&track.applyConstraints({advanced:[{torch:on}]}).catch(()=>{})}
 document.addEventListener('visibilitychange',()=>{const id=HS[HS.length-1];if(document.hidden)stopCam();else if(id==='ses'||(id==='price'&&$('cam2').style.display!=='none'))go(id,1)});
 /* ===== ĐỌC MÃ 7 SỐ TRÊN TEM — làm theo cách app Android ScanBarcode đang dùng =====
@@ -1199,16 +1203,39 @@ document.querySelectorAll('.bk').forEach(b=>b.onclick=back);
 /* price test */
 let showSeq=0;
 function drawBc(){try{const b=$('bc');b&&JsBarcode(b,b.dataset.v,{format:'EAN13',height:64,displayValue:true,fontSize:18,textMargin:4,font:'Arial, Helvetica, sans-serif',fontOptions:'bold',marginTop:2,marginBottom:2,marginLeft:12,marginRight:12,width:2,background:'#ffffff',lineColor:'#000000'})}catch(e){const b=$('bc');b&&b.remove()}}
-async function showP(c,box){const seq=++showSeq,is13=/^\d{13}$/.test(c);let L=lookup(c),tried=false;clearTimeout(idleT);$('pq').value='';$('pq').blur();
- if(!L.found&&!L.sku&&is13&&CFG.ocrTest&&box&&stream){tried=true;$('pinfo').textContent='MÃ VẠCH: '+c+' | đang đọc mã 7 số…';
-  OCRD=newD();$('pout').innerHTML=card(L)+detHTML();shownIv=-1;detUp();drawBc();
-  const sku=await resolve7(c,box,false);if(seq!==showSeq)return;dlog(sku?'✓ KẾT QUẢ: đọc được SKU '+sku:'✗ Không đọc được 7 số – '+(OCRLOG||'hết thời gian'));if(sku){rememberSku(c,sku);L=lookup(c);L.viaOcr=true}}
- scanning=false;$('cam2').style.display='none';idleT=setTimeout(stopCam,20000);
- $('pinfo').textContent=`MÃ VẠCH: ${is13?c:(L.cat&&L.cat.b)||'-'} | SKU: ${L.sku||'-'}${L.viaOcr?' (đọc từ tem)':''}`;
- const wasOpen=!!($('lvd')&&$('lvd').open);$('pout').innerHTML=card(L)+(tried?detHTML():'');if(tried){if(wasOpen)$('lvd').open=true;shownIv=-1;detUp()}
- drawBc();fb(L.found||!!L.sku,L.viaOcr?'sku':undefined);
- if(!L.found){const c0=$('pout').querySelector('.card');if(c0){c0.id='wcard';const m=c0.querySelector('.mu');if(m)m.outerHTML='<div class="wl" id="wlive">⏳ Không có thông tin trong danh mục – đợi một lát để lấy dữ liệu…</div>';const hl=c0.querySelector('.hintl');hl&&hl.remove();webFill(L.sku||c,seq,is13?c:'')}}}
 const LIVEC={};
+/* ===== TEST GIÁ: mã không có trong danh mục -> web + đọc 7 số chạy SONG SONG; web có SKU thì tra danh mục bằng SKU đó rồi so khuyến mãi ===== */
+function wkOf(j){const k=num(j.giaKM),p=num(j.giaBan);return k>0&&(!p||k<p)?k:0}
+function cmpHTML(L,j){let h=card(L);if(!j)return h;const wk=wkOf(j),p=num(j.giaBan);if(!wk)return h;
+ const cp=Array.from(new Set(L.pr.filter(x=>status(x.d)[2]==='on'&&x.p>0&&!isMem(x)).map(x=>x.p))),wr=[{d:j.dateRange||'',t:'',p:wk}];
+ if(!cp.length)return h+'<div class="sect">🌐 Khuyến mãi trên web</div><div class="g2">'+pbox('km full','🏷️ GIÁ KHUYẾN MÃI',wk,wr,p||L.list)+'</div>';
+ if(cp.some(x=>Math.abs(x-wk)<1))return h;
+ return h+'<div class="cfl"><b>⚠️ Khuyến mãi danh mục và web khác nhau</b></div><div class="g2">'+pbox('c1','📋 DANH MỤC',Math.min.apply(null,cp),L.pr.filter(x=>status(x.d)[2]==='on'&&x.p===Math.min.apply(null,cp)),L.list)+pbox('c2','🌐 WEB',wk,wr,p||L.list)+'</div>'}
+function waitHTML(L,msg,bad){let h=card(L).replace('<div class="card">','<div class="card" id="wcard">').replace(/<div class="mu">[^<]*<\/div>/,'<div class="wl'+(bad?' bad':'')+'" id="wlive">'+msg+'</div>').replace(/<div class="hintl">.*?<\/div>/,'');return h}
+async function webGet(code){if(!/\/macros\//.test(LIVE_LINK))return{err:'Chưa có link tra web'};if(!navigator.onLine)return{err:'Không có mạng để lấy dữ liệu'};
+ try{const j=LIVEC[code]||await liveFetch(code);if(j&&j.success){LIVEC[code]=j;return{j}}return{err:'Không tìm thấy thông tin trên web'}}catch(e){return{err:'Không lấy được dữ liệu – kiểm tra mạng'}}}
+async function showP(c,box){const seq=++showSeq,is13=/^\d{13}$/.test(c),L0=lookup(c);clearTimeout(idleT);$('pq').value='';$('pq').blur();
+ const camOff=()=>{scanning=false;$('cam2').style.display='none';clearTimeout(idleT);idleT=setTimeout(stopCam,20000)};
+ /* 1) Có trong danh mục: hiện luôn như cũ */
+ if(L0.found){camOff();$('pinfo').textContent=`MÃ VẠCH: ${is13?c:(L0.cat&&L0.cat.b)||'-'} | SKU: ${L0.sku||'-'}`;$('pout').innerHTML=card(L0);drawBc();fb(true);return}
+ /* 2) Không có: web + đọc 7 số cùng lúc */
+ const canOcr=!L0.sku&&is13&&CFG.ocrTest&&box&&stream,wcode=String(L0.sku||c).replace(/\D/g,'');
+ let webR=null,ocrSku='',ocrOn=!!canOcr,webOn=true,fbd=false,webStopOcr=false;
+ const info=Lx=>{const j=webR&&webR.j;const sk=Lx.sku||(j&&j.sku)||'';$('pinfo').textContent=`MÃ VẠCH: ${is13?c:(Lx.cat&&Lx.cat.b)||(j&&j.barcode)||'-'} | SKU: ${sk||'-'}${ocrSku&&!(j&&j.sku)?' (đọc từ tem)':''}`};
+ const paint=()=>{if(seq!==showSeq)return;const Lx=lookup(c),j=webR&&webR.j,wasOpen=!!($('lvd')&&$('lvd').open);let h;
+  if(Lx.found)h=cmpHTML(Lx,j);
+  else if(j)h=liveHTML(j,is13?c:'');
+  else{let m,bad=false;if(webOn&&ocrOn)m='⏳ Đang lấy từ web và đọc 7 số trên tem…';else if(webOn)m='⏳ Đang lấy dữ liệu từ web…';else if(ocrOn)m='Web: '+((webR&&webR.err)||'không có')+' · ⏳ đang đọc 7 số trên tem…';else{m=(webR&&webR.err)||'Không có thông tin';bad=true}h=waitHTML(Lx,m,bad)}
+  const showD=canOcr&&!webStopOcr;$('pout').innerHTML=h+(showD?detHTML():'');if(showD){if(wasOpen&&$('lvd'))$('lvd').open=true;shownIv=-1;detUp()}drawBc();info(Lx);
+  if(!fbd&&(Lx.found||j)){fbd=true;fb(true,ocrSku?'sku':undefined)}
+  if(!webOn&&!ocrOn){camOff();if(!fbd&&!Lx.found&&!j){fbd=true;fb(false)}}};
+ if(canOcr){OCRD=newD();shownIv=-1}
+ paint();
+ const pw=webGet(wcode).then(r=>{if(seq!==showSeq)return;webR=r;webOn=false;
+  if(r.j){const sk=String(r.j.sku||'').replace(/\D/g,'');if(sk&&is13)rememberSku(c,sk);if(sk&&ocrOn){webStopOcr=true;ocrCancel();ocrOn=false}}
+  paint()});
+ const po=canOcr?resolve7(c,box,false).then(sku=>{if(seq!==showSeq)return;ocrOn=false;if(!webStopOcr){dlog(sku?'✓ KẾT QUẢ: đọc được SKU '+sku:'✗ Không đọc được 7 số – '+(OCRLOG||'hết thời gian'));if(sku){rememberSku(c,sku);ocrSku=sku}}paint()}):Promise.resolve();
+ await Promise.all([pw,po])}
 function liveHTML(j,bc){const p=num(j.giaBan),k=num(j.giaKM),km=k>0&&(!p||k<p);return`<div class="card">${bc?`<svg id="bc" data-v="${bc}"></svg>`:''}<div class="nm">${esc(j.tenHang||'')}</div><div class="pl"><small>Giá niêm yết:</small><div class="v${km?' cut':''}">${p?fmt(p):''}</div></div>${km?pbox('km full','🏷️ GIÁ KHUYẾN MÃ',k,[{d:j.dateRange||'',t:'',p:k}],p):''}${j.ton306!==undefined&&j.ton306!==''?`<div class="mu" style="margin-top:8px">Tồn: ${esc(j.ton306)}</div>`:''}<div class="mu" style="margin-top:4px">🌐 Lấy từ web</div></div>`}
 async function webFill(code,seq,bc){code=String(code||'').replace(/\D/g,'');const el=()=>seq===showSeq&&$('wlive');if(!code)return;
  const set=h=>{const e=el();if(e)e.outerHTML=h},ok=j=>{const w=$('wcard');if(w&&seq===showSeq){w.outerHTML=liveHTML(j,bc);drawBc();if(j.sku){const pi=$('pinfo');if(pi)pi.textContent='MÃ VẠCH: '+(bc||j.barcode||'-')+' | SKU: '+j.sku}}};
@@ -1456,7 +1483,7 @@ function tcProg(d,n,ok,fail,end){const w=$('tprog');if(!w)return;clearTimeout(tc
 function qtyVis(){const q=$('qty');q.readOnly=false;q.setAttribute('inputmode','numeric');q.placeholder='SL';if(!askBusy)q.value=CFG.scanN?'':(q.value||1)}
 function bind(){document.querySelectorAll('[data-k]').forEach(e=>{const k=e.dataset.k;if(e.type==='checkbox')e.checked=!!CFG[k];else if(e.type==='radio')e.checked=String(CFG[k])===e.value;else e.value=CFG[k]});renderStk();qtyVis()}
 document.addEventListener('input',e=>{const el=e.target;if(el.dataset&&el.dataset.k==='vol'){CFG.vol=+el.value;clearTimeout(window._vt);window._vt=setTimeout(()=>beep('ok'),150)}});
-document.addEventListener('change',e=>{const el=e.target,k=el.dataset&&el.dataset.k;if(!k)return;CFG[k]=el.type==='checkbox'?+el.checked:el.type==='radio'||el.type==='range'?+el.value:el.value.trim();if(el.checked&&k==='scanN')CFG.sl1=0;else if(el.checked&&k==='sl1')CFG.scanN=0;saveCfg();if(k==='scanN'||k==='sl1')bind();qtyVis();refreshHold();if(k==='theme')applyTheme();if(k==='snk'){SND=null;audioOK=false;unlockAudio();setTimeout(()=>beep('ok'),350)}});
+document.addEventListener('change',e=>{const el=e.target,k=el.dataset&&el.dataset.k;if(!k)return;CFG[k]=el.type==='checkbox'?+el.checked:el.type==='radio'||el.type==='range'?+el.value:el.value.trim();if(el.checked&&k==='scanN')CFG.sl1=0;else if(el.checked&&k==='sl1')CFG.scanN=0;saveCfg();if(k==='scanN'||k==='sl1')bind();if(k==='cam'||k==='hd')stopCam(true);qtyVis();refreshHold();if(k==='theme')applyTheme();if(k==='snk'){SND=null;audioOK=false;unlockAudio();setTimeout(()=>beep('ok'),350)}});
 function applyTheme(){const t=+CFG.theme||0,r=document.documentElement;if(t===1)r.setAttribute('data-theme','light');else if(t===2)r.setAttribute('data-theme','dark');else r.removeAttribute('data-theme');try{localStorage.setItem('qrtheme',String(t))}catch(e){}}
 function cycleTheme(){CFG.theme=((+CFG.theme||0)+1)%3;saveCfg();applyTheme();bind();toast(['Giao diện: tự động theo điện thoại','Giao diện: sáng','Giao diện: tối'][CFG.theme])}
 function reset(){cfm('Đặt lại cài đặt về mặc định?','Đặt lại',()=>{CFG={...DEF,link:CFG.link};saveCfg();bind();tierUI();applyTheme()})}
