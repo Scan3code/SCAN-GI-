@@ -840,9 +840,9 @@ const uq=a=>a.filter((x,i)=>a.indexOf(x)===i);
 const dtm=d=>{const st=status(d),c=st[2]==='off'?(/hết/.test(st[0])?'bad':'wa'):'ok';return`<div class="tm ${c}">⏰ ${esc(d||'Chưa rõ thời gian')}<small>${st[0]}</small></div>`};
 const pnum=n=>{const s=n.toLocaleString('vi-VN'),k=s.length<=7?'a':s.length<=9?'b':s.length===10?'c':'d';return`<span class="pn ${k}">${s}</span><span class="pu">đ</span>`};
 /* Trùng CTKM = các dòng KM đang chạy, KHÔNG phải KM thẻ thành viên, có giá KM khác nhau */
-function conf(L){const m=new Map();(L.pr||[]).forEach(p=>{if(status(p.d)[2]!=='on'||isMem(p)||!(p.p>0))return;(m.get(p.p)||m.set(p.p,[]).get(p.p)).push(p)});
+function conf(L){const m=new Map();(L.pr||[]).forEach(p=>{if(status(p.d)[2]!=='on'||isMem(p)||!(p.p>0&&(!L.list||p.p<L.list)))return;(m.get(p.p)||m.set(p.p,[]).get(p.p)).push(p)});
  return m.size>1?Array.from(m.entries()).sort((a,b)=>a[0]-b[0]).map(e=>({p:e[0],rows:e[1]})):[]}
-function t2(p,l){const t=String(p.t);let m=t.match(/thứ\s*2.*?(\d[\d.]*)\s*(?:đ|vnd)/i);if(m&&l)return l+num(m[1]);m=t.match(/mua\s*2.*?giá\s*(\d[\d.]*)\s*(?:đ|vnd)/i);if(m)return num(m[1]);return/mua\s*1\s*tặng\s*1/i.test(t)&&l?l:0}
+function t2(p,l){const t=String(p.t);let m=t.match(/thứ\s*2.*?(\d[\d.]*)\s*(?:đ|vnd)/i);if(m&&l)return l+num(m[1]);m=t.match(/mua\s*2.*?giá\s*(\d[\d.]*)\s*(?:đ|vnd)/i);if(m)return num(m[1]);return(/mua\s*1\s*tặng\s*1/i.test(t)||/mua\s*2\s*t[ií]nh\s*ti[eề]n\s*1\b/i.test(t))&&l?l:0}
 const genT=t=>/^(thanh vien|member|vip|the)?[\s,\/\-]*((hang\s*)?(dong|bac|vang|bach kim)[\s,\/\-]*(va\s*)?)*$/.test(norm(t));
 function pbox(cls,lab,pr,rows,l){const tl=uq(rows.map(p=>String(p.t||'').trim()).filter(Boolean)).filter(t=>!(/^mem/.test(cls)&&genT(t))),ds=uq(rows.map(p=>p.d||'')),t2s=uq(rows.map(p=>t2(p,l)).filter(Boolean));
  return`<div class="pbx ${cls}"><div class="bl">${lab}</div><div class="bp">${pnum(pr)}</div>${tl.map(t=>`<div class="bt">${esc(t)}</div>`).join('')}${t2s.map(T=>`<div class="bt hi">→ Mua 2 sản phẩm giá ${fmt(T)}</div>`).join('')}${ds.map(dtm).join('')}</div>`}
@@ -858,15 +858,15 @@ function memLine(L){return(L.pr||[]).some(p=>status(p.d)[2]==='on'&&isMem(p)&&p.
 function cfHTML(cf,pk,i){if(!cf.length)return'';
  return`<div class="cfw${pk?' okc':''}"><span class="cft">${pk?'✓ Giá KM':'⚠️ Trùng CTKM – chọn giá'}</span>${cf.map(g=>`<button class="cfb${g.p===pk?' sel':''}" data-i="${i}" data-a="pick" data-v="${g.p}"><span class="cn">${g.p.toLocaleString('vi-VN')}đ</span>${pk?'':`<span class="cd2">${esc(uq(g.rows.map(x=>x.vr?('Vendor '+x.vr.v+' −'+x.vr.pct+'%'):(x.d||''))).join(' | '))}</span>`}</button>`).join('')}</div>`}
 function card(L){if(!L.found){const b13=/^\d{13}$/.test(L.code)?L.code:'';return`<div class="card">${b13?`<svg id="bc" data-v="${b13}"></svg>`:''}<div class="nm">${L.sku?'Sản phẩm '+esc(L.sku):'Không tìm thấy mã '+esc(L.code)}</div><div class="mu">${DB.cat.length?'Mã này không có trong dữ liệu danh mục / khuyến mãi.':'Chưa có dữ liệu – vào ⚙️ Cài đặt để đồng bộ.'}</div>${b13&&!L.sku?'<div class="hintl"><b>Nhập SKU 7 số in trên tem</b> vào ô tra cứu phía trên rồi bấm Tìm.</div>':''}</div>`}
- const bc=/^\d{13}$/.test(L.code)?L.code:(L.cat&&/^\d{13}$/.test(L.cat.b)?L.cat.b:''),l=L.list,AP=L.pr.filter(p=>status(p.d)[2]==='on'),NP=L.pr.filter(p=>status(p.d)[2]!=='on'),hp=AP.some(p=>p.p>0),plain=[],ruled=[],MEM=[],CF=conf(L);
+ const bc=/^\d{13}$/.test(L.code)?L.code:(L.cat&&/^\d{13}$/.test(L.cat.b)?L.cat.b:''),l=L.list,AP=L.pr.filter(p=>status(p.d)[2]==='on'),NP=L.pr.filter(p=>status(p.d)[2]!=='on'),hp=AP.some(p=>p.p>0&&(!l||p.p<l)),plain=[],ruled=[],MEM=[],CF=conf(L);
  AP.forEach(p=>{if(isMem(p))MEM.push(p);else(String(p.t||'').trim()?ruled:plain).push(p)});
  const PB=[];let h=`<div class="card">${bc?`<svg id="bc" data-v="${bc}"></svg>`:''}<div class="nm">${esc(L.name)}</div>${stk(L.sku)}<div class="pl"><small>Giá niêm yết${L.pr[0]&&L.pr[0].u?' / '+esc(L.pr[0].u):''}:</small><div class="v${hp?' cut':''}">${l?fmt(l):'-'}</div></div>`;
  if(CF.length){h+=`<div class="cfl"><b>⚠️ TRÙNG CTKM</b></div><div class="g2 eq">${(()=>{let n=0;return CF.map((g,j)=>{const w=g.rows.every(x=>x.web);return pbox('c'+((j%4)+1),w?'🌐 GIÁ KM WEB':'🏷️ GIÁ KM '+(++n)+(g.rows.some(x=>x.vr)?' · THEO VENDOR':''),g.p,g.rows,l)}).join('')})()}</div>`}
- else{const byP=new Map();plain.forEach(p=>{if(!(p.p>0))return;(byP.get(p.p)||byP.set(p.p,[]).get(p.p)).push(p)});byP.forEach((rs,pr)=>{PB.push(pbox('km','🏷️ GIÁ KHUYẾN MÃI',pr,rs,l))})}
+ else{const byP=new Map();plain.forEach(p=>{if(!(p.p>0&&(!l||p.p<l)))return;(byP.get(p.p)||byP.set(p.p,[]).get(p.p)).push(p)});byP.forEach((rs,pr)=>{PB.push(pbox('km','🏷️ GIÁ KHUYẾN MÃI',pr,rs,l))})}
  let MEMH='',HR='';if(MEM.length)MEMH='<div class="sect">💳 Giá thẻ thành viên</div>'+memBoxes(MEM,l);
  const RL=CF.length?ruled.filter(p=>!(p.p>0)):ruled,G=new Map();RL.forEach(p=>{const k=p.t+'|'+p.d;(G.get(k)||G.set(k,[]).get(k)).push(p)});
- G.forEach(A=>{const sn0={};A=A.filter(p=>{const k=p.p+'|'+p.t;if(sn0[k])return false;sn0[k]=1;return true});const d=A[0].d,one=A.length===1&&A[0].p>0;
-  const ln=A.map(p=>{const T=t2(p,l);return`<div class="bt">${esc(p.t)}${p.p>0&&!one?` · giá <b>${fmt(p.p)}</b>`:''}</div>`+(T?`<div class="bt hi">→ Mua 2 sản phẩm giá ${fmt(T)}</div>`:'')}).join('');
+ G.forEach(A=>{const sn0={};A=A.filter(p=>{const k=p.p+'|'+p.t;if(sn0[k])return false;sn0[k]=1;return true});const d=A[0].d,one=A.length===1&&A[0].p>0&&(!l||A[0].p<l);
+  const ln=A.map(p=>{const T=t2(p,l);return`<div class="bt">${esc(p.t)}${p.p>0&&!one&&(!l||p.p<l)?` · giá <b>${fmt(p.p)}</b>`:''}</div>`+(T?`<div class="bt hi">→ Mua 2 sản phẩm giá ${fmt(T)}</div>`:'')}).join('');
   const bx=`<div class="pbx ${one?'km':'rule full'}"><div class="bl">${one?(A[0].vr?'🏷️ GIÁ GIẢM THEO VENDOR':'🏷️ GIÁ KHUYẾN MÃI'):hp?'🎁 ƯU ĐÃI KHUYẾN MÃI':'🎁 THỂ LỆ KHUYẾN MÃI'}</div>${one?`<div class="bp">${pnum(A[0].p)}</div>`:''}${ln}${dtm(d)}</div>`;if(one)PB.push(bx);else HR+=bx});
  if(PB.length)h+=PB.length===1?PB[0].replace('class="pbx km"','class="pbx km full"'):'<div class="g2 eq">'+PB.join('')+'</div>';
  h+=MEMH+HR;
@@ -1214,7 +1214,7 @@ const LIVEC={};
 /* ===== TEST GIÁ: mã không có trong danh mục -> web + đọc 7 số chạy SONG SONG; web có SKU thì tra danh mục bằng SKU đó rồi so khuyến mãi ===== */
 function wkOf(j){const k=num(j.giaKM),p=num(j.giaBan);return k>0&&(!p||k<p)?k:0}
 function cmpHTML(L,j){if(!j)return card(L);const wk=wkOf(j);if(!wk)return card(L);
- const cp=Array.from(new Set(L.pr.filter(x=>status(x.d)[2]==='on'&&x.p>0&&!isMem(x)).map(x=>x.p)));
+ const cp=Array.from(new Set(L.pr.filter(x=>status(x.d)[2]==='on'&&x.p>0&&(!L.list||x.p<L.list)&&!isMem(x)).map(x=>x.p)));
  if(cp.some(x=>Math.abs(x-wk)<1))return card(L);
  /* web khác file: cho giá web vào cùng nhóm khuyến mãi -> card() tự hiện "TRÙNG CTKM" và các ô giá như logic gốc */
  return card(Object.assign({},L,{pr:L.pr.concat([{s:L.sku,n:L.name,l:L.list,p:wk,t:'',d:j.dateRange||'',web:1}]),promo:true}))}
