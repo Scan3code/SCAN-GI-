@@ -626,6 +626,13 @@ button.spin svg{animation:rps 1s linear infinite;color:#ea580c}button.spin{point
 .g2.eq>.pbx,.g2.eq>.pbx:last-child:nth-child(odd){grid-column:auto!important}
 .pbx .bt{overflow-wrap:anywhere}
 #pout .cfl.nt{display:block!important}#pout .cfl.nt b,#pout .cfl.nt span{display:block!important;width:auto!important}
+
+/* ô "Mua 2 sản phẩm giá X" nổi bật, giá niêm yết nhỏ lại */
+#pout .pl.sm{padding:8px 12px}#pout .pl.sm .v{font-size:clamp(16px,5vw,21px)!important;font-weight:800;opacity:.85}#pout .pl.sm small{font-size:12.5px}
+.pbx.m2 .bl{font-size:14px}.pbx.m2 .bt{font-size:12.5px;font-weight:600}
+
+.pbx.m2 .bt{font-size:14px;font-weight:700}
+#pout .pbx.m2 .bt.hi.big{margin-top:12px!important;padding:18px 10px!important;border-radius:18px!important;font-size:clamp(22px,6.6vw,30px)!important;line-height:1.25!important;font-weight:900!important;letter-spacing:.2px;box-shadow:0 4px 14px rgba(0,0,0,.25)}
 </style>
 </head><body>
 
@@ -860,14 +867,15 @@ function cfHTML(cf,pk,i){if(!cf.length)return'';
 function card(L){if(!L.found){const b13=/^\d{13}$/.test(L.code)?L.code:'';return`<div class="card">${b13?`<svg id="bc" data-v="${b13}"></svg>`:''}<div class="nm">${L.sku?'Sản phẩm '+esc(L.sku):'Không tìm thấy mã '+esc(L.code)}</div><div class="mu">${DB.cat.length?'Mã này không có trong dữ liệu danh mục / khuyến mãi.':'Chưa có dữ liệu – vào ⚙️ Cài đặt để đồng bộ.'}</div>${b13&&!L.sku?'<div class="hintl"><b>Nhập SKU 7 số in trên tem</b> vào ô tra cứu phía trên rồi bấm Tìm.</div>':''}</div>`}
  const bc=/^\d{13}$/.test(L.code)?L.code:(L.cat&&/^\d{13}$/.test(L.cat.b)?L.cat.b:''),l=L.list,AP=L.pr.filter(p=>status(p.d)[2]==='on'),NP=L.pr.filter(p=>status(p.d)[2]!=='on'),hp=AP.some(p=>p.p>0&&(!l||p.p<l)),plain=[],ruled=[],MEM=[],CF=conf(L);
  AP.forEach(p=>{if(isMem(p))MEM.push(p);else(String(p.t||'').trim()?ruled:plain).push(p)});
- const PB=[];let h=`<div class="card">${bc?`<svg id="bc" data-v="${bc}"></svg>`:''}<div class="nm">${esc(L.name)}</div>${stk(L.sku)}<div class="pl"><small>Giá niêm yết${L.pr[0]&&L.pr[0].u?' / '+esc(L.pr[0].u):''}:</small><div class="v${hp?' cut':''}">${l?fmt(l):'-'}</div></div>`;
+ const PB=[],hasM2=AP.some(p=>!isMem(p)&&t2(p,l));let h=`<div class="card">${bc?`<svg id="bc" data-v="${bc}"></svg>`:''}<div class="nm">${esc(L.name)}</div>${stk(L.sku)}<div class="pl${hasM2?' sm':''}"><small>Giá niêm yết${L.pr[0]&&L.pr[0].u?' / '+esc(L.pr[0].u):''}:</small><div class="v${hp?' cut':''}">${l?fmt(l):'-'}</div></div>`;
  if(CF.length){h+=`<div class="cfl"><b>⚠️ TRÙNG CTKM</b></div><div class="g2 eq">${(()=>{let n=0;return CF.map((g,j)=>{const w=g.rows.every(x=>x.web);return pbox('c'+((j%4)+1),w?'🌐 GIÁ KM WEB':'🏷️ GIÁ KM '+(++n)+(g.rows.some(x=>x.vr)?' · THEO VENDOR':''),g.p,g.rows,l)}).join('')})()}</div>`}
  else{const byP=new Map();plain.forEach(p=>{if(!(p.p>0&&(!l||p.p<l)))return;(byP.get(p.p)||byP.set(p.p,[]).get(p.p)).push(p)});byP.forEach((rs,pr)=>{PB.push(pbox('km','🏷️ GIÁ KHUYẾN MÃI',pr,rs,l))})}
  let MEMH='',HR='';if(MEM.length)MEMH='<div class="sect">💳 Giá thẻ thành viên</div>'+memBoxes(MEM,l);
  const RL=CF.length?ruled.filter(p=>!(p.p>0)):ruled,G=new Map();RL.forEach(p=>{const k=p.t+'|'+p.d;(G.get(k)||G.set(k,[]).get(k)).push(p)});
  G.forEach(A=>{const sn0={};A=A.filter(p=>{const k=p.p+'|'+p.t;if(sn0[k])return false;sn0[k]=1;return true});const d=A[0].d,one=A.length===1&&A[0].p>0&&(!l||A[0].p<l);
-  const ln=A.map(p=>{const T=t2(p,l);return`<div class="bt">${esc(p.t)}${p.p>0&&!one&&(!l||p.p<l)?` · giá <b>${fmt(p.p)}</b>`:''}</div>`+(T?`<div class="bt hi">→ Mua 2 sản phẩm giá ${fmt(T)}</div>`:'')}).join('');
-  const bx=`<div class="pbx ${one?'km':'rule full'}"><div class="bl">${one?(A[0].vr?'🏷️ GIÁ GIẢM THEO VENDOR':'🏷️ GIÁ KHUYẾN MÃI'):hp?'🎁 ƯU ĐÃI KHUYẾN MÃI':'🎁 THỂ LỆ KHUYẾN MÃI'}</div>${one?`<div class="bp">${pnum(A[0].p)}</div>`:''}${ln}${dtm(d)}</div>`;if(one)PB.push(bx);else HR+=bx});
+  const T0=one?0:(A.map(p=>t2(p,l)).find(Boolean)||0);
+  const ln=A.map(p=>{const T=t2(p,l);return`<div class="bt">${esc(p.t)}${p.p>0&&!one&&(!l||p.p<l)?` · giá <b>${fmt(p.p)}</b>`:''}</div>`+(T?`<div class="bt hi${T===T0?' big':''}">→ Mua 2 sản phẩm giá ${fmt(T)}</div>`:'')}).join('');
+  const bx=`<div class="pbx ${one?'km':(T0?'rule m2 full':'rule full')}"><div class="bl">${one?(A[0].vr?'🏷️ GIÁ GIẢM THEO VENDOR':'🏷️ GIÁ KHUYẾN MÃI'):hp?'🎁 ƯU ĐÃI KHUYẾN MÃI':'🎁 THỂ LỆ KHUYẾN MÃI'}</div>${one?`<div class="bp">${pnum(A[0].p)}</div>`:''}${ln}${dtm(d)}</div>`;if(one)PB.push(bx);else HR+=bx});
  if(PB.length)h+=PB.length===1?PB[0].replace('class="pbx km"','class="pbx km full"'):'<div class="g2 eq">'+PB.join('')+'</div>';
  h+=MEMH+HR;
  const seenNP={};NP.forEach(p=>{const k=p.d+'|'+status(p.d)[0];if(seenNP[k])return;seenNP[k]=1;h+=`<div class="tm wa" style="margin-top:6px">⏳ ${status(p.d)[0]}: ${esc(p.d||'')}</div>`});
