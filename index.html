@@ -65,7 +65,10 @@ input,select{border-radius:14px;border:1.5px solid var(--line);transition:border
 .cam{border-radius:0 0 24px 24px;box-shadow:0 6px 18px #0003}.frame{border-radius:18px;box-shadow:0 0 0 999px #0006;top:14%;bottom:14%;left:8%;right:8%}
 .frame i{height:3px;background:linear-gradient(90deg,transparent,#ff3b3b,transparent);box-shadow:0 0 12px #f33}
 .msg{border:1px solid var(--line);border-radius:16px}.it{transition:background .3s}.it.new{animation:fl .7s}@keyframes fl{from{transform:scale(.97);opacity:.4}to{transform:none;opacity:1}}
-#bc{display:block;margin:0 auto 10px;max-width:100%;background:#fff;border-radius:12px;padding:8px}
+#bc{display:block;margin:0 auto;max-width:100%;background:#fff;padding:0}
+.bcw{background:#fff;border-radius:14px;padding:8px 8px 4px;margin:0 0 10px;box-shadow:0 1px 6px #0002}.bcs{color:#111;font-size:15px;text-align:right;padding:0 6px 2px;letter-spacing:.2px}.bcs b{font-size:19px;font-weight:900;letter-spacing:.6px}.bcs em{font-style:normal;font-size:12px;font-weight:700;color:#15803d;margin-left:2px}
+#pinfo{display:none!important}
+#pcb.pill{width:auto;padding:0 12px 0 10px;gap:6px;border-radius:19px;background:#fff!important;color:var(--pr)!important}#pcb.pill b{font-size:13px;font-weight:800}#pcb.pill svg{width:18px;height:18px}
 .pl{background:var(--in);border-radius:16px;padding:14px;margin:10px 0}.pl small{color:var(--mu);font-weight:600;font-size:14px}.pl .v{font-size:32px;font-weight:800}.pl .v.cut{text-decoration:line-through;opacity:.6}
 
 .tm{border-radius:12px;padding:10px 12px;font-weight:700;font-size:14px}.tm.ok{color:#16a34a;background:#16a34a1f}.tm.bad{color:#dc2626;background:#dc26261f}.tm.wa{color:#d97706;background:#f59e0b1f}
@@ -345,6 +348,29 @@ body{font-size:16px;line-height:1.4;background:var(--bg);color:var(--tx)}
 .grab::before{content:"";position:absolute;left:0;right:0;top:-22px;height:22px}
 #det .hd2{padding-top:4px;padding-bottom:10px;touch-action:none}
 #dlist{overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+
+/* ===== gọn & đồng bộ phần Test giá ===== */
+#price .row{padding:6px 10px}
+#price .sc{padding:6px 10px}
+#pout .card{padding:10px 12px;margin:4px 0;border-radius:18px}
+.bcw{padding:6px 8px 3px;margin:0 0 6px;border-radius:12px;box-shadow:none;border:1px solid var(--line)}
+.bcs{font-size:13px;font-weight:700;padding:0 4px 1px;letter-spacing:.3px;line-height:1.2}
+.bcs em{font-size:11px;font-weight:700;color:#15803d}
+#bc{height:auto;max-height:54px}
+#pout .nm{font-size:17px;line-height:1.25;font-weight:700;margin:2px 0 4px}
+.stk{font-size:12px;margin:0 0 6px;gap:5px}.stk span{padding:2px 8px;font-weight:600}.stk b,.stk b.z{font-weight:600}
+#pout .pl{padding:8px 12px;margin:6px 0;border-left-width:4px}
+#pout .pl small{font-size:13px;font-weight:600}
+#pout .pl .v{font-size:clamp(18px,6vw,24px);font-weight:700}
+#pout .pl.sm{padding:6px 12px}#pout .pl.sm .v{font-size:clamp(15px,4.6vw,19px)}
+#pout .pbx{border-radius:16px;padding:10px 10px 8px}
+#pout .pbx.full,#pout .card>.pbx.full{margin:6px 0}
+#pout .g2{gap:8px;margin:6px 0}
+#pout .pbx .bt{margin-top:6px;padding:6px 10px}
+#pout .pbx .bp{margin:6px 0 2px}
+#pout .pbx.m2 .bt.hi.big{margin-top:8px!important;padding:13px 10px!important;border-radius:16px!important}
+#pout .cfl{margin:6px 0 2px}
+#pagainw{padding:6px 10px!important}#pagainw .big{padding:14px;margin:0;font-size:16px}
 </style><style id="kbfix"> html,body{overscroll-behavior:none;overscroll-behavior-y:none}
 /* Bàn phím điện thoại: màn hình luôn nằm gọn phía trên bàn phím (--kb, --vt do JS tính từ visualViewport) */
 html .scr.on{top:var(--vt,0px);bottom:var(--kb,0px)}
@@ -683,14 +709,14 @@ button.spin svg{animation:rps 1s linear infinite;color:#ea580c}button.spin{point
 
 <section class="scr" id="list"><div class="hd"><button class="bk ib"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button><span id="ltitle">Danh sách phiên</span><button class="ib" id="lsel" onclick="selToggle()" aria-label="Chọn nhiều phiên để gộp" title="Chọn nhiều phiên để gộp"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="4"/><polyline points="8 12 11 15 16 9"/></svg></button></div><div class="gsb" id="gsb"><button onclick="gopSheet()"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 18a4 4 0 0 1-.5-7.97A5.5 5.5 0 0 1 17 8.5a4.5 4.5 0 0 1 .5 9z"/><polyline points="12 11 12 17"/><polyline points="9.5 14.5 12 17 14.5 14.5"/></svg> Gộp từ Sheet (nhiều máy)</button></div><div class="sc" id="llist"></div><div class="mbar" id="mbar" style="display:none"><div class="mi"><b id="mn">0</b><span id="ms"></span></div><button class="mx" onclick="selToggle(0)">Hủy</button><button class="mg" id="mg" onclick="mergeGo()">Gộp</button></div></section>
 
-<section class="scr" id="price"><div class="hd" style="background:var(--pr)"><button class="bk ib"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button><span>Test giá sản phẩm</span><button class="ib" onclick="go('set')" aria-label="Cài đặt"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button></div>
+<section class="scr" id="price"><div class="hd" style="background:var(--pr)"><button class="ib" onclick="goHome()" aria-label="Về màn hình chính"><svg viewBox="0 0 24 24"><path d="M3 11l9-8 9 8"/><path d="M5 9.5V20h5v-6h4v6h5V9.5"/></svg></button><span>Test giá sản phẩm</span><button class="ib" onclick="go('set')" aria-label="Cài đặt"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button></div>
 <div class="row"><input id="pq" inputmode="numeric" placeholder="Nhập mã 13 số hoặc SKU 7 số"><button id="pgo">Tìm</button></div>
 <div class="tabs" id="pmode"><button class="on" data-m="1">🔍 Tra giá</button><button data-m="2">🛒 Giỏ hàng</button></div>
 <div id="tierw" class="tier" style="display:none"><div class="chips" id="tchips"><button data-t="none">Không thẻ</button><button data-t="dong">Đồng</button><button data-t="bac">Bạc</button><button data-t="vang">Vàng</button><button data-t="bachkim">Bạch kim</button></div></div>
 <div class="cam" id="cam2"><div class="frame"><i></i></div><div class="ctl"><button class="cb zin" onclick="zoomBy(-1)">−</button><b class="zv">1.0×</b><button class="cb zin" onclick="zoomBy(1)">+</button><button class="cb tcb" onclick="torch()">🔦</button><button class="cb lcb" onclick="nextLens()">🔄</button></div><div class="ocrb"></div><div class="camov" onclick="enableCam()"></div></div>
 <div class="sc"><div class="msg" id="pinfo">MÃ VẠCH: - | SKU: -</div><div id="pout"><div class="card nm">Vui lòng quét mã để kiểm tra giá...</div></div></div>
 <div id="ctot" class="ctot" style="display:none"><div class="ctl2"><span class="tl">TỔNG CỘNG</span><b id="ctv">0 VNĐ</b><small id="ctn"></small><small id="csv"></small><small id="cwn"></small></div><button class="ib ghost" onclick="cartClr()" aria-label="Xóa giỏ hàng"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button></div>
-<div id="pagainw" style="padding:8px 12px"><button class="big" style="background:#0a84ff;margin:0" onclick="pagain()">⚡ QUÉT TIẾP SẢN PHẨM KHÁC</button></div></section>
+<div id="pagainw" style="padding:8px 12px"><button class="big" style="background:#0a84ff;margin:0" onclick="pscan()">⚡ QUÉT TIẾP SẢN PHẨM KHÁC</button></div></section>
 
 <section class="scr set" id="set"><div class="hd"><button class="bk ib"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button><span>Cài đặt</span></div><div class="sc">
 <div class="gt">Cách quét</div>
@@ -865,10 +891,11 @@ function memBoxes(MEM,l){const g=new Map(),tx=[];
 function memLine(L){return(L.pr||[]).some(p=>status(p.d)[2]==='on'&&isMem(p)&&p.p>0)?'<div class="mh">💳 Áp dụng theo thẻ thành viên</div>':''}
 function cfHTML(cf,pk,i){if(!cf.length)return'';
  return`<div class="cfw${pk?' okc':''}"><span class="cft">${pk?'✓ Giá KM':'⚠️ Trùng CTKM – chọn giá'}</span>${cf.map(g=>`<button class="cfb${g.p===pk?' sel':''}" data-i="${i}" data-a="pick" data-v="${g.p}"><span class="cn">${g.p.toLocaleString('vi-VN')}đ</span>${pk?'':`<span class="cd2">${esc(uq(g.rows.map(x=>x.vr?('Vendor '+x.vr.v+' −'+x.vr.pct+'%'):x.web?('Web'+(x.d?' · '+x.d:'')):(x.d||''))).join(' | '))}</span>`}</button>`).join('')}</div>`}
-function card(L){if(!L.found){const b13=/^\d{13}$/.test(L.code)?L.code:'';return`<div class="card">${b13?`<svg id="bc" data-v="${b13}"></svg>`:''}<div class="nm">${L.sku?'Sản phẩm '+esc(L.sku):'Không tìm thấy mã '+esc(L.code)}</div><div class="mu">${DB.cat.length?'Mã này không có trong dữ liệu danh mục / khuyến mãi.':'Chưa có dữ liệu – vào ⚙️ Cài đặt để đồng bộ.'}</div>${b13&&!L.sku?'<div class="hintl"><b>Nhập SKU 7 số in trên tem</b> vào ô tra cứu phía trên rồi bấm Tìm.</div>':''}</div>`}
+function bcBlk(bc,sku){return bc||sku?`<div class="bcw">${sku?`<div class="bcs">SKU: ${esc(sku)}<em id="bcm"></em></div>`:''}${bc?`<svg id="bc" data-v="${bc}"></svg>`:''}</div>`:''}
+function card(L){if(!L.found){const b13=/^\d{13}$/.test(L.code)?L.code:'';return`<div class="card">${bcBlk(b13,L.sku)}<div class="nm">${L.sku?'Sản phẩm '+esc(L.sku):'Không tìm thấy mã '+esc(L.code)}</div><div class="mu">${DB.cat.length?'Mã này không có trong dữ liệu danh mục / khuyến mãi.':'Chưa có dữ liệu – vào ⚙️ Cài đặt để đồng bộ.'}</div>${b13&&!L.sku?'<div class="hintl"><b>Nhập SKU 7 số in trên tem</b> vào ô tra cứu phía trên rồi bấm Tìm.</div>':''}</div>`}
  const bc=/^\d{13}$/.test(L.code)?L.code:(L.cat&&/^\d{13}$/.test(L.cat.b)?L.cat.b:''),l=L.list,AP=L.pr.filter(p=>status(p.d)[2]==='on'),NP=L.pr.filter(p=>status(p.d)[2]!=='on'),hp=AP.some(p=>p.p>0&&(!l||p.p<l)),plain=[],ruled=[],MEM=[],CF=conf(L);
  AP.forEach(p=>{if(isMem(p))MEM.push(p);else(String(p.t||'').trim()?ruled:plain).push(p)});
- const PB=[],hasM2=AP.some(p=>!isMem(p)&&t2(p,l));let h=`<div class="card">${bc?`<svg id="bc" data-v="${bc}"></svg>`:''}<div class="nm">${esc(L.name)}</div>${stk(L.sku)}<div class="pl${hasM2?' sm':''}"><small>Giá niêm yết${L.pr[0]&&L.pr[0].u?' / '+esc(L.pr[0].u):''}:</small><div class="v${hp?' cut':''}">${l?fmt(l):'-'}</div></div>`;
+ const PB=[],hasM2=AP.some(p=>!isMem(p)&&t2(p,l));let h=`<div class="card">${bcBlk(bc,L.sku)}<div class="nm">${esc(L.name)}</div>${stk(L.sku)}<div class="pl${hasM2?' sm':''}"><small>Giá niêm yết${L.pr[0]&&L.pr[0].u?' / '+esc(L.pr[0].u):''}:</small><div class="v${hp?' cut':''}">${l?fmt(l):'-'}</div></div>`;
  if(CF.length){h+=`<div class="cfl"><b>⚠️ TRÙNG CTKM</b></div><div class="g2 eq">${(()=>{let n=0;return CF.map((g,j)=>{const w=g.rows.every(x=>x.web);return pbox('c'+((j%4)+1),w?'🌐 GIÁ KM WEB':'🏷️ GIÁ KM '+(++n)+(g.rows.some(x=>x.vr)?' · THEO VENDOR':''),g.p,g.rows,l)}).join('')})()}</div>`}
  else{const byP=new Map();plain.forEach(p=>{if(!(p.p>0&&(!l||p.p<l)))return;(byP.get(p.p)||byP.set(p.p,[]).get(p.p)).push(p)});byP.forEach((rs,pr)=>{PB.push(pbox('km','🏷️ GIÁ KHUYẾN MÃI',pr,rs,l))})}
  let MEMH='',HR='';if(MEM.length)MEMH='<div class="sect">💳 Giá thẻ thành viên</div>'+memBoxes(MEM,l);
@@ -1212,13 +1239,13 @@ function go(id,keep){if(askBusy&&id!=='ses')qkCancel();try{var _a=document.activ
  if(id==='ses'||id==='price')clearTimeout(idleT);else{scanning=false;clearTimeout(idleT);idleT=setTimeout(stopCam,id==='home'?3000:60000)}
  document.querySelectorAll('.scr').forEach(e=>e.classList.toggle('on',e.id===id));try{$('ses').classList.toggle('tcm',!!cur&&tyOf(cur)==='tc');$('list').classList.toggle('tcm',LT==='tc');$('det').classList.toggle('tcm',!!cur&&tyOf(cur)==='tc')}catch(e){}
  if(id==='ses'){if(cur){CFG.act=CFG.act||{};CFG.act[tyOf(cur)]=cur.id;saveCfg()}bind();$('cam1').prepend(v);v.style.display='block';H=onSes;showSeq++;$('holdrow').style.display=holdOn()?'flex':'none';scanning=!holdOn();if(stream)v.play&&v.play().catch(()=>{});startCam().then(ok=>{if(ok){armScan();warm()}});renderS()}
- else if(id==='price'){fetchStock();$('cam2').style.display='';$('cam2').prepend(v);v.style.display='block';H=onPrice;scanning=true;if(stream)v.play&&v.play().catch(()=>{});startCam().then(ok=>{if(ok){armScan();warm()}})}
+ else if(id==='price'){fetchStock();$('cam2').prepend(v);v.style.display='block';H=onPrice;if(PCAM){$('cam2').style.display='';scanning=true;if(stream)v.play&&v.play().catch(()=>{});startCam().then(ok=>{if(ok){armScan();warm()}})}else{$('cam2').style.display='none';scanning=false}}
  else if(id==='det')renderD();else if(id==='list')renderL();else if(id==='set'){bind();ocrStat()}}
 function back(){if(SHEET){closeDet();return}HS.pop();go(HS[HS.length-1]||'home',1);if(HS.length<1)HS=['home']}
 document.querySelectorAll('.bk').forEach(b=>b.onclick=back);
 /* price test */
 let showSeq=0;
-function drawBc(){try{const b=$('bc');b&&JsBarcode(b,b.dataset.v,{format:'EAN13',height:64,displayValue:true,fontSize:18,textMargin:4,font:'Arial, Helvetica, sans-serif',fontOptions:'bold',marginTop:2,marginBottom:2,marginLeft:12,marginRight:12,width:2,background:'#ffffff',lineColor:'#000000'})}catch(e){const b=$('bc');b&&b.remove()}}
+function drawBc(){try{const b=$('bc');b&&JsBarcode(b,b.dataset.v,{format:'EAN13',height:34,displayValue:true,fontSize:12,textMargin:1,font:'Arial, Helvetica, sans-serif',fontOptions:'bold',marginTop:0,marginBottom:0,marginLeft:8,marginRight:8,width:1.5,background:'#ffffff',lineColor:'#000000'})}catch(e){const b=$('bc');b&&b.remove()}}
 const LIVEC={};
 /* ===== TEST GIÁ: mã không có trong danh mục -> web + đọc 7 số chạy SONG SONG; web có SKU thì tra danh mục bằng SKU đó rồi so khuyến mãi ===== */
 function wkOf(j){const k=num(j.giaKM),p=num(j.giaBan);return k>0&&(!p||k<p)?k:0}
@@ -1243,7 +1270,7 @@ async function showP(c,box){const seq=++showSeq,is13=/^\d{13}$/.test(c),L0=looku
   if(Lx.found)h=cmpHTML(Lx,j);
   else if(j)h=liveHTML(j,is13?c:'');
   else{let m,bad=false;if(webOn&&ocrOn)m='⏳ Đang lấy từ web và đọc 7 số trên tem…';else if(webOn)m='⏳ Đang lấy dữ liệu từ web…';else if(ocrOn)m='Web: '+((webR&&webR.err)||'không có')+' · ⏳ đang đọc 7 số trên tem…';else{m=(webR&&webR.err)||'Không có thông tin';bad=true}h=waitHTML(Lx,m,bad)}
-  const showD=canOcr&&!webStopOcr;$('pout').innerHTML=h+(showD?detHTML():'');if(showD){if(wasOpen&&$('lvd'))$('lvd').open=true;shownIv=-1;detUp()}drawBc();info(Lx);
+  const showD=canOcr&&!webStopOcr;$('pout').innerHTML=h+(showD?detHTML():'');if(showD){if(wasOpen&&$('lvd'))$('lvd').open=true;shownIv=-1;detUp()}drawBc();info(Lx);{const m=$('bcm');if(m&&ocrSku&&!(j&&j.sku))m.textContent=' · đọc từ tem'}
   if(!fbd&&(Lx.found||j)){fbd=true;fb(true,ocrSku?'sku':undefined)}
   if(!webOn&&!ocrOn){camOff();if(!fbd&&!Lx.found&&!j){fbd=true;fb(false)}}};
  if(canOcr){OCRD=newD();shownIv=-1}
@@ -1253,7 +1280,7 @@ async function showP(c,box){const seq=++showSeq,is13=/^\d{13}$/.test(c),L0=looku
   paint()});
  const po=canOcr?resolve7(c,box,false).then(sku=>{if(seq!==showSeq)return;ocrOn=false;if(!webStopOcr){dlog(sku?'✓ KẾT QUẢ: đọc được SKU '+sku:'✗ Không đọc được 7 số – '+(OCRLOG||'hết thời gian'));if(sku){rememberSku(c,sku);ocrSku=sku}}paint()}):Promise.resolve();
  await Promise.all([pw,po])}
-function liveHTML(j,bc){const p=num(j.giaBan),k=num(j.giaKM),km=k>0&&(!p||k<p);return`<div class="card">${bc?`<svg id="bc" data-v="${bc}"></svg>`:''}<div class="nm">${esc(j.tenHang||'')}</div><div class="pl"><small>Giá niêm yết:</small><div class="v${km?' cut':''}">${p?fmt(p):''}</div></div>${km?pbox('km full','🏷️ GIÁ KHUYẾN MÃ',k,[{d:j.dateRange||'',t:'',p:k}],p):''}${j.ton306!==undefined&&j.ton306!==''?`<div class="mu" style="margin-top:8px">Tồn: ${esc(j.ton306)}</div>`:''}<div class="mu" style="margin-top:4px">🌐 Lấy từ web</div></div>`}
+function liveHTML(j,bc){const p=num(j.giaBan),k=num(j.giaKM),km=k>0&&(!p||k<p);return`<div class="card">${bcBlk(bc,String(j.sku||'').replace(/\D/g,''))}<div class="nm">${esc(j.tenHang||'')}</div><div class="pl"><small>Giá niêm yết:</small><div class="v${km?' cut':''}">${p?fmt(p):''}</div></div>${km?pbox('km full','🏷️ GIÁ KHUYẾN MÃ',k,[{d:j.dateRange||'',t:'',p:k}],p):''}${j.ton306!==undefined&&j.ton306!==''?`<div class="mu" style="margin-top:8px">Tồn: ${esc(j.ton306)}</div>`:''}<div class="mu" style="margin-top:4px">🌐 Lấy từ web</div></div>`}
 async function webFill(code,seq,bc){code=String(code||'').replace(/\D/g,'');const el=()=>seq===showSeq&&$('wlive');if(!code)return;
  const set=h=>{const e=el();if(e)e.outerHTML=h},ok=j=>{const w=$('wcard');if(w&&seq===showSeq){w.outerHTML=liveHTML(j,bc);drawBc();if(j.sku){const pi=$('pinfo');if(pi)pi.textContent='MÃ VẠCH: '+(bc||j.barcode||'-')+' | SKU: '+j.sku}}};
  if(!/\/macros\//.test(LIVE_LINK))return set('<div class="wl bad" id="wlive">Chưa có link tra web</div>');
@@ -1265,6 +1292,12 @@ async function webCart(it){if(it.live||it.wait)return;const code=String(it.c||''
  try{if(!/\/macros\//.test(LIVE_LINK)||!navigator.onLine)throw 0;const j=LIVEC[cd]||await liveFetch(cd);if(j&&j.success){LIVEC[cd]=j;it.live={n:j.tenHang||'',p:num(j.giaBan),k:num(j.giaKM),t:j.ton306,d:j.dateRange||''};if(j.sku&&/^\d{13}$/.test(code)){rememberSku(code,j.sku);if(ocrCtl.code===it.c)ocrCancel()}}else it.nf=1}catch(e){it.nf=1}
  it.wait=0;kv('cart',CART);renderCart()}
 function onPrice(c,box){if(ocrCtl.code===c)return;if(ocrCtl.code)ocrCancel();PM===2?cartAdd(c,0,box):showP(c,box)}
+let PCAM=1;
+function quickScan(){showSeq++;ocrCancel();if(lastSes('tc')){cur=lastSes('tc');go('ses')}else newSes('tc')}
+function goHome(){HS=['home'];go('home',1)}
+function pcamToggle(){const vis=$('cam2').style.display!=='none';if(vis){PCAM=0;scanning=false;ocrCancel();$('cam2').style.display='none';clearTimeout(idleT);stopCam()}else{PCAM=1;resume()}}
+function pscan(){PCAM=1;pagain()}
+new MutationObserver(()=>{const b=$('pcb');if(b)b.classList.toggle('lit',$('cam2').style.display!=='none')}).observe($('cam2'),{attributes:true,attributeFilter:['style']});
 function pagain(){showSeq++;ocrCancel();$('pq').value='';$('pinfo').textContent='MÃ VẠCH: - | SKU: -';$('pout').innerHTML='<div class="card nm">Vui lòng quét mã để kiểm tra giá...</div>';resume()}
 $('pgo').onclick=()=>{const c=$('pq').value.trim();if(!c)return;if(PM===2){cartAdd(c,1);$('pq').value=''}else showP(c)};$('pq').onkeydown=e=>{if(e.key==='Enter')$('pgo').click()};
 
@@ -1525,7 +1558,7 @@ async function fetchStock(force){const u=CFG.link.trim();if(!u||!CFG.s3||!naviga
 function renderStk(){const S=DB.stock;$('stkst').textContent=STKMSG||(S?(S.n?`✅ ${S.n} mã có tồn hôm nay (${S.d}) · cập nhật ${fd(S.t)}`:`⚠️ Tab không có dòng nào của ngày ${S.d}.${S.last?' Ngày cuối trong tab: '+S.last:''}`):'Chưa tải tồn')}
 async function chkStk(){$('stkst').textContent='Đang tải...';await fetchStock(1);renderStk()}
 function stk(sku){const S=DB.stock;if(!S||S.d!==todayS()||!sku||!S.m[sku]||!S.m[sku].length)return'';return`<div class="stk">📦${S.m[sku].map(([a,b])=>`<span>Tồn ${esc(a)}: <b class="${b<=0?'z':''}">${b}</b></span>`).join('')}</div>`}
-function resume(){clearTimeout(idleT);$('cam2').style.display='';if(stream){v.play&&v.play().catch(()=>{});scanning=true;startLoop()}else go('price',1)}
+function resume(){clearTimeout(idleT);if(!PCAM){$('cam2').style.display='none';scanning=false;return}$('cam2').style.display='';if(stream){v.play&&v.play().catch(()=>{});scanning=true;startLoop()}else go('price',1)}
 const TIERS={dong:'Đồng',vang:'Vàng',bac:'Bạc',bachkim:'Bạch kim'};
 function memberOK(p,tier){if(p.vr)return null;const t=norm(p.t);if(!/thanh vien|member|vip/.test(t))return null;if(!tier||tier==='none')return false;
  const h={dong:/\bdong\b/.test(t),vang:/\bvang\b/.test(t),bac:/\bbac\b/.test(t),bachkim:/\bbach kim\b/.test(t)};return(h.dong||h.vang||h.bac||h.bachkim)?h[tier]:true}
@@ -1555,7 +1588,7 @@ function tierUI(){document.querySelectorAll('#tchips button').forEach(b=>b.class
 document.querySelectorAll('#tchips button').forEach(b=>b.onclick=()=>{CFG.tier=b.dataset.t;saveCfg();tierUI();renderCart()});
 function cartClr(){if(CART.length)cfm('Xóa toàn bộ giỏ hàng?','Xóa hết',()=>{CART=[];kv('cart',CART);renderCart()})}
 function setMode(m){PM=m;showSeq++;ocrCancel();document.querySelectorAll('#pmode button').forEach(b=>b.className=+b.dataset.m===m?'on':'');const c=m===2;
- $('cam2').classList.toggle('mini',c);$('ctot').style.display=c?'flex':'none';$('tierw').style.display=c?'flex':'none';$('pagainw').style.display=c?'none':'';$('pinfo').style.display=c?'none':'';
+ $('cam2').classList.toggle('mini',c);$('ctot').style.display=c?'flex':'none';$('tierw').style.display=c?'flex':'none';$('pagainw').style.display=c?'none':'';
  if(c){renderCart();resume()}else pagain()}
 document.querySelectorAll('#pmode button').forEach(b=>b.onclick=()=>setMode(+b.dataset.m));
 
@@ -1584,7 +1617,7 @@ setInterval(()=>{if(!stream||askBusy)return;const id=HS[HS.length-1];if(id!=='se
 /* init */
 (async()=>{const sv=(await kv('cfg'))||{};if(!(sv.ver>=4)){sv.hold=0;sv.holdN=0;sv.hd=DEF.hd;sv.ver=4}if(!(sv.ver>=5)){sv.ocrScan=0;sv.ver=5}CFG={...DEF,...sv};applyTheme();tierUI();try{navigator.storage&&navigator.storage.persist&&navigator.storage.persist()}catch(e){}DB=await kv('db')||DB;SS=await kv('ss')||[];SS.forEach(s=>{if(s.type!=='kk')s.name=String(s.name).replace(/^Phiên Tra Cứu/,'Scan hàng')});SS=SS.filter(s=>!isJunk(s));saveSS();CART=await kv('cart')||[];CART.forEach(r=>{r.wait=0});
  if(DEFAULT_LINK)CFG.link=DEFAULT_LINK;Object.assign(CFG,TABS);const q=new URLSearchParams(location.search).get('l');if(q){CFG.link=q;history.replaceState(null,'',location.pathname)}
- saveCfg();index();bind();if(CFG.link&&navigator.onLine&&(!DB.cat.length||DB.sv!==2||Date.now()-DB.t>36e5))sync(!DB.cat.length)})();
+ saveCfg();index();bind();HS=['home','price'];go('price',1);if(CFG.link&&navigator.onLine&&(!DB.cat.length||DB.sv!==2||Date.now()-DB.t>36e5))sync(!DB.cat.length)})();
 </script><script>
 /* ===== Chống xung đột bàn phím điện thoại ===== */
 (function(){
