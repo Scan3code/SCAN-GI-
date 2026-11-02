@@ -1569,7 +1569,8 @@ function reset(){cfm('Đặt lại cài đặt về mặc định?','Đặt lạ
 let idleT,PM=1,CART=[];
 const todayS=()=>{const d=new Date();return`${pad(d.getDate())}/${pad(d.getMonth()+1)}/${d.getFullYear()}`};
 const nd=x=>{const m=String(x).match(/(\d{1,2})\/(\d{1,2})\/(\d{4})/);return m?`${pad(+m[1])}/${pad(+m[2])}/${m[3]}`:String(x).trim()};
-const sn=x=>{const n=parseInt(String(x).replace(/[^\d-]/g,''),10);return isNaN(n)?0:n};
+/* tồn: ô trống -> '' (không hiện), chữ (vd 'báo IT') -> giữ nguyên chữ, số -> số; KHÔNG biến ô trống/chữ thành 0 */
+const sn=x=>{if(x===null||x===undefined)return'';const t=String(x).trim();if(!t)return'';if(/^-?\d+([.,]\d+)?$/.test(t)){const n=parseFloat(t.replace(',','.'));return n}return t};
 let STKMSG='';
 function loadStock(a,last){if(!a||!a.length)return;const h=a[0].map(norm),sc=fc(h,'masku','sku'),dc=fc(h,'ngay'),cols=[],T=todayS(),m={};
  h.forEach((x,i)=>{if(/^ton/.test(x))cols.push([i,x.replace(/^ton_?/,'')])});
@@ -1585,7 +1586,7 @@ async function fetchStock(force){const u=CFG.link.trim();if(!u||!CFG.s3||!naviga
   loadStock(a,last)}catch(e){STKMSG=e&&e.name==='AbortError'?'❌ Quá thời gian chờ – Apps Script phản hồi chậm':'❌ Không tải được tồn (kiểm tra mạng / link)'}}
 function renderStk(){const S=DB.stock;$('stkst').textContent=STKMSG||(S?(S.n?`✅ ${S.n} mã có tồn hôm nay (${S.d}) · cập nhật ${fd(S.t)}`:`⚠️ Tab không có dòng nào của ngày ${S.d}.${S.last?' Ngày cuối trong tab: '+S.last:''}`):'Chưa tải tồn')}
 async function chkStk(){$('stkst').textContent='Đang tải...';await fetchStock(1);renderStk()}
-function stk(sku){const S=DB.stock;if(!S||S.d!==todayS()||!sku||!S.m[sku]||!S.m[sku].length)return'';return`<div class="stk">📦${S.m[sku].map(([a,b])=>`<span>Tồn ${esc(a)}: <b class="${b<=0?'z':''}">${b}</b></span>`).join('')}</div>`}
+function stk(sku){const S=DB.stock;if(!S||S.d!==todayS()||!sku||!S.m[sku]||!S.m[sku].length)return'';const A=S.m[sku].filter(([a,b])=>b!==''&&b!==null&&b!==undefined);if(!A.length)return'';return`<div class="stk">📦${A.map(([a,b])=>{const num=typeof b==='number';return`<span>Tồn ${esc(a)}: <b class="${num&&b<=0?'z':''}">${esc(b)}</b></span>`}).join('')}</div>`}
 function resume(){clearTimeout(idleT);if(!PCAM){$('cam2').style.display='none';scanning=false;return}$('cam2').style.display='';if(stream){v.play&&v.play().catch(()=>{});scanning=true;startLoop()}else go('price',1)}
 const TIERS={dong:'Đồng',vang:'Vàng',bac:'Bạc',bachkim:'Bạch kim'};
 function memberOK(p,tier){if(p.vr)return null;const t=norm(p.t);if(!/thanh vien|member|vip/.test(t))return null;if(!tier||tier==='none')return false;
