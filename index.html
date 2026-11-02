@@ -389,6 +389,14 @@ body{font-size:16px;line-height:1.4;background:var(--bg);color:var(--tx)}
 .bcw .bcs span{font-size:11px;font-weight:700;color:#6b7280;letter-spacing:1px}
 .bcw .bcs b{font-size:21px;font-weight:800;color:#111;letter-spacing:.5px;margin-top:2px}
 .bcw .bcs em{margin:2px 0 0;font-size:10.5px}
+
+/* laser nháy xanh khi đọc được mã */
+.frame.hit i,.frame.hit::after{animation:none!important;opacity:1!important;background:#22ff66!important;box-shadow:0 0 6px #22ff66,0 0 16px #22ff66!important}
+.frame.hit i{height:3px!important}.frame.hit::after{width:3px!important;margin-left:-1.5px!important}
+#price .hd.pth>.ib{width:36px;height:36px;align-self:center;flex:none}
+#tcs .hd.pth{padding:8px 10px;gap:8px;align-items:stretch;min-height:78px}
+#tcs .phl .bk{width:36px;height:36px}
+#tcs .phr.a3{background:linear-gradient(135deg,#c2410c,#f97316)!important}
 </style><style id="kbfix"> html,body{overscroll-behavior:none;overscroll-behavior-y:none}
 /* Bàn phím điện thoại: màn hình luôn nằm gọn phía trên bàn phím (--kb, --vt do JS tính từ visualViewport) */
 html .scr.on{top:var(--vt,0px);bottom:var(--kb,0px)}
@@ -698,7 +706,7 @@ button.spin svg{animation:rps 1s linear infinite;color:#ea580c}button.spin{point
 <button class="act a1 sm" onclick="delAll('kk')"><i><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></i><div><b>Xóa dữ liệu phiên</b><small>Xóa các dòng của phiên gần nhất</small></div></button>
 <button class="act a1 sm" onclick="go('set')"><i><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></i><div><b>Cài đặt</b><small>Âm thanh, camera, dữ liệu</small></div></button></div></section>
 
-<section class="scr" id="tcs"><div class="hd"><button class="bk ib"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button><span>ScanBarcode</span></div><div class="hm">
+<section class="scr" id="tcs"><div class="hd pth"><div class="phl"><button class="bk ib"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button><span>ScanBarcode</span></div><button class="act a3 phr" onclick="swap('price')"><i><svg viewBox="0 0 24 24"><path d="M20.6 13.4l-7.2 7.2a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8z"/><circle cx="7.5" cy="7.5" r="1.2"/></svg></i><div><b>Test giá sản phẩm</b><small>Giá, khuyến mãi, tồn, giỏ hàng</small></div></button></div><div class="hm">
 <button class="act a2" onclick="newSes('tc')"><i><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg></i><div><b>Phiên scan mới</b><small>Đặt tên rồi bắt đầu quét</small></div></button>
 <button class="act a2" onclick="contSes('tc')"><i><svg viewBox="0 0 24 24"><polygon points="7 4 20 12 7 20 7 4"/></svg></i><div><b>Tiếp tục phiên mới nhất</b><small>Quét tiếp phiên gần nhất</small></div></button>
 <button class="act a2" onclick="openList('tc')"><i><svg viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg></i><div><b>Danh sách phiên</b><small>Xem, đổi tên, xóa các phiên</small></div></button></div></section>
@@ -727,7 +735,7 @@ button.spin svg{animation:rps 1s linear infinite;color:#ea580c}button.spin{point
 
 <section class="scr" id="list"><div class="hd"><button class="bk ib"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button><span id="ltitle">Danh sách phiên</span><button class="ib" id="lsel" onclick="selToggle()" aria-label="Chọn nhiều phiên để gộp" title="Chọn nhiều phiên để gộp"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="4"/><polyline points="8 12 11 15 16 9"/></svg></button></div><div class="gsb" id="gsb"><button onclick="gopSheet()"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 18a4 4 0 0 1-.5-7.97A5.5 5.5 0 0 1 17 8.5a4.5 4.5 0 0 1 .5 9z"/><polyline points="12 11 12 17"/><polyline points="9.5 14.5 12 17 14.5 14.5"/></svg> Gộp từ Sheet (nhiều máy)</button></div><div class="sc" id="llist"></div><div class="mbar" id="mbar" style="display:none"><div class="mi"><b id="mn">0</b><span id="ms"></span></div><button class="mx" onclick="selToggle(0)">Hủy</button><button class="mg" id="mg" onclick="mergeGo()">Gộp</button></div></section>
 
-<section class="scr" id="price"><div class="hd pth"><div class="phl"><button class="ib" onclick="goHome()" aria-label="Về màn hình chính"><svg viewBox="0 0 24 24"><path d="M3 11l9-8 9 8"/><path d="M5 9.5V20h5v-6h4v6h5V9.5"/></svg></button><span>Test giá sản phẩm</span><button class="ib" onclick="go('set')" aria-label="Cài đặt"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button></div><button class="act a2 phr" onclick="go('tcs')"><i><svg viewBox="0 0 24 24"><path d="M4 8V5a1 1 0 0 1 1-1h3M16 4h3a1 1 0 0 1 1 1v3M20 16v3a1 1 0 0 1-1 1h-3M8 20H5a1 1 0 0 1-1-1v-3"/><path d="M8 8v8M11 8v8M14 8v8M17 8v8"/></svg></i><div><b>ScanBarcode</b><small>Scan mã vạch, hàng đổi/trả, hàng dư</small></div></button></div>
+<section class="scr" id="price"><div class="hd pth"><div class="phl"><button class="ib" onclick="goHome()" aria-label="Về màn hình chính"><svg viewBox="0 0 24 24"><path d="M3 11l9-8 9 8"/><path d="M5 9.5V20h5v-6h4v6h5V9.5"/></svg></button><span>Test giá<br>sản phẩm</span></div><button class="act a2 phr" onclick="swap('tcs')"><i><svg viewBox="0 0 24 24"><path d="M4 8V5a1 1 0 0 1 1-1h3M16 4h3a1 1 0 0 1 1 1v3M20 16v3a1 1 0 0 1-1 1h-3M8 20H5a1 1 0 0 1-1-1v-3"/><path d="M8 8v8M11 8v8M14 8v8M17 8v8"/></svg></i><div><b>ScanBarcode</b><small>Scan mã vạch, hàng đổi/trả, hàng dư</small></div></button><button class="ib" onclick="go('set')" aria-label="Cài đặt"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button></div>
 <div class="row"><input id="pq" inputmode="numeric" placeholder="Nhập mã 13 số hoặc SKU 7 số"><button id="pgo">Tìm</button></div>
 <div class="tabs" id="pmode"><button class="on" data-m="1">🔍 Tra giá</button><button data-m="2">🛒 Giỏ hàng</button></div>
 <div id="tierw" class="tier" style="display:none"><div class="chips" id="tchips"><button data-t="none">Không thẻ</button><button data-t="dong">Đồng</button><button data-t="bac">Bạc</button><button data-t="vang">Vàng</button><button data-t="bachkim">Bạch kim</button></div></div>
@@ -868,10 +876,11 @@ function chooseFile(kind){const f=document.createElement('input');f.type='file';
 function syncBtn(on){const b=$('syncb');b&&b.classList.toggle('spin',on)}
 async function sync(manual){const u=CFG.link.trim();if(!u){manual&&toast('Chưa có link dữ liệu');return}syncBtn(true);
  try{manual&&toast('Đang đồng bộ...');let A={};
-  if(/\/macros\//.test(u)){A=await (await fetch(u+(u.includes('?')?'&':'?')+'sheets='+encodeURIComponent(CFG.s1+','+CFG.s2))).json()}
+  if(/\/macros\//.test(u)){A=await (await fetch(u+(u.includes('?')?'&':'?')+'sheets='+encodeURIComponent(CFG.s1+','+CFG.s2)+(DB.ver&&DB.cat.length&&DB.promo?'&ver='+encodeURIComponent(DB.ver):''))).json();
+   if(A.same){DB.t=Date.now();saveDB();manual&&toast('Dữ liệu đã là bản mới nhất');fetchStock(1);return}}
   else{const m=u.match(/\/d\/([\w-]+)/);if(!m)throw 0;for(const n of [CFG.s1,CFG.s2]){const r=await fetch(`https://docs.google.com/spreadsheets/d/${m[1]}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(n)}`);if(!r.ok)throw 0;
    const wb=XLSX.read(await r.text(),{type:'string',raw:true});A[n]=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{header:1,raw:true,defval:''})}}
-  const a=loadRows('cat',A[CFG.s1]),b=loadRows('promo',A[CFG.s2]);DB.sv=2;saveDB();toast(`Đồng bộ xong: ${a} SP, ${b} KM`);fetchStock(1)}
+  const a=loadRows('cat',A[CFG.s1]),b=loadRows('promo',A[CFG.s2]);DB.sv=2;if(A._ver)DB.ver=A._ver;saveDB();toast(`Đồng bộ xong: ${a} SP, ${b} KM`);fetchStock(1)}
  catch(e){manual&&toast('Không tải được dữ liệu – kiểm tra mạng')}finally{syncBtn(false)}}
 /* lookup */
 function parseRange(t){t=String(t);let P=[],m;const iso=/(\d{4})-(\d{1,2})-(\d{1,2})/g;while(m=iso.exec(t))P.push([+m[1],+m[2],+m[3]]);
@@ -985,6 +994,7 @@ function beep(k){if(!CFG.snd)return;
   T.forEach(q=>{const o=AC.createOscillator(),e=AC.createGain();o.type='square';o.frequency.value=q[0];e.gain.setValueAtTime(0,t);e.gain.linearRampToValueAtTime(.9,t+.01);e.gain.setValueAtTime(.9,t+q[1]-.03);e.gain.linearRampToValueAtTime(0,t+q[1]);o.connect(e);e.connect(g);o.start(t);o.stop(t+q[1]);t+=q[1]})}catch(e){}}
 function haptic(ok){if(!CFG.vib)return;try{if(navigator.vibrate){navigator.vibrate(ok?(CFG.vp==2?[80,50,80]:100):[280]);return}
  if(!HL){HL=document.createElement('label');HL.style.cssText='position:fixed;left:-99px;top:-99px;opacity:0;pointer-events:none';const i=document.createElement('input');i.type='checkbox';i.setAttribute('switch','');HL.appendChild(i);document.body.appendChild(HL)}HL.click()}catch(e){}}
+let lzT=0;function laserOk(){document.querySelectorAll('.frame').forEach(f=>f.classList.add('hit'));clearTimeout(lzT);lzT=setTimeout(()=>document.querySelectorAll('.frame.hit').forEach(f=>f.classList.remove('hit')),420)}
 function fb(ok,k){haptic(ok);beep(k||(ok?'ok':'bad'))}
 let lastAct=Date.now();
 const camMsg=t=>document.querySelectorAll('.camov').forEach(e=>{e.textContent=t;e.style.display=t?'flex':'none'});
@@ -994,7 +1004,7 @@ const holdOn=()=>!!CFG.hold&&(!CFG.scanN||!!CFG.holdN); function refreshHold(){c
 function enableCam(){camMsg('');startCam().then(ok=>{if(ok)armScan()})}
 function need(c){return CFG.kkStrict?3:2}
 function accept(d){let c=String(d.t).trim();if(/^\d{12}$/.test(c))c='0'+c;if(!c||!scanning||!H||askBusy)return;if(/^\d{13}$/.test(c)&&!eanOK(c))return;
- const n=Date.now();if(c!==last||n-lastAt>1500){last=c;cnt=0}lastAt=n;if(++cnt<need(c))return;last='';cnt=0;lastAct=Date.now();H(c,d.box)}
+ const n=Date.now();if(c!==last||n-lastAt>1500){last=c;cnt=0}lastAt=n;if(++cnt<need(c))return;last='';cnt=0;lastAct=Date.now();laserOk();H(c,d.box)}
 function roi(){const vw=v.videoWidth,vh=v.videoHeight,p=v.parentElement,w=p.clientWidth,h=p.clientHeight;if(!vw||!w||!h)return null;
  const k=vw+'x'+vh+'_'+w+'x'+h+'_'+DZ.toFixed(2);if(ROIC&&ROIC.k===k)return ROIC.r;
  const sc=Math.max(w/vw,h/vh),ox=(w-vw*sc)/2,oy=(h-vh*sc)/2,X=q=>((q-w/2)/DZ+w/2-ox)/sc,Y=q=>((q-h/2)/DZ+h/2-oy)/sc,x0=Math.max(0,X(w*.08)),x1=Math.min(vw,X(w*.92)),y0=Math.max(0,Y(h*.14)),y1=Math.min(vh,Y(h*.86)),r={x:x0,y:y0,w:x1-x0,h:y1-y0};ROIC={k,r};return r}
@@ -1312,6 +1322,7 @@ async function webCart(it){if(it.live||it.wait)return;const code=String(it.c||''
 function onPrice(c,box){if(ocrCtl.code===c)return;if(ocrCtl.code)ocrCancel();PM===2?cartAdd(c,0,box):showP(c,box)}
 let PCAM=1;
 function quickScan(){showSeq++;ocrCancel();if(lastSes('tc')){cur=lastSes('tc');go('ses')}else newSes('tc')}
+function swap(id){HS=['home'];go(id)}
 function goHome(){HS=['home'];go('home',1)}
 function pcamToggle(){const vis=$('cam2').style.display!=='none';if(vis){PCAM=0;scanning=false;ocrCancel();$('cam2').style.display='none';clearTimeout(idleT);stopCam()}else{PCAM=1;resume()}}
 function pscan(){PCAM=1;pagain()}
