@@ -1597,10 +1597,11 @@ async function fetchStock(force){const u=CFG.link.trim();if(!u||!CFG.s3||!naviga
   loadStock(a,last)}catch(e){STKMSG=e&&e.name==='AbortError'?'❌ Quá thời gian chờ – Apps Script phản hồi chậm':'❌ Không tải được tồn (kiểm tra mạng / link)'}}
 function renderStk(){const S=DB.stock;$('stkst').textContent=STKMSG||(S?(S.n?`✅ ${S.n} mã có tồn hôm nay (${S.d}) · cập nhật ${fd(S.t)}`:`⚠️ Tab không có dòng nào của ngày ${S.d}.${S.last?' Ngày cuối trong tab: '+S.last:''}`):'Chưa tải tồn')}
 async function chkStk(){$('stkst').textContent='Đang tải...';await fetchStock(1);renderStk()}
-function stk(sku){const S=DB.stock;if(!S||S.d!==todayS()||!sku)return'';const T=(S.m&&S.m[sku])||[],B=(S.b&&S.b[sku])||[],ok=v=>v!==''&&v!==null&&v!==undefined,L=[];
- T.forEach(([a,b])=>{if(ok(b))L.push(a)});B.forEach(([a,b])=>{if(ok(b)&&L.indexOf(a)<0)L.push(a)});if(!L.length)return'';
- const dy=(S.y||'').slice(0,5),hasB=B.some(z=>ok(z[1]));
- return`<div class="stk">📦${L.map(a=>{const t=(T.find(z=>z[0]===a)||[])[1],b=(B.find(z=>z[0]===a)||[])[1],tn=typeof t==='number',bn=typeof b==='number';return`<span>${esc(a)}${ok(t)?` · Tồn <b class="${tn&&t<=0?'z':''}">${esc(t)}</b>`:''}${ok(b)?` · Bán${dy?' '+esc(dy):''} <b class="sl">${esc(b)}</b>`:''}</span>`}).join('')}</div>`}
+function stk(sku){const S=DB.stock;if(!S||S.d!==todayS()||!sku)return'';const T=(S.m&&S.m[sku])||[],B=(S.b&&S.b[sku])||[],isN=v=>typeof v==='number'&&isFinite(v),L=[];
+ /* chỉ hiện kho có TỒN là số hợp lệ; tồn trống / báo lỗi / chữ -> ẩn cả kho đó, kể cả số bán */
+ T.forEach(([a,b])=>{if(isN(b))L.push(a)});if(!L.length)return'';
+ const dy=(S.y||'').slice(0,5);
+ return`<div class="stk">📦${L.map(a=>{const t=(T.find(z=>z[0]===a)||[])[1],b=(B.find(z=>z[0]===a)||[])[1];return`<span>${esc(a)} · Tồn <b class="${t<=0?'z':''}">${esc(t)}</b>${isN(b)?` · Bán${dy?' '+esc(dy):''} <b class="sl">${esc(b)}</b>`:''}</span>`}).join('')}</div>`}
 function resume(){clearTimeout(idleT);if(!PCAM){$('cam2').style.display='none';scanning=false;return}$('cam2').style.display='';if(stream){v.play&&v.play().catch(()=>{});scanning=true;startLoop()}else go('price',1)}
 const TIERS={dong:'Đồng',vang:'Vàng',bac:'Bạc',bachkim:'Bạch kim'};
 function memberOK(p,tier){if(p.vr)return null;const t=norm(p.t);if(!/thanh vien|member|vip/.test(t))return null;if(!tier||tier==='none')return false;
