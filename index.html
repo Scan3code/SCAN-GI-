@@ -1457,19 +1457,31 @@ function delAll(t){const s=lastSes(t);if(!s)return toast('Chưa có phiên nào'
 const xname=s=>s.name.replace(/[\/:*?"<>|]/g,'-')+'.xlsx';
 function buildWB(s){const A=agg(s),wb=XLSX.utils.book_new();
  const lines=(v,w)=>String(v==null?'':v).split('\n').reduce((a,t)=>a+Math.max(1,Math.ceil(t.length/Math.max(1,w-1))),0);
- const mk=(aoa,cols,wrapCol,numCols,moneyCols,last)=>{const ws=XLSX.utils.aoa_to_sheet(aoa);ws['!cols']=cols.map(x=>({wch:x}));const rows=[{hpt:22}];
-  for(let r=0;r<aoa.length;r++){let ln=1;if(r>0)aoa[r].forEach((v,c)=>{if(typeof v==='string')ln=Math.max(ln,lines(v,cols[c]))});if(r>0)rows.push({hpt:Math.max(20,ln*16+4)});
+ const mk=(aoa,cols,wrapCol,numCols,moneyCols,last,grp)=>{const ws=XLSX.utils.aoa_to_sheet(aoa);ws['!cols']=cols.map(x=>({wch:x}));const rows=[{hpt:22}],mg=[];
+  for(let r=0;r<aoa.length;r++){const isG=!!(grp&&grp.has(r));let ln=1;if(r>0&&!isG)aoa[r].forEach((v,c)=>{if(typeof v==='string')ln=Math.max(ln,lines(v,cols[c]))});if(r>0)rows.push({hpt:isG?26:Math.max(20,ln*16+4)});if(isG)mg.push({s:{r:r,c:0},e:{r:r,c:cols.length-1}});
    for(let c=0;c<cols.length;c++){const a=ws[XLSX.utils.encode_cell({r:r,c:c})];if(!a)continue;
-    const al={vertical:'center',wrapText:true,horizontal:r===0?'center':(numCols.indexOf(c)>=0?'right':(c===0?'center':'left'))};
+    const al={vertical:'center',wrapText:true,horizontal:r===0?'center':(isG?'left':(numCols.indexOf(c)>=0?'right':(c===0?'center':'left')))};
     const bd={top:{style:'thin',color:{rgb:'BFBFBF'}},bottom:{style:'thin',color:{rgb:'BFBFBF'}},left:{style:'thin',color:{rgb:'BFBFBF'}},right:{style:'thin',color:{rgb:'BFBFBF'}}};
     a.s={alignment:al,border:bd};
     if(r===0){a.s.font={bold:true,color:{rgb:'FFFFFF'}};a.s.fill={patternType:'solid',fgColor:{rgb:'1E3A8A'}}}
+    else if(isG){a.s.font={bold:true,color:{rgb:'1E3A8A'}};a.s.fill={patternType:'solid',fgColor:{rgb:'DBEAFE'}}}
     else if(last&&r===aoa.length-1){a.s.font={bold:true};a.s.fill={patternType:'solid',fgColor:{rgb:'E8EEF7'}}}
     if(r>0&&moneyCols.indexOf(c)>=0&&typeof a.v==='number')a.z='#,##0'}}
-  ws['!rows']=rows;ws['!views']=[{state:'frozen',ySplit:1}];ws['!margins']={left:.4,right:.4,top:.5,bottom:.5,header:.3,footer:.3};return ws};
+  if(mg.length)ws['!merges']=mg;ws['!rows']=rows;ws['!views']=[{state:'frozen',ySplit:1}];ws['!margins']={left:.4,right:.4,top:.5,bottom:.5,header:.3,footer:.3};return ws};
  const tq=A.reduce((a,o)=>a+o.q,0),tt=A.reduce((a,o)=>a+(o.p?o.p*o.q:0),0);
- const cd=[['STT','Barcode','SKU','Tên sản phẩm','Số lượng','Đơn giá','Thành tiền']].concat(A.map((o,i)=>[i+1,String(o.b||o.raw||''),o.sku||'',o.n||'',o.q,o.p||'',o.p?o.p*o.q:''])).concat([['','','','TỔNG ('+A.length+' SKU)',tq,'',tt||'']]);
- XLSX.utils.book_append_sheet(wb,mk(cd,[6,16,10,40,10,13,15],3,[4,5,6],[5,6],true),'CongDon');
+ /* giống màn hình: bật Vendor -> có cột Vendor; 1 vendor hoặc đang xếp theo vendor -> gom nhóm có dòng tiêu đề vendor */
+ const nv=new Set(A.map(o=>o.v).filter(Boolean)).size,vs=!!CFG.vshow,grouped=vs&&(nv===1||(!!CFG.vsort&&nv>=2)),vc=vs&&!grouped;
+ const hd=['STT','Barcode','SKU','Tên sản phẩm'].concat(vc?['Vendor']:[],['Số lượng','Đơn giá','Thành tiền']),W=[6,16,10,40].concat(vc?[14]:[],[10,13,15]),qi=vc?5:4;
+ const rowX=(o,n)=>[n,String(o.b||o.raw||''),o.sku||'',o.n||''].concat(vc?[o.v||'']:[],[o.q,o.p||'',o.p?o.p*o.q:'']);
+ const blank=()=>hd.map(()=>'');
+ let cd=[hd],gs=new Set(),n=0;
+ if(grouped){const g=new Map();A.forEach(o=>{const k=o.v||'';if(!g.has(k))g.set(k,[]);g.get(k).push(o)});
+  Array.from(g.keys()).sort((a,b)=>!a?1:!b?-1:a.localeCompare(b,'en',{numeric:true})).forEach(k=>{const L2=g.get(k),q=L2.reduce((a,o)=>a+o.q,0),t=blank();
+   t[0]=k?'Vendor '+k+(vname(k)?' · '+vname(k):''):'Vendor chưa rõ';t[hd.length-3]='';t[0]+='   |   '+L2.length+' SKU · SL '+q;
+   gs.add(cd.length);cd.push(t);L2.forEach(o=>cd.push(rowX(o,++n)))})}
+ else A.forEach(o=>cd.push(rowX(o,++n)));
+ const tr=blank();tr[3]='TỔNG CỘNG';tr[qi]=tq;tr[qi+2]=tt||'';cd.push(tr);
+ XLSX.utils.book_append_sheet(wb,mk(cd,W,3,[qi,qi+1,qi+2],[qi+1,qi+2],true,gs),'CongDon');
  const lg=[['STT','Barcode','SKU','Tên hàng','Số lượng','Giá','Thời gian']].concat(s.rows.map((r,i)=>{const L=lookup(r.c);return[i+1,String(r.b!==undefined?(r.b||r.c):r.c),r.s||L.sku||'',L.name||(r.live&&r.live.n)||'',r.q,L.list||(r.live&&(r.live.p||r.live.k))||'',fd(r.t)]}));
  XLSX.utils.book_append_sheet(wb,mk(lg,[6,16,10,40,10,12,17],3,[4,5],[5],false),'Log');
  wb.Workbook={Views:[{activeTab:0}]};
