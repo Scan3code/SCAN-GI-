@@ -419,6 +419,12 @@ body{font-size:16px;line-height:1.4;background:var(--bg);color:var(--tx)}
 .ci .mpr span{flex:none}
 .ci .mpi{flex:1;min-width:0;height:40px;box-sizing:border-box;padding:0 10px;line-height:normal;border-radius:12px;border:1.5px solid var(--ac,#ea580c);background:var(--in);color:var(--tx);font-size:17px;font-weight:700;text-align:center;-moz-appearance:textfield;appearance:none;-webkit-appearance:none}
 .ci .mpi::placeholder{font-size:17px;font-weight:500;line-height:normal;text-align:center;color:var(--mu);opacity:.75}
+/* gợi ý nhỏ: vuốt lên xem chi tiết */
+#grab .gh{display:flex;align-items:center;justify-content:center;gap:5px;margin-top:5px;font-style:normal;font-size:12px;font-weight:600;letter-spacing:.2px;color:var(--mu);opacity:.85}
+#grab .gh svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;animation:ghUp 2.2s ease-in-out infinite}
+@keyframes ghUp{0%,100%{transform:translateY(1px);opacity:.5}50%{transform:translateY(-2px);opacity:1}}
+@media (prefers-reduced-motion:reduce){#grab .gh svg{animation:none}}
+#ses .grab{padding:12px 0 10px!important}
 </style><style id="kbfix"> html,body{overscroll-behavior:none;overscroll-behavior-y:none}
 /* Bàn phím điện thoại: màn hình luôn nằm gọn phía trên bàn phím (--kb, --vt do JS tính từ visualViewport) */
 html .scr.on{top:var(--vt,0px);bottom:var(--kb,0px)}
@@ -743,7 +749,7 @@ button.spin svg{animation:rps 1s linear infinite;color:#ea580c}button.spin{point
 <div class="tbar"><span class="tot" id="tot">Tổng Record: <b id="totn">0</b></span>
 <div class="chips2"><label class="chip"><input type="checkbox" data-k="np"><span>Tên&amp;giá</span></label><label class="chip"><input type="checkbox" data-k="sl1"><span>SL1</span></label><label class="chip"><input type="checkbox" data-k="scanN"><span>Scan N</span></label></div>
 <button class="ib clr" onclick="clr()" aria-label="Xóa tất cả" title="Xóa tất cả"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg><span>Xóa tất cả</span></button></div>
-<div class="panel"><div class="grab" id="grab"><i></i></div><div class="sc" id="slist"></div></div>
+<div class="panel"><div class="grab" id="grab"><i></i><em class="gh"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 15l6-6 6 6"/></svg>Vuốt lên xem chi tiết</em></div><div class="sc" id="slist"></div></div>
 <div class="qk" id="qk"><div class="qh"><div style="flex:1;min-width:0"><b id="qkn"></b><span class="mu" id="qks"></span></div><button class="gr" onclick="qkCancel()" style="padding:8px 12px">✕ Bỏ</button></div><div class="qv" id="qkv">0</div><div class="kp" id="qkp"></div></div></section>
 
 <section class="sheet" id="det"><div class="grab" id="grab2"><i></i></div>
