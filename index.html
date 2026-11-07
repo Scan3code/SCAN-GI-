@@ -731,6 +731,20 @@ button.spin svg{animation:rps 1s linear infinite;color:#ea580c}button.spin{point
 
 .pbx.m2 .bt{font-size:14px;font-weight:700}
 #pout .pbx.m2 .bt.hi.big{margin-top:12px!important;padding:18px 10px!important;border-radius:18px!important;font-size:clamp(22px,6.6vw,30px)!important;line-height:1.25!important;font-weight:900!important;letter-spacing:.2px;box-shadow:0 4px 14px rgba(0,0,0,.25)}
+/* ===== tối ưu màn hình nhỏ (<=380px): không tràn, không dính nút ===== */
+@media (max-width:380px){
+ #ses .tbar{flex-wrap:wrap;row-gap:6px}
+ #ses .tbar .tot{order:1;flex:1 1 auto!important}
+ #ses .tbar .ib.clr{order:2;flex:none}
+ #ses .tbar .chips2{order:3;flex:1 0 100%;display:grid;grid-template-columns:repeat(3,1fr);gap:6px;overflow:visible}
+ #ses .tbar .chips2 .chip{min-width:0}#ses .tbar .chips2 .chip span{padding:0 4px;font-size:12.5px;width:100%;box-sizing:border-box}
+  #det .th.gn,.ag{grid-template-columns:20px 54px 56px minmax(0,1fr) 24px 56px;column-gap:5px}
+ #det .th.gn span{font-size:9px;letter-spacing:0;line-height:1.6!important;padding-top:1px}
+}
+/* 3 nút (Tra cứu / Tạo Excel & chia sẻ / Upload): luôn 1 dòng, chữ to nhất có thể theo bề rộng màn hình */
+#det .acts{grid-template-columns:minmax(0,.9fr) minmax(0,1.5fr) minmax(0,.9fr);gap:6px}
+#det .acts button{white-space:nowrap;padding:0 2px;font-size:clamp(11.5px,3.6vw,14px);letter-spacing:-.1px}
+#det.kkm .acts{grid-template-columns:minmax(0,.8fr) minmax(0,1.9fr) minmax(0,.8fr)}#det.kkm .acts button:nth-child(2){font-size:clamp(10.5px,3.3vw,13.5px)}
 </style>
 </head><body>
 
@@ -771,7 +785,7 @@ button.spin svg{animation:rps 1s linear infinite;color:#ea580c}button.spin{point
 
 <section class="sheet" id="det"><div class="grab" id="grab2"><i></i></div>
 <div class="hd2"><b id="dname"></b><span id="dsum" style="text-align:right;line-height:1.3;font-size:15px;font-weight:800"></span><button class="ib" onclick="closeDet()" aria-label="Đóng"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
-<div class="acts"><button class="o" onclick="tcAll()">Tra cứu</button><button onclick="share(cur)">Tạo Excel &amp; chia sẻ</button><button class="dk" id="up" onclick="upload()">Upload</button></div>
+<div class="acts"><button class="o" onclick="tcAll()">Tra cứu</button><button id="xbtn" onclick="xBtn()">Tạo Excel &amp; chia sẻ</button><button class="dk" id="up" onclick="upload()">Upload</button></div>
 <div class="tprog" id="tprog" style="display:none"><div class="tpt"><b id="tpl"></b><span id="tpp"></span><button id="tpx" onclick="tcStop()">Dừng</button></div><div class="tpb"><i id="tpi"></i></div><small id="tps"></small></div>
 <div style="padding:0 12px 6px"><button onclick="resumeScan()" style="width:100%;padding:10px;border-radius:12px;font-size:15px;font-weight:800;background:var(--ok);color:#fff;border:0">▶ Tiếp tục scan phiên này</button></div>
 <div class="tabs"><button class="on" id="t2" onclick="tab(2)">CỘNG DỒN (SKU)</button><button id="t1" onclick="tab(1)">DATA THÔ (LOG)</button></div>
@@ -1318,7 +1332,7 @@ function back(){if(SHEET){closeDet();return}HS.pop();go(HS[HS.length-1]||'home',
 document.querySelectorAll('.bk').forEach(b=>b.onclick=back);
 /* price test */
 let showSeq=0;
-function drawBc(){try{const b=$('bc');b&&JsBarcode(b,b.dataset.v,{format:'EAN13',height:34,displayValue:true,fontSize:12,textMargin:1,font:'Arial, Helvetica, sans-serif',fontOptions:'bold',marginTop:0,marginBottom:0,marginLeft:8,marginRight:8,width:1.5,background:'#ffffff',lineColor:'#000000'})}catch(e){const b=$('bc');b&&b.remove()}}
+function drawBc(){try{const b=$('bc');b&&JsBarcode(b,b.dataset.v,{format:'EAN13',height:34,displayValue:true,fontSize:12,textMargin:1,font:'Arial, Helvetica, sans-serif',fontOptions:'bold',flat:true,marginTop:0,marginBottom:0,marginLeft:8,marginRight:8,width:1.5,background:'#ffffff',lineColor:'#000000'})}catch(e){const b=$('bc');b&&b.remove()}}
 const LIVEC={};
 /* ===== TEST GIÁ: mã không có trong danh mục -> web + đọc 7 số chạy SONG SONG; web có SKU thì tra danh mục bằng SKU đó rồi so khuyến mãi ===== */
 function wkOf(j){const k=num(j.giaKM),p=num(j.giaBan);return k>0&&(!p||k<p)?k:0}
@@ -1470,7 +1484,7 @@ function togV(k){CFG[k]=CFG[k]?0:1;if(k==='vshow'&&!CFG.vshow)CFG.vsort=0;saveCf
 function agg(s){const m=new Map();s.rows.forEach(r=>{const L=lookup(r.c),lv=r.live,sk=r.s||L.sku,k=sk||r.c;const o=m.get(k)||{k,sku:sk,n:L.name||'',q:0,p:L.list||0,l:L};if(lv&&lv.n&&!L.name&&!o.lv){o.lv=lv;o.n=lv.n;o.p=lv.p||lv.k||0}const bi=bcOf(r,L,sk||'');if(!o.v){const vv=vendOf(r,L);if(vv)o.v=vv}if(!o.b&&bi.ok)o.b=bi.ok;if(!o.raw&&bi.raw)o.raw=bi.raw;o.q+=r.q;m.set(k,o)});return Array.from(m.values())}
 function bcOf(r,L,sk){let raw='';for(const c of [r.b,r.c,L.cat&&L.cat.b]){const d=String(c||'').replace(/\D/g,'');if(!d||d===sk)continue;if(/^\d{13}$/.test(d)&&eanOK(d))return{ok:d,raw:d};if(!raw)raw=d}return{ok:'',raw}}
 function bcSVG(code){if(typeof JsBarcode==='undefined')return '';const fm=(/^\d{13}$/.test(code)&&eanOK(code))?'EAN13':'CODE128';
- try{const s=document.createElementNS('http://www.w3.org/2000/svg','svg');JsBarcode(s,code,{format:fm,width:1,height:16,displayValue:false,margin:2,background:'#ffffff',lineColor:'#000000'});
+ try{const s=document.createElementNS('http://www.w3.org/2000/svg','svg');JsBarcode(s,code,{format:fm,flat:true,width:1,height:16,displayValue:false,margin:2,background:'#ffffff',lineColor:'#000000'});
   const w=parseFloat(s.getAttribute('width')),h=parseFloat(s.getAttribute('height'));if(!s.getAttribute('viewBox')&&w&&h)s.setAttribute('viewBox','0 0 '+w+' '+h);
   s.setAttribute('preserveAspectRatio','none');s.setAttribute('shape-rendering','crispEdges');s.removeAttribute('width');s.removeAttribute('height');return s.outerHTML}catch(e){return ''}}
 function renderD(){const s=cur;propLive(s);let A=agg(s);const vb=$('vbar');if(vb)vb.style.display=tabN===2?'':'none';$('dname').textContent=s.name;$('dsum').innerHTML=`<div class="sm">Tổng SKU: <b>${A.length}</b></div><div class="sm">Tổng số lượng: <b>${s.rows.reduce((a,r)=>a+r.q,0)}</b></div>`;$('up').style.display='';const el=$('dlist');
@@ -1727,7 +1741,21 @@ document.querySelectorAll('#pmode button').forEach(b=>b.onclick=()=>setMode(+b.d
 document.addEventListener('keydown',e=>{if(!askBusy||$('qk').style.display!=='block')return;if(/^\d$/.test(e.key))qkPress(e.key);else if(e.key==='Backspace')qkPress('del');else if(e.key==='Enter')qkPress('ok');else return;e.preventDefault()});
 /* ===== bảng chi tiết: kéo lên để mở, kéo xuống để đóng; mặc định tab Cộng dồn ===== */
 let SHEET=false,VPREV;
-function openDet(){if(!cur)return toast('Chưa có phiên nào');try{$('det').classList.toggle('tcm',tyOf(cur)==='tc')}catch(e){}tab(2);const d=$('det');d.style.transition='transform .3s cubic-bezier(.2,.8,.2,1)';d.style.transform='translateY(0)';d.classList.add('open');SHEET=true;scanning=false}
+/* TXT máy kiểm kê: hỏi tên -> mở bảng chia sẻ của điện thoại (Zalo...), máy không hỗ trợ thì tải file về */
+function xBtn(){if(!cur)return;if(cur.type!=='kk')return share(cur);if(!cur.rows.length)return toast('Chưa có dữ liệu để chia sẻ');let ch='t';
+ const card=(k,t,d)=>'<button type="button" data-p="'+k+'" style="display:block;width:100%;text-align:left;border:2px solid var(--line);background:var(--in);color:var(--tx);border-radius:14px;padding:11px 14px;margin-top:10px;box-shadow:none"><b style="font-size:16px">'+t+'</b><div style="font-size:12.5px;color:var(--mu);margin-top:2px;font-weight:500">'+d+'</div></button>';
+ modal('<div style="font-size:18px;font-weight:800">Tạo file &amp; chia sẻ</div>'+card('t','TXT máy kiểm kê (.txt)','Dữ liệu thô "mã vạch,số lượng" – giao phòng Vi tính')+card('x','Excel (.xlsx)','Bảng đầy đủ: tên hàng, SKU, vendor, số lượng'),'Tiếp tục',()=>{const c=ch;setTimeout(()=>{c==='t'?txtShare(cur):share(cur)},120)},o=>{const bs=o.querySelectorAll('button[data-p]'),sync=()=>bs.forEach(b=>{const on=b.dataset.p===ch;b.style.borderColor=on?'var(--pr)':'var(--line)';b.style.background=on?'var(--card)':'var(--in)'});bs.forEach(b=>b.onclick=()=>{ch=b.dataset.p;sync()});sync()})}
+function txtShare(s){s=s||cur;if(!s||!s.rows.length)return toast('Chưa có dữ liệu để chia sẻ');const p=pdtText(s);if(!p.lines)return toast('Chưa có dữ liệu để xuất');
+ const def=(norm(s.name).replace(/[^a-z0-9._-]+/g,'_').replace(/^_+|_+$/g,'')||'kiemke');
+ modal('<div style="font-size:18px;font-weight:800;margin-bottom:8px">Tạo TXT &amp; chia sẻ</div><input style="width:100%;box-sizing:border-box;padding:12px;border-radius:12px;border:2px solid var(--pr);background:var(--in);color:var(--tx);font-size:16px" maxlength="80" autocomplete="off" autocapitalize="off"><div style="color:var(--mu);font-size:13px;margin-top:6px">Tên file (đuôi .txt). '+p.lines+' dòng "mã vạch,số lượng", dữ liệu thô theo thứ tự quét.</div>','Chia sẻ',o=>{
+  const n=(o.querySelector('input').value||'').replace(/\.txt$/i,'').replace(/[^A-Za-z0-9._-]+/g,'_').replace(/^_+|_+$/g,'')||def,fn=n+'.txt';
+  try{const f=new File([p.text],fn,{type:'text/plain'});
+   if(navigator.canShare&&navigator.canShare({files:[f]})){navigator.share({files:[f],title:fn}).catch(e=>{if(e&&e.name!=='AbortError'){dlBlob(new Blob([p.text],{type:'text/plain;charset=utf-8'}),fn);toast('Đã tải file '+fn)}})}
+   else{dlBlob(new Blob([p.text],{type:'text/plain;charset=utf-8'}),fn);toast('Đã tải file – bấm mở file rồi chọn Chia sẻ')}}
+  catch(e){dlBlob(new Blob([p.text],{type:'text/plain;charset=utf-8'}),fn);toast('Đã tải file '+fn)}
+ },o=>{const i=o.querySelector('input');i.value=def;const sel=()=>{try{i.focus();i.select();i.setSelectionRange(0,i.value.length)}catch(e){}};sel();setTimeout(sel,60);setTimeout(sel,250);
+  i.onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();o.querySelector('[data-x="1"]').click()}}})}
+function openDet(){if(!cur)return toast('Chưa có phiên nào');try{$('det').classList.toggle('tcm',tyOf(cur)==='tc');const kk=cur.type==='kk',xb=$('xbtn');$('det').classList.toggle('kkm',kk);if(xb)xb.textContent=kk?'Tạo TXT/Excel & chia sẻ':'Tạo Excel & chia sẻ'}catch(e){}tab(2);const d=$('det');d.style.transition='transform .3s cubic-bezier(.2,.8,.2,1)';d.style.transform='translateY(0)';d.classList.add('open');SHEET=true;scanning=false}
 function closeDet(){if(VPREV!==undefined){cur=VPREV;VPREV=undefined}const d=$('det');d.style.transition='transform .26s ease';d.style.transform='translateY(105%)';d.classList.remove('open');SHEET=false;outerRefresh();if(HS[HS.length-1]==='ses'||HS[HS.length-1]==='list')armScan()}
 function dragSheet(h,opening,sc){let y0=0,dy=0,on=false,live=false,raf=0,H=0,base=0,ly=0,lt=0,vel=0;const d=$('det');
  const paint=()=>{raf=0;let y=base+dy;if(y<0)y=y/4;if(y>H*1.05)y=H*1.05;d.style.transform='translate3d(0,'+y+'px,0)'};
