@@ -747,7 +747,7 @@ button.spin svg{animation:rps 1s linear infinite;color:#ea580c}button.spin{point
 <button class="act a1 sm" onclick="newSes('kk')"><i><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg></i><div><b>Phiên kiểm kê mới</b><small>Đặt tên rồi bắt đầu đếm</small></div></button>
 <button class="act a1 sm" onclick="contSes('kk')"><i><svg viewBox="0 0 24 24"><polygon points="7 4 20 12 7 20 7 4"/></svg></i><div><b>Tiếp tục phiên</b><small>Đếm tiếp phiên gần nhất</small></div></button>
 <button class="act a1 sm" onclick="openList('kk')"><i><svg viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg></i><div><b>Danh sách phiên</b><small>Xem, đổi tên, xóa các phiên</small></div></button>
-<button class="act a1 sm" onclick="xport(lastSes('kk'))"><i><svg viewBox="0 0 24 24"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg></i><div><b>Xuất file Excel</b><small>Phiên gần nhất</small></div></button>
+<button class="act a1 sm" onclick="xport(lastSes('kk'))"><i><svg viewBox="0 0 24 24"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg></i><div><b>Xuất file</b><small>Excel hoặc TXT · Phiên gần nhất</small></div></button>
 <button class="act a1 sm" onclick="delAll('kk')"><i><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></i><div><b>Xóa dữ liệu phiên</b><small>Xóa các dòng của phiên gần nhất</small></div></button>
 <button class="act a1 sm" onclick="go('set')"><i><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></i><div><b>Cài đặt</b><small>Âm thanh, camera, dữ liệu</small></div></button></div></section>
 
@@ -1538,7 +1538,20 @@ function buildWB(s){const A=agg(s),wb=XLSX.utils.book_new();
  XLSX.utils.book_append_sheet(wb,mk(lg,[6,16,10,40,10,12,17],3,[4,5],[5],false),'Log');
  wb.Workbook={Views:[{activeTab:0}]};
  return wb}
-function xport(s){if(!s)return toast('Chưa có phiên nào');XLSX.writeFile(buildWB(s),xname(s))}
+/* TXT chuẩn máy kiểm kê cầm tay (PDT), dữ liệu thô đúng thứ tự quét, KHÔNG cộng dồn: mỗi dòng "mã_vạch,số_lượng", không khoảng trắng, UTF-8 không BOM, xuống dòng \n */
+function pdtText(s){let t='',n=0,sl=0;s.rows.forEach(r=>{const c=String(r.c==null?'':r.c).replace(/[\s,]/g,''),q=parseInt(r.q,10);if(!c||!(q>0))return;t+=c+','+q+'\n';n++;sl+=q});return{text:t,lines:n,qty:sl}}
+function dlBlob(blob,name){const a=document.createElement('a'),u=URL.createObjectURL(blob);a.href=u;a.download=name;a.style.display='none';document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(u);a.remove()},1500)}
+function xportTxt(s){const p=pdtText(s);if(!p.lines)return toast('Chưa có dữ liệu để xuất');
+ dlBlob(new Blob([p.text],{type:'text/plain;charset=utf-8'}),(norm(s.name).replace(/[^a-z0-9._-]+/g,'_').replace(/^_+|_+$/g,'')||'kiemke')+'.txt');toast('Đã xuất '+p.lines+' dòng (TXT)')}
+function xport(s){if(!s)return toast('Chưa có phiên nào');if(!s.rows.length)return toast('Phiên này chưa có dữ liệu');
+ const p=pdtText(s);let ch='x';
+ const card=(k,t,d)=>'<button type="button" data-p="'+k+'" style="display:block;width:100%;text-align:left;border:2px solid var(--line);background:var(--in);color:var(--tx);border-radius:14px;padding:11px 14px;margin-top:10px;box-shadow:none"><b style="font-size:16px">'+t+'</b><div style="font-size:12.5px;color:var(--mu);margin-top:2px;font-weight:500">'+d+'</div></button>';
+ ovl('<div style="font-size:18px;font-weight:800">Xuất file</div><div style="font-size:13px;color:var(--mu);margin-top:2px">'+esc(s.name)+'</div>'
+  +card('x','Excel (.xlsx)','Bảng đầy đủ: tên hàng, SKU, vendor, số lượng')
+  +card('t','TXT máy kiểm kê (.txt)','Dữ liệu thô, đúng thứ tự quét · '+p.lines+' dòng'),
+  'Xuất file','var(--pr)',()=>{if(ch==='t')xportTxt(s);else{if(typeof XLSX==='undefined'){toast('Chưa tải được thư viện Excel – kiểm tra mạng rồi thử lại');return false}try{XLSX.writeFile(buildWB(s),xname(s))}catch(e){toast('Không tạo được file Excel');return false}}},
+  o=>{const bs=o.querySelectorAll('button[data-p]'),sync=()=>bs.forEach(b=>{const on=b.dataset.p===ch;b.style.borderColor=on?'var(--pr)':'var(--line)';b.style.background=on?'var(--card)':'var(--in)'});
+   bs.forEach(b=>b.onclick=()=>{ch=b.dataset.p;sync()});sync()})}
 /* ===== Hộp thoại riêng của app (không hiện tên trang web như hộp thoại mặc định của trình duyệt) ===== */
 function ovl(inner,okLabel,okColor,onOk,after){const o=document.createElement('div');o.className='ovl';
  o.style.cssText='position:fixed;left:0;top:0;right:0;bottom:0;z-index:100000;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;padding:20px';
