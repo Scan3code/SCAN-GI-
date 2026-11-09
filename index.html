@@ -754,6 +754,17 @@ button.spin svg{animation:rps 1s linear infinite;color:#ea580c}button.spin{point
 .ag .bx .bxq{flex:0 0 auto;min-width:76px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:6px 12px;border-radius:16px;background:var(--in);border:1.5px solid var(--line)}
 .ag .bx .bxq small{font-size:11px;font-weight:700;letter-spacing:.4px;color:var(--mu);text-transform:uppercase}
 .ag .bx .bxq b{font-size:34px;line-height:1.05;font-weight:900;color:var(--pr);font-variant-numeric:tabular-nums}
+/* tìm mã: nhiều ô lọc */
+.srch .sh{align-items:flex-start}
+.srch .sqs{flex:1;min-width:0;display:flex;flex-direction:column;gap:8px}
+.srch .sq{position:relative;display:flex}
+.srch .sq input{width:100%;box-sizing:border-box;height:46px;font-size:16.5px;border-radius:14px;padding:0 14px}
+.srch .sq .sx{position:absolute;right:6px;top:7px;width:32px;height:32px;border-radius:10px;border:0;background:var(--in);color:var(--mu);font-size:20px;line-height:1;padding:0;box-shadow:none}
+.srch .sq:nth-child(n+3) input{padding-right:46px}
+.srch .sq:nth-child(n+3) input::-webkit-search-cancel-button{-webkit-appearance:none;display:none}
+.srch .sadd{display:flex;align-items:center;gap:10px;padding:0 14px 4px}
+.srch .sadd button{border:1.5px dashed var(--pr);background:transparent;color:var(--pr);font-weight:700;font-size:13.5px;border-radius:12px;padding:6px 12px;box-shadow:none;white-space:nowrap}
+.srch .sadd span{font-size:11.5px;color:var(--mu);line-height:1.25}
 </style>
 </head><body>
 
@@ -1390,27 +1401,29 @@ function srchIdx(){const k=DB.t+'|'+DB.cat.length+'|'+DB.promo.length;if(SIDX&&S
   A.push({s:r.s||'',b:r.b||'',v:r.v||'',vn,n:nm,km:!!pr,h:norm([r.s,r.b,r.v,vn,nm,extra].join(' '))});if(r.s)seen.add(r.s)});
  Object.keys(proSku).forEach(sk=>{if(seen.has(sk))return;const p=proSku[sk],nm=String((p[0]&&p[0].n)||'').trim();A.push({s:sk,b:'',v:'',vn:'',n:nm,km:true,h:norm(sk+' '+nm)})});
  SIDX=A;SIK=k;return A}
-function srchFind(q){const T=norm(q).split(/\s+/).filter(Boolean);if(!T.length)return[];const out=[];
+function srchFind(q){const T=norm(Array.isArray(q)?q.join(' '):q).split(/\s+/).filter(Boolean);if(!T.length)return[];const out=[];
  for(const o of srchIdx()){let ok=true;for(const t of T){if(o.h.indexOf(t)<0){ok=false;break}}if(!ok)continue;
   const ex=(o.s===T[0]||o.b===T[0])?2:0;out.push({o,sc:ex*10+(o.km?1:0)});if(out.length>400)break}
  out.sort((a,b)=>b.sc-a.sc||String(a.o.n).localeCompare(String(b.o.n),'vi'));return out.slice(0,60).map(x=>x.o)}
 function psGo(){if($('pq').value.trim())$('pgo').click();else openSrch()}
 function openSrch(){if(document.querySelector('.srch'))return;const o=document.createElement('div');o.className='srch';
- o.innerHTML='<div class="sh"><input type="search" id="sq" placeholder="Tên hàng, vendor, SKU, barcode…" autocomplete="off" autocapitalize="off" enterkeyhint="search"><button type="button" data-c="1">Đóng</button></div><div class="sn" id="sn">Gõ để tìm, ví dụ: áo khoác nữ, 14649…</div><div class="sl" id="sl"></div>';
+ o.innerHTML='<div class="sh"><div class="sqs" id="sqs"></div><button type="button" data-c="1">Đóng</button></div><div class="sadd"><button type="button" id="sadd">+ Thêm ô lọc</button><span>Mỗi ô lọc thêm một điều kiện, kết quả phải khớp tất cả</span></div><div class="sn" id="sn">Gõ để tìm, ví dụ: áo khoác nữ, 14649…</div><div class="sl" id="sl"></div>';
  document.body.appendChild(o);scanning=false;try{ocrCancel()}catch(e){}
- const q=o.querySelector('#sq'),sl=o.querySelector('#sl'),sn=o.querySelector('#sn');let cl=0,lastP=0;
+ const sqs=o.querySelector('#sqs'),sl=o.querySelector('#sl'),sn=o.querySelector('#sn');let cl=0,lastP=0;const PH=['Ô 1: tên hàng, mô tả…','Ô 2: vendor, SKU, barcode…','Ô lọc thêm: bất kỳ thông tin nào','Ô lọc thêm: bất kỳ thông tin nào','Ô lọc thêm: bất kỳ thông tin nào','Ô lọc thêm: bất kỳ thông tin nào'];
+ const vals=()=>Array.from(sqs.querySelectorAll('input')).map(i=>i.value.trim()).filter(Boolean);
  const close=()=>{if(cl)return;cl=1;o.style.opacity='0';setTimeout(()=>o.remove(),500);try{if(!SHEET)armScan()}catch(e){}};
  const pick=i=>{const r=RES[i];if(!r)return;const c=/^\d{13}$/.test(r.b)?r.b:(r.s||r.b);close();setTimeout(()=>{try{if(PM===2)cartAdd(c,0,null);else showP(c,null)}catch(e){console.error(e)}},60)};
  let RES=[],tm=0;
- const draw=()=>{const v=q.value.trim();RES=v?srchFind(v):[];
+ const draw=()=>{const vv=vals(),v=vv.join(' ');RES=v?srchFind(vv):[];
   if(!v){sn.textContent='Gõ để tìm, ví dụ: áo khoác nữ, 14649…';sl.innerHTML='';return}
   sn.textContent=RES.length?(RES.length>=60?'Hiện 60 kết quả đầu – gõ thêm để lọc':RES.length+' kết quả'):'Không tìm thấy';
   sl.innerHTML=RES.map((r,i)=>'<button type="button" class="si" data-i="'+i+'"><b>'+esc(r.n||'(chưa có tên)')+(r.km?'<em>KM</em>':'')+'</b><small>SKU '+esc(r.s||'-')+(r.b?' · '+esc(r.b):'')+(r.v?' · Vendor '+esc(r.v)+(r.vn?' · '+esc(r.vn):''):'')+'</small></button>').join('')};
- q.oninput=()=>{clearTimeout(tm);tm=setTimeout(draw,120)};
+ const addBox=(focus)=>{const n=sqs.children.length;if(n>=6)return;const w=document.createElement('div');w.className='sq';w.innerHTML='<input type="search" placeholder="'+PH[n]+'" autocomplete="off" autocapitalize="off" enterkeyhint="search">'+(n>=2?'<button type="button" class="sx" aria-label="Xóa ô lọc">×</button>':'');sqs.appendChild(w);const i=w.querySelector('input');i.oninput=()=>{clearTimeout(tm);tm=setTimeout(draw,120)};i.onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();clearTimeout(tm);draw();const nx=w.nextElementSibling;if(nx)nx.querySelector('input').focus();else i.blur()}};const x=w.querySelector('.sx');if(x)x.onclick=()=>{w.remove();draw();o.querySelector('#sadd').style.display=''};if(focus)setTimeout(()=>{try{i.focus()}catch(e){}},30);if(sqs.children.length>=6)o.querySelector('#sadd').style.display='none'};
+ addBox();addBox();o.querySelector('#sadd').onclick=()=>addBox(true);const q=sqs.querySelector('input');
  o.addEventListener('pointerup',e=>{const b=e.target.closest&&e.target.closest('button');if(!b||e.button>0)return;if(b.dataset.c){lastP=Date.now();e.preventDefault();close()}});
  sl.addEventListener('click',e=>{const b=e.target.closest('.si');if(b)pick(+b.dataset.i)});
  o.onclick=e=>{if(e.target.closest('button[data-c]')&&Date.now()-lastP>700)close()};
- o.onkeydown=e=>{if(e.key==='Escape')close();else if(e.key==='Enter'){e.preventDefault();clearTimeout(tm);draw();q.blur()}};
+ o.onkeydown=e=>{if(e.key==='Escape')close()};
  try{q.focus()}catch(e){}setTimeout(()=>{try{q.focus()}catch(e){}},80)}
 function onPrice(c,box){if(ocrCtl.code===c)return;if(ocrCtl.code)ocrCancel();if(PM===2)cartAdd(c,0,box);else{laserOk();showP(c,box)}}
 let PCAM=1;
