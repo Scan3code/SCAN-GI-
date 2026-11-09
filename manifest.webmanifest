@@ -1,15 +1,12 @@
 {
  "name": "SCANBARCODE",
  "short_name": "SCANBARCODE",
- "description": "Quét mã vạch, tra cứu SKU, giá và kiểm kê",
- "id": "scanbarcode-scan-gi",
  "start_url": "./index.html",
  "scope": "./",
  "display": "standalone",
  "orientation": "portrait",
  "background_color": "#1e3a8a",
  "theme_color": "#1e3a8a",
- "lang": "vi",
  "icons": [
   {
    "src": "icon-192.png",
@@ -29,8 +26,5 @@
    "type": "image/png",
    "purpose": "maskable"
   }
- ],
- "display_override": [
-  "standalone"
  ]
 }
