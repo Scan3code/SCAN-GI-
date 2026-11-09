@@ -746,6 +746,14 @@ button.spin svg{animation:rps 1s linear infinite;color:#ea580c}button.spin{point
 #det .acts{grid-template-columns:minmax(0,.9fr) minmax(0,1.5fr) minmax(0,.9fr);gap:6px}
 #det .acts button{white-space:nowrap;padding:0 2px;font-size:clamp(11.5px,3.6vw,14px);letter-spacing:-.1px}
 #det.kkm .acts{grid-template-columns:minmax(0,.8fr) minmax(0,1.9fr) minmax(0,.8fr)}#det.kkm .acts button:nth-child(2){font-size:clamp(10.5px,3.3vw,13.5px)}
+/* chi tiết mã vạch: số lượng to rõ nằm cạnh barcode */
+.ag .bx{flex-direction:row!important;align-items:center;justify-content:center;gap:14px;padding:8px 4px 4px}
+.ag .bx .bxl{display:flex;flex-direction:column;align-items:center;gap:5px;flex:1 1 auto;min-width:0}
+.ag .bx .bxl svg{width:100%;max-width:230px}
+.ag .bx .bxl .d{font-size:14.5px;letter-spacing:1.5px;white-space:nowrap}
+.ag .bx .bxq{flex:0 0 auto;min-width:76px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:6px 12px;border-radius:16px;background:var(--in);border:1.5px solid var(--line)}
+.ag .bx .bxq small{font-size:11px;font-weight:700;letter-spacing:.4px;color:var(--mu);text-transform:uppercase}
+.ag .bx .bxq b{font-size:34px;line-height:1.05;font-weight:900;color:var(--pr);font-variant-numeric:tabular-nums}
 </style>
 </head><body>
 
@@ -1495,7 +1503,7 @@ function renderD(){const s=cur;propLive(s);let A=agg(s);const vb=$('vbar');if(vb
   let VL=A,k0=0;if(sortOn){const g=new Map();A.forEach(o=>{const k=o.v||'';if(!g.has(k))g.set(k,[]);g.get(k).push(o)});const ks=Array.from(g.keys()).sort((a,b)=>!a?1:!b?-1:a.localeCompare(b,'en',{numeric:true}));VL=[];ks.forEach(k=>{const L2=g.get(k);if(k)VL.push({hd:k,n:L2.length,q:L2.reduce((a,o)=>a+o.q,0)});else VL.push({hd:'chưa rõ',n:L2.length,q:L2.reduce((a,o)=>a+o.q,0)});L2.forEach(o=>VL.push(o))})}
   let ri=0;VL.forEach(o=>{if(!o.hd)o.ri=ri++});
   el.innerHTML=`<div class="th gn"><span style="text-align:center">STT</span><span style="text-align:center">Barcode</span><span>SKU</span><span>Tên sản phẩm</span><span style="text-align:center">SL</span><span style="text-align:right">${CFG.vshow?'Vendor':'Đơn giá'}</span></div>`+VL.map((o,i)=>{if(o.hd)return`<div class="vh"><b>Vendor ${esc(o.hd)}${vname(o.hd)?' · '+esc(vname(o.hd)):''}</b><span>${o.n} SKU · SL ${o.q}</span></div>`;const bv=o.b||o.raw||'',g=bv?bcSVG(bv):'',bc=g?`<div class="bc" data-t="1" data-b="${bv}">${g}</div>`:(o.raw?`<div class="bc"><span class="d">${esc(o.raw)}</span></div>`:'<div class="bc"></div>');return`<div class="ag${o.ri%2?' z':''}"><b class="no">${o.ri+1}</b>${bc}<b class="sk">${esc(o.sku||'')}</b><span class="nm">${esc(o.n)}</span><b class="q">${o.q}</b><b class="pr">${CFG.vshow?esc(o.v||''):(o.p?o.p.toLocaleString('vi-VN'):'')}</b></div>`}).join('');
-  el.onclick=e=>{const b=e.target.closest('.bc[data-t]');if(!b)return;const row=b.closest('.ag'),x=row.querySelector('.bx');if(x){x.remove();return}const d=document.createElement('div');d.className='bx';d.innerHTML=bcSVG(b.dataset.b)+'<span class="d">'+esc(b.dataset.b)+'</span>';row.appendChild(d)}}}
+  el.onclick=e=>{const b=e.target.closest('.bc[data-t]');if(!b)return;const row=b.closest('.ag'),x=row.querySelector('.bx');if(x){x.remove();return}const d=document.createElement('div');d.className='bx';const qv=(row.querySelector('.q')||{}).textContent||'';d.innerHTML='<div class="bxl">'+bcSVG(b.dataset.b)+'<span class="d">'+esc(b.dataset.b)+'</span></div><div class="bxq"><small>Số lượng</small><b>'+esc(qv)+'</b></div>';row.appendChild(d)}}}
 function tab(n){tabN=n;$('t1').className=n===1?'on':'';$('t2').className=n===2?'on':'';renderD()}
 function renameSes(){if(!cur)return;const sp=$('sname'),inp=$('snin');inp.value=cur.name;sp.style.display='none';inp.style.display='block';inp.focus();inp.select()}
 function renameDone(save){const sp=$('sname'),inp=$('snin');if(inp.style.display==='none')return;const t=inp.value.trim();inp.style.display='none';sp.style.display='';if(save&&t&&cur){cur.name=t;saveSS()}sp.textContent=cur?cur.name:''}
@@ -1672,7 +1680,10 @@ function qtyVis(){const q=$('qty');q.readOnly=false;q.setAttribute('inputmode','
 function bind(){document.querySelectorAll('[data-k]').forEach(e=>{const k=e.dataset.k;if(e.type==='checkbox')e.checked=!!CFG[k];else if(e.type==='radio')e.checked=String(CFG[k])===e.value;else e.value=CFG[k]});renderStk();qtyVis()}
 document.addEventListener('input',e=>{const el=e.target;if(el.dataset&&el.dataset.k==='vol'){CFG.vol=+el.value;clearTimeout(window._vt);window._vt=setTimeout(()=>beep('ok'),150)}});
 document.addEventListener('change',e=>{const el=e.target,k=el.dataset&&el.dataset.k;if(!k)return;CFG[k]=el.type==='checkbox'?+el.checked:el.type==='radio'||el.type==='range'?+el.value:el.value.trim();if(el.checked&&k==='scanN')CFG.sl1=0;else if(el.checked&&k==='sl1')CFG.scanN=0;saveCfg();if(k==='scanN'||k==='sl1')bind();if(k==='cam'||k==='hd')stopCam(true);qtyVis();refreshHold();if(k==='theme')applyTheme();if(k==='snk'){SND=null;audioOK=false;unlockAudio();setTimeout(()=>beep('ok'),350)}});
-function applyTheme(){const t=+CFG.theme||0,r=document.documentElement;if(t===1)r.setAttribute('data-theme','light');else if(t===2)r.setAttribute('data-theme','dark');else r.removeAttribute('data-theme');try{localStorage.setItem('qrtheme',String(t))}catch(e){}}
+/* thanh trạng thái + thanh điều hướng của Android lấy đúng màu nền trang, hết lòi viền xanh */
+function setBars(){try{const c=getComputedStyle(document.body).backgroundColor;let m=document.querySelector('meta[name=theme-color]');if(!m){m=document.createElement('meta');m.name='theme-color';document.head.appendChild(m)}if(c&&m.content!==c)m.content=c}catch(e){}}
+try{addEventListener('load',()=>setTimeout(setBars,50));matchMedia('(prefers-color-scheme: dark)').addEventListener('change',()=>setTimeout(setBars,50))}catch(e){}
+function applyTheme(){const t=+CFG.theme||0,r=document.documentElement;if(t===1)r.setAttribute('data-theme','light');else if(t===2)r.setAttribute('data-theme','dark');else r.removeAttribute('data-theme');try{localStorage.setItem('qrtheme',String(t))}catch(e){}setTimeout(setBars,30)}
 function cycleTheme(){CFG.theme=((+CFG.theme||0)+1)%3;saveCfg();applyTheme();bind();toast(['Giao diện: tự động theo điện thoại','Giao diện: sáng','Giao diện: tối'][CFG.theme])}
 function reset(){cfm('Đặt lại cài đặt về mặc định?','Đặt lại',()=>{CFG={...DEF,link:CFG.link};saveCfg();bind();tierUI();applyTheme()})}
 /* stock + cart */
