@@ -2,8 +2,8 @@
  "name": "SCANBARCODE",
  "short_name": "SCANBARCODE",
  "description": "Quét mã vạch, tra cứu SKU, giá và kiểm kê",
- "id": "./",
- "start_url": "./",
+ "id": "scanbarcode-scan-gi",
+ "start_url": "./index.html",
  "scope": "./",
  "display": "standalone",
  "orientation": "portrait",
@@ -29,5 +29,8 @@
    "type": "image/png",
    "purpose": "maskable"
   }
+ ],
+ "display_override": [
+  "standalone"
  ]
 }
