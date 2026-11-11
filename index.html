@@ -773,6 +773,10 @@ button.spin svg{animation:rps 1s linear infinite;color:#ea580c}button.spin{point
 .ag .bx.big .bxl svg{height:92px;max-width:none;width:100%}
 .ag .bx.big .bxl{flex:1 1 60%}
 .ag .bx .bmk{flex:1 0 100%;min-height:50px;border:0;border-radius:14px;background:linear-gradient(135deg,#15803d,#22c55e);color:#fff;font-weight:800;font-size:16px;box-shadow:0 2px 6px #0002}
+/* nút Danh sách barcode nằm góc trái; khi bật thì ẩn cột barcode nhỏ để máy scan không đọc nhầm */
+.vbar #bbl{margin-right:auto}
+#dlist.blm .ag>.bc{visibility:hidden}
+#dlist.blm .th.gn>span:nth-child(2){visibility:hidden}
 </style>
 </head><body>
 
@@ -1530,9 +1534,9 @@ let BLM=false;
 function bxOpen(row){const b=row.querySelector('.bc[data-t]');if(!b)return;const d=document.createElement('div');d.className='bx'+(BLM?' big':'');const qv=(row.querySelector('.q')||{}).textContent||'';
  d.innerHTML='<div class="bxl">'+bcSVG(b.dataset.b)+'<span class="d">'+esc(b.dataset.b)+'</span></div><div class="bxq"><small>Số lượng</small><b>'+esc(qv)+'</b></div>'+(BLM&&!row.classList.contains('dn')?'<button type="button" class="bmk">✓ Đã scan – mã tiếp theo</button>':'');row.appendChild(d);return d}
 function blExpand(el){const rows=Array.from(el.querySelectorAll('.ag')).filter(r=>r.querySelector('.bc[data-t]')),dn=rows.filter(r=>r.classList.contains('dn')).length;
- const bt=$('bbt'),bb=$('bbl');if(bt)bt.textContent=BLM?'Thoát · '+dn+'/'+rows.length:'Danh sách barcode'+(dn?' '+dn+'/'+rows.length:'');if(bb)bb.classList.toggle('on',BLM);
+ const bt=$('bbt'),bb=$('bbl');if(bt)bt.textContent=BLM?'Thoát · '+dn+'/'+rows.length:'Danh sách barcode'+(dn?' '+dn+'/'+rows.length:'');if(bb)bb.classList.toggle('on',BLM);el.classList.toggle('blm',BLM);
  if(!BLM)return;const nx=rows.find(r=>!r.classList.contains('dn'));if(nx&&!nx.querySelector('.bx'))bxOpen(nx);
- if(!nx&&rows.length){BLM=false;toast('Đã scan hết danh sách barcode ✓');if(bt)bt.textContent='Danh sách barcode '+dn+'/'+rows.length;if(bb)bb.classList.remove('on')}}
+ if(!nx&&rows.length){BLM=false;toast('Đã scan hết danh sách barcode ✓');if(bt)bt.textContent='Danh sách barcode '+dn+'/'+rows.length;if(bb)bb.classList.remove('on');el.classList.remove('blm')}}
 function blScroll(){const bx=$('dlist').querySelector('.bx');if(bx){try{bx.closest('.ag').scrollIntoView({block:'center',behavior:'smooth'})}catch(e){}}}
 function toggleBL(){BLM=!BLM;if(BLM&&tabN!==2)tab(2);renderD();if(BLM)blScroll()}
 function blMark(k,on){if(!cur)return;cur.bd=cur.bd||{};if(on)cur.bd[k]=1;else delete cur.bd[k];saveSS();try{navigator.vibrate&&navigator.vibrate(18)}catch(e){}renderD();blScroll()}
