@@ -760,8 +760,8 @@ button.spin svg{animation:rps 1s linear infinite;color:#ea580c}button.spin{point
 .srch .sq{position:relative;display:flex}
 .srch .sq input{width:100%;box-sizing:border-box;height:46px;font-size:16.5px;border-radius:14px;padding:0 14px}
 .srch .sq .sx{position:absolute;right:6px;top:7px;width:32px;height:32px;border-radius:10px;border:0;background:var(--in);color:var(--mu);font-size:20px;line-height:1;padding:0;box-shadow:none}
-.srch .sq:nth-child(n+3) input{padding-right:46px}
-.srch .sq:nth-child(n+3) input::-webkit-search-cancel-button{-webkit-appearance:none;display:none}
+.srch .sq:nth-child(n+4) input{padding-right:46px}
+.srch .sq:nth-child(n+4) input::-webkit-search-cancel-button{-webkit-appearance:none;display:none}
 .srch .sadd{display:flex;align-items:center;gap:10px;padding:0 14px 4px}
 .srch .sadd button{border:1.5px dashed var(--pr);background:transparent;color:var(--pr);font-weight:700;font-size:13.5px;border-radius:12px;padding:6px 12px;box-shadow:none;white-space:nowrap}
 .srch .sadd span{font-size:11.5px;color:var(--mu);line-height:1.25}
@@ -777,6 +777,16 @@ button.spin svg{animation:rps 1s linear infinite;color:#ea580c}button.spin{point
 .vbar #bbl{margin-right:auto}
 #dlist.blm .ag>.bc{visibility:hidden}
 #dlist.blm .th.gn>span:nth-child(2){visibility:hidden}
+/* ===== tinh chỉnh khung barcode ===== */
+#dlist .ag .bx{background:var(--card)!important;background-image:none!important;border:1.5px solid var(--line);border-radius:20px;margin:4px 10px 12px;padding:14px 14px 14px;gap:12px 14px;box-shadow:0 8px 22px #0b1c3a18}
+#dlist .ag .bx .bxt{flex:1 0 100%;text-align:center;font-size:11.5px;font-weight:800;letter-spacing:1.2px;color:var(--ok)}
+#dlist .ag .bx .bxl{gap:8px}
+#dlist .ag .bx .bxl svg{background:#fff;border:1px solid var(--line);border-radius:12px;padding:6px 8px;box-sizing:border-box}
+#dlist .ag .bx.big .bxl svg{height:96px}
+#dlist .ag .bx .bxl .d{color:var(--tx);font-size:15px;font-weight:800;letter-spacing:2.2px}
+#dlist .ag .bx .bxq{min-width:84px;align-self:stretch;border-radius:16px;background:var(--in);border:1.5px solid var(--line);padding:8px 12px}
+#dlist .ag .bx .bxq b{font-size:38px;color:var(--ok)}
+#dlist .ag .bx .bmk{min-height:52px;border-radius:15px;font-size:16.5px;letter-spacing:.2px;box-shadow:0 4px 12px #16a34a40}
 </style>
 </head><body>
 
@@ -1419,9 +1429,9 @@ function srchFind(q){const T=norm(Array.isArray(q)?q.join(' '):q).split(/\s+/).f
  out.sort((a,b)=>b.sc-a.sc||String(a.o.n).localeCompare(String(b.o.n),'vi'));return out.slice(0,60).map(x=>x.o)}
 function psGo(){if($('pq').value.trim())$('pgo').click();else openSrch()}
 function openSrch(){if(document.querySelector('.srch'))return;const o=document.createElement('div');o.className='srch';
- o.innerHTML='<div class="sh"><div class="sqs" id="sqs"></div><button type="button" data-c="1">Đóng</button></div><div class="sadd"><button type="button" id="sadd">+ Thêm ô lọc</button><span>Mỗi ô lọc thêm một điều kiện, kết quả phải khớp tất cả</span></div><div class="sn" id="sn">Gõ để tìm, ví dụ: áo khoác nữ, 14649…</div><div class="sl" id="sl"></div>';
+ o.innerHTML='<div class="sh"><div class="sqs" id="sqs"></div><button type="button" data-c="1">Đóng</button></div><div class="sadd"><button type="button" id="sadd">+ Thêm ô lọc</button><span>3 ô gõ tùy ý (tên, SKU, vendor, mã…), kết quả khớp tất cả ô đã gõ. Cần thêm thì bấm thêm ô</span></div><div class="sn" id="sn">Gõ để tìm, ví dụ: áo khoác nữ, 14649…</div><div class="sl" id="sl"></div>';
  document.body.appendChild(o);scanning=false;try{ocrCancel()}catch(e){}
- const sqs=o.querySelector('#sqs'),sl=o.querySelector('#sl'),sn=o.querySelector('#sn');let cl=0,lastP=0;const PH=['Ô 1: tên hàng, mô tả…','Ô 2: vendor, SKU, barcode…','Ô lọc thêm: bất kỳ thông tin nào','Ô lọc thêm: bất kỳ thông tin nào','Ô lọc thêm: bất kỳ thông tin nào','Ô lọc thêm: bất kỳ thông tin nào'];
+ const sqs=o.querySelector('#sqs'),sl=o.querySelector('#sl'),sn=o.querySelector('#sn');let cl=0,lastP=0;const PH=['Ô 1 · gõ gì cũng được…','Ô 2 · gõ gì cũng được…','Ô 3 · gõ gì cũng được…','Ô thêm · gõ gì cũng được…','Ô thêm · gõ gì cũng được…','Ô thêm · gõ gì cũng được…'];
  const vals=()=>Array.from(sqs.querySelectorAll('input')).map(i=>i.value.trim()).filter(Boolean);
  const close=()=>{if(cl)return;cl=1;o.style.opacity='0';setTimeout(()=>o.remove(),500);try{if(!SHEET)armScan()}catch(e){}};
  const pick=i=>{const r=RES[i];if(!r)return;const c=/^\d{13}$/.test(r.b)?r.b:(r.s||r.b);close();setTimeout(()=>{try{if(PM===2)cartAdd(c,0,null);else showP(c,null)}catch(e){console.error(e)}},60)};
@@ -1430,8 +1440,8 @@ function openSrch(){if(document.querySelector('.srch'))return;const o=document.c
   if(!v){sn.textContent='Gõ để tìm, ví dụ: áo khoác nữ, 14649…';sl.innerHTML='';return}
   sn.textContent=RES.length?(RES.length>=60?'Hiện 60 kết quả đầu – gõ thêm để lọc':RES.length+' kết quả'):'Không tìm thấy';
   sl.innerHTML=RES.map((r,i)=>'<button type="button" class="si" data-i="'+i+'"><b>'+esc(r.n||'(chưa có tên)')+(r.km?'<em>KM</em>':'')+'</b><small>SKU '+esc(r.s||'-')+(r.b?' · '+esc(r.b):'')+(r.v?' · Vendor '+esc(r.v)+(r.vn?' · '+esc(r.vn):''):'')+'</small></button>').join('')};
- const addBox=(focus)=>{const n=sqs.children.length;if(n>=6)return;const w=document.createElement('div');w.className='sq';w.innerHTML='<input type="search" placeholder="'+PH[n]+'" autocomplete="off" autocapitalize="off" enterkeyhint="search">'+(n>=2?'<button type="button" class="sx" aria-label="Xóa ô lọc">×</button>':'');sqs.appendChild(w);const i=w.querySelector('input');i.oninput=()=>{clearTimeout(tm);tm=setTimeout(draw,120)};i.onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();clearTimeout(tm);draw();const nx=w.nextElementSibling;if(nx)nx.querySelector('input').focus();else i.blur()}};const x=w.querySelector('.sx');if(x)x.onclick=()=>{w.remove();draw();o.querySelector('#sadd').style.display=''};if(focus)setTimeout(()=>{try{i.focus()}catch(e){}},30);if(sqs.children.length>=6)o.querySelector('#sadd').style.display='none'};
- addBox();addBox();o.querySelector('#sadd').onclick=()=>addBox(true);const q=sqs.querySelector('input');
+ const addBox=(focus)=>{const n=sqs.children.length;if(n>=6)return;const w=document.createElement('div');w.className='sq';w.innerHTML='<input type="search" placeholder="'+PH[n]+'" autocomplete="off" autocapitalize="off" enterkeyhint="search">'+(n>=3?'<button type="button" class="sx" aria-label="Xóa ô lọc">×</button>':'');sqs.appendChild(w);const i=w.querySelector('input');i.oninput=()=>{clearTimeout(tm);tm=setTimeout(draw,120)};i.onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();clearTimeout(tm);draw();const nx=w.nextElementSibling;if(nx)nx.querySelector('input').focus();else i.blur()}};const x=w.querySelector('.sx');if(x)x.onclick=()=>{w.remove();draw();o.querySelector('#sadd').style.display=''};if(focus)setTimeout(()=>{try{i.focus()}catch(e){}},30);if(sqs.children.length>=6)o.querySelector('#sadd').style.display='none'};
+ addBox();addBox();addBox();o.querySelector('#sadd').onclick=()=>addBox(true);const q=sqs.querySelector('input');
  o.addEventListener('pointerup',e=>{const b=e.target.closest&&e.target.closest('button');if(!b||e.button>0)return;if(b.dataset.c){lastP=Date.now();e.preventDefault();close()}});
  sl.addEventListener('click',e=>{const b=e.target.closest('.si');if(b)pick(+b.dataset.i)});
  o.onclick=e=>{if(e.target.closest('button[data-c]')&&Date.now()-lastP>700)close()};
@@ -1531,11 +1541,11 @@ function renderD(){const s=cur;propLive(s);let A=agg(s);const vb=$('vbar');if(vb
   el.onclick=e=>{const mk=e.target.closest('.bmk');if(mk){blMark(mk.closest('.ag').dataset.k,1);return}const un=e.target.closest('.ag.dn .no');if(un){blMark(un.closest('.ag').dataset.k,0);return}const b=e.target.closest('.bc[data-t]');if(!b)return;const row=b.closest('.ag'),x=row.querySelector('.bx');if(x){x.remove();return}bxOpen(row)};blExpand(el)}}
 /* ===== Danh sách barcode: mở lần lượt từng mã để lấy máy scan quét, quét xong bấm đánh dấu -> đóng, mở mã kế tiếp ===== */
 let BLM=false;
-function bxOpen(row){const b=row.querySelector('.bc[data-t]');if(!b)return;const d=document.createElement('div');d.className='bx'+(BLM?' big':'');const qv=(row.querySelector('.q')||{}).textContent||'';
- d.innerHTML='<div class="bxl">'+bcSVG(b.dataset.b)+'<span class="d">'+esc(b.dataset.b)+'</span></div><div class="bxq"><small>Số lượng</small><b>'+esc(qv)+'</b></div>'+(BLM&&!row.classList.contains('dn')?'<button type="button" class="bmk">✓ Đã scan – mã tiếp theo</button>':'');row.appendChild(d);return d}
+function bxOpen(row,lb){const b=row.querySelector('.bc[data-t]');if(!b)return;const d=document.createElement('div');d.className='bx'+(BLM?' big':'');const qv=(row.querySelector('.q')||{}).textContent||'';
+ d.innerHTML=(lb?'<div class="bxt">'+esc(lb)+'</div>':'')+'<div class="bxl">'+bcSVG(b.dataset.b)+'<span class="d">'+esc(b.dataset.b)+'</span></div><div class="bxq"><small>Số lượng</small><b>'+esc(qv)+'</b></div>'+(BLM&&!row.classList.contains('dn')?'<button type="button" class="bmk">✓ Đã scan – mã tiếp theo</button>':'');row.appendChild(d);return d}
 function blExpand(el){const rows=Array.from(el.querySelectorAll('.ag')).filter(r=>r.querySelector('.bc[data-t]')),dn=rows.filter(r=>r.classList.contains('dn')).length;
  const bt=$('bbt'),bb=$('bbl');if(bt)bt.textContent=BLM?'Thoát · '+dn+'/'+rows.length:'Danh sách barcode'+(dn?' '+dn+'/'+rows.length:'');if(bb)bb.classList.toggle('on',BLM);el.classList.toggle('blm',BLM);
- if(!BLM)return;const nx=rows.find(r=>!r.classList.contains('dn'));if(nx&&!nx.querySelector('.bx'))bxOpen(nx);
+ if(!BLM)return;const nx=rows.find(r=>!r.classList.contains('dn'));if(nx&&!nx.querySelector('.bx'))bxOpen(nx,'MÃ ĐANG QUÉT · '+(rows.indexOf(nx)+1)+'/'+rows.length);
  if(!nx&&rows.length){BLM=false;toast('Đã scan hết danh sách barcode ✓');if(bt)bt.textContent='Danh sách barcode '+dn+'/'+rows.length;if(bb)bb.classList.remove('on');el.classList.remove('blm')}}
 function blScroll(){const bx=$('dlist').querySelector('.bx');if(bx){try{bx.closest('.ag').scrollIntoView({block:'center',behavior:'smooth'})}catch(e){}}}
 function toggleBL(){BLM=!BLM;if(BLM&&tabN!==2)tab(2);renderD();if(BLM)blScroll()}
