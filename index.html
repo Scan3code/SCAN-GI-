@@ -820,6 +820,18 @@ button.spin svg{animation:rps 1s linear infinite;color:#ea580c}button.spin{point
 .onl .ofoot button{width:100%;height:52px;border-radius:16px;border:0;background:linear-gradient(135deg,#15803d,#22c55e);color:#fff;font-size:16.5px;font-weight:800;box-shadow:0 4px 12px #16a34a40}
 .onl .none{text-align:center;color:var(--mu);padding:26px 0;display:none}
 .onl .onh .ib{background:var(--in)!important;color:var(--tx)!important;border:1px solid var(--line);box-shadow:none}.onl .onh .ib svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+/* ===== nút camera: gọn, hiện đại ===== */
+.cam .ctl{top:10px;right:10px;gap:2px;padding:3px;border-radius:999px;background:rgba(15,23,42,.55)!important;border:1px solid rgba(255,255,255,.16)!important;-webkit-backdrop-filter:blur(10px)!important;backdrop-filter:blur(10px)!important;box-shadow:0 4px 14px rgba(0,0,0,.28)}
+.cam .cb{width:36px;height:36px;border-radius:50%;background:transparent!important;color:#fff;transition:background .15s,transform .1s}
+.cam .cb svg{display:block}
+.cam .cb:active{background:rgba(255,255,255,.22)!important;transform:scale(.92)}
+.cam .zv{min-width:48px;height:30px;padding:0 6px;border-radius:999px;background:rgba(255,255,255,.14);font-size:13px;font-weight:800;letter-spacing:.2px;font-variant-numeric:tabular-nums;margin:0 1px}
+.cam .tcb{margin-left:5px;position:relative}
+.cam .tcb::before{content:'';position:absolute;left:-4px;top:9px;bottom:9px;width:1px;background:rgba(255,255,255,.28)}
+.cam .cb.tcb.lit{background:#fbbf24!important;color:#1f1300;box-shadow:0 0 14px rgba(251,191,36,.7)}
+.cam .cb.tcb.lit svg{fill:#1f1300}
+.cam .lcb{margin-left:1px}
+.vbar button{min-height:34px!important;padding:0 13px!important;font-size:13px!important}
 </style>
 </head><body>
 
@@ -848,7 +860,7 @@ button.spin svg{animation:rps 1s linear infinite;color:#ea580c}button.spin{point
 
 
 <section class="scr" id="ses"><div class="hd"><button class="bk ib"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button><span id="sname" onclick="renameSes()"></span><input id="snin" class="nin" maxlength="60" style="display:none"><button class="ib plus" onclick="newHere()" aria-label="Tạo phiên mới"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button><button class="ib" onclick="go('set')" aria-label="Cài đặt"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button><button class="ib" onclick="openList(cur&&cur.type||'kk')" aria-label="Danh sách phiên"><svg viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><circle cx="3.5" cy="6" r=".6"/><circle cx="3.5" cy="12" r=".6"/><circle cx="3.5" cy="18" r=".6"/></svg></button></div>
-<div class="cam" id="cam1"><div class="frame"><i></i></div><div class="ctl"><button class="cb zin" onclick="zoomBy(-1)">−</button><b class="zv">1.0×</b><button class="cb zin" onclick="zoomBy(1)">+</button><button class="cb tcb" onclick="torch()">🔦</button><button class="cb lcb" onclick="nextLens()">🔄</button></div><div class="ocrb"></div><div class="camov" onclick="enableCam()"></div></div>
+<div class="cam" id="cam1"><div class="frame"><i></i></div><div class="ctl"><button class="cb zin" onclick="zoomBy(-1)" aria-label="Thu nhỏ"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/></svg></button><b class="zv">1.0×</b><button class="cb zin" onclick="zoomBy(1)" aria-label="Phóng to"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button><button class="cb tcb" onclick="torch()" aria-label="Đèn flash"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2L4.5 13.5H11L10 22l8.5-11.5H12L13 2z"/></svg></button><button class="cb lcb" onclick="nextLens()" aria-label="Đổi ống kính"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 0 1 15.5-6.2L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-15.5 6.2L3 16"/><path d="M3 21v-5h5"/></svg></button></div><div class="ocrb"></div><div class="camov" onclick="enableCam()"></div></div>
 <div class="row2"><input id="code" inputmode="numeric" placeholder="Code" autocomplete="off" enterkeyhint="next"><button class="ib sbtn" id="codeok" aria-label="Xác nhận mã"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></button><input id="qty" type="number" value="1" min="1" placeholder="SL"></div>
 <div class="ln"><span id="sp" style="color:var(--ok)">SP: -</span><span id="gia" class="pc">Giá: -</span></div>
 <div class="row" id="holdrow" style="display:none"><button class="big" id="hold" style="margin:0">✋ GIỮ ĐỂ QUÉT MÃ</button></div>
@@ -874,7 +886,7 @@ button.spin svg{animation:rps 1s linear infinite;color:#ea580c}button.spin{point
 <div class="row"><div class="pqw"><input id="pq" inputmode="numeric" placeholder="Nhập mã 13 số hoặc SKU 7 số"><button type="button" class="psb" id="psb" onclick="psGo()" aria-label="Tìm"><svg class="i1" viewBox="0 0 24 24"><path d="M4 6h10M4 12h7M4 18h5"/><circle cx="17" cy="15" r="3.5"/><path d="M19.6 17.6L22 20"/></svg><svg class="i2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4.2-4.2"/></svg></button></div><button id="pgo">Tìm</button></div>
 <div class="tabs" id="pmode"><button class="on" data-m="1">🔍 Tra giá</button><button data-m="2">🛒 Giỏ hàng</button></div>
 <div id="tierw" class="tier" style="display:none"><div class="chips" id="tchips"><button data-t="none">Không thẻ</button><button data-t="dong">Đồng</button><button data-t="bac">Bạc</button><button data-t="vang">Vàng</button><button data-t="bachkim">Bạch kim</button></div></div>
-<div class="cam" id="cam2"><div class="frame"><i></i></div><div class="ctl"><button class="cb zin" onclick="zoomBy(-1)">−</button><b class="zv">1.0×</b><button class="cb zin" onclick="zoomBy(1)">+</button><button class="cb tcb" onclick="torch()">🔦</button><button class="cb lcb" onclick="nextLens()">🔄</button></div><div class="ocrb"></div><div class="camov" onclick="enableCam()"></div></div>
+<div class="cam" id="cam2"><div class="frame"><i></i></div><div class="ctl"><button class="cb zin" onclick="zoomBy(-1)" aria-label="Thu nhỏ"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/></svg></button><b class="zv">1.0×</b><button class="cb zin" onclick="zoomBy(1)" aria-label="Phóng to"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button><button class="cb tcb" onclick="torch()" aria-label="Đèn flash"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2L4.5 13.5H11L10 22l8.5-11.5H12L13 2z"/></svg></button><button class="cb lcb" onclick="nextLens()" aria-label="Đổi ống kính"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 0 1 15.5-6.2L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-15.5 6.2L3 16"/><path d="M3 21v-5h5"/></svg></button></div><div class="ocrb"></div><div class="camov" onclick="enableCam()"></div></div>
 <div class="sc"><div class="msg" id="pinfo">MÃ VẠCH: - | SKU: -</div><div id="pout"><div class="card nm">Vui lòng quét mã để kiểm tra giá...</div></div></div>
 <div id="ctot" class="ctot" style="display:none"><div class="ctl2"><span class="tl">TỔNG CỘNG</span><b id="ctv">0 VNĐ</b><small id="ctn"></small><small id="csv"></small><small id="cwn"></small></div><button class="ib ghost" onclick="cartClr()" aria-label="Xóa giỏ hàng"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button></div>
 <div id="pagainw" style="padding:8px 12px"><button class="big" style="background:#0a84ff;margin:0" onclick="pscan()">⚡ QUÉT TIẾP SẢN PHẨM KHÁC</button></div></section>
@@ -1211,7 +1223,7 @@ function zPreset(){const r=zRange(),n=ZPRE.find(p=>p>ZM+.05&&p<=r.max);setZoom(n
 function ctlInit(){const r=zRange();ZM=Math.max(r.min,Math.min(r.max,CFG.zoom||1));DZ=Math.max(1,ZM/(r.hw?Math.min(ZM,r.hw.max):1));zDig();zLab();
  document.querySelectorAll('.zin,.zv').forEach(e=>e.style.display='flex');
  document.querySelectorAll('.zv').forEach(e=>{e.onclick=zPreset;e.style.cursor='pointer'});
- document.querySelectorAll('.tcb').forEach(e=>e.style.display=CAPS.torch?'flex':'none');
+ document.querySelectorAll('.tcb').forEach(e=>e.style.display='flex');
  document.querySelectorAll('.lcb').forEach(e=>e.style.display=LENS.length>1?'flex':'none')}
 const tdist=e=>Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);
 document.querySelectorAll('.cam').forEach(c=>{let d0=0,z0=1;
@@ -1245,7 +1257,17 @@ async function nextLens(){if(LENS.length<2)return;const c0=track&&track.getSetti
 let SOFT=null;
 /* iPhone: tạm tắt camera bằng cách 'ngủ' luồng (không đóng) để lần mở lại không bị hỏi quyền nữa */
 function stopCam(hard){looping=false;scanning=false;if(WL){try{WL.release()}catch(e){}WL=null}on=false;document.querySelectorAll('.tcb').forEach(b=>b.classList.remove('lit'));if(stream){if(IOS&&!hard){try{stream.getTracks().forEach(t=>t.enabled=false);SOFT=stream}catch(e){stream.getTracks().forEach(t=>t.stop())}}else{stream.getTracks().forEach(t=>t.stop())}stream=null}if(hard&&SOFT){SOFT.getTracks().forEach(t=>t.stop());SOFT=null}track=null}
-let on=false;function torch(){on=!on;document.querySelectorAll('.tcb').forEach(b=>b.classList.toggle('lit',on));track&&track.applyConstraints({advanced:[{torch:on}]}).catch(()=>{})}
+let on=false,torchBusy=false,torchWarn=false;
+function torchUI(v){on=v;document.querySelectorAll('.tcb').forEach(b=>b.classList.toggle('lit',v))}
+/* đèn flash: thử nhiều cách cho mọi máy; máy không hỗ trợ thì báo rõ, không để nút "bấm mà không có gì" */
+async function torch(){if(torchBusy)return;if(!track||track.readyState!=='live'){toast('Chưa bật camera nên chưa dùng được đèn');return}
+ const want=!on;torchBusy=true;let ok=false;
+ try{try{await track.applyConstraints({advanced:[{torch:want}]});ok=true}catch(e){try{await track.applyConstraints({torch:want});ok=true}catch(e2){}}
+  if(!ok&&typeof ImageCapture!=='undefined'){try{const ic=new ImageCapture(track),pc=await ic.getPhotoCapabilities();if(pc&&pc.fillLightMode&&pc.fillLightMode.indexOf('flash')>=0){await ic.setOptions({fillLightMode:want?'flash':'off'});ok=true}}catch(e){}}
+  if(ok){try{const st=track.getSettings?track.getSettings():{};if(st&&typeof st.torch==='boolean'&&st.torch!==want)ok=false}catch(e){}}
+ }finally{torchBusy=false}
+ if(ok){torchUI(want);if(want&&!(CAPS&&CAPS.torch)&&!torchWarn){torchWarn=true;toast('Nếu đèn không sáng: máy/camera này không hỗ trợ bật đèn từ web')}}
+ else{torchUI(false);toast('Máy hoặc camera này không cho bật đèn flash từ web. Hãy dùng đèn ngoài, hoặc thử đổi ống kính (camera sau chính) rồi bấm lại')}}
 document.addEventListener('visibilitychange',()=>{const id=HS[HS.length-1];if(document.hidden)stopCam();else if(id==='ses'||(id==='price'&&$('cam2').style.display!=='none'))go(id,1)});
 /* ===== ĐỌC MÃ 7 SỐ TRÊN TEM — làm theo cách app Android ScanBarcode đang dùng =====
    1) Đọc chữ trên CHÍNH khung hình đang quét, quanh vị trí barcode 13 số (chỉ chạy khi barcode đó đang hiện trong khung)
