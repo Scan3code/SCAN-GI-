@@ -836,6 +836,12 @@ button.spin svg{animation:rps 1s linear infinite;color:#ea580c}button.spin{point
 .cam .zv small{font-size:8.5px;font-weight:800;letter-spacing:1.2px;opacity:.7}
 .cam .zv i{font-style:normal;font-size:14.5px;font-weight:900;margin-top:2px}
 .cam .zv:active{background:rgba(255,255,255,.28)}
+/* ===== thanh zoom kiểu camera điện thoại ===== */
+.cam .zbar{display:none;position:absolute;left:50%;bottom:7px;transform:translateX(-50%);gap:3px;padding:3px;border-radius:999px;background:rgba(15,23,42,.55);border:1px solid rgba(255,255,255,.16);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);z-index:2;box-shadow:0 4px 14px rgba(0,0,0,.28)}
+.cam .zbar button{min-width:40px;height:30px;padding:0 10px;border-radius:999px;background:transparent;border:0;color:#fff;font-size:13.5px;font-weight:800;font-variant-numeric:tabular-nums;box-shadow:none;transition:background .15s,color .15s}
+.cam .zbar button.on{background:#fff;color:#0f172a}
+.cam .zbar button:active{transform:scale(.94)}
+.cam .tcb{margin-left:0!important}.cam .tcb::before{display:none!important}
 </style>
 </head><body>
 
@@ -864,7 +870,7 @@ button.spin svg{animation:rps 1s linear infinite;color:#ea580c}button.spin{point
 
 
 <section class="scr" id="ses"><div class="hd"><button class="bk ib"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button><span id="sname" onclick="renameSes()"></span><input id="snin" class="nin" maxlength="60" style="display:none"><button class="ib plus" onclick="newHere()" aria-label="Tạo phiên mới"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button><button class="ib" onclick="go('set')" aria-label="Cài đặt"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button><button class="ib" onclick="openList(cur&&cur.type||'kk')" aria-label="Danh sách phiên"><svg viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><circle cx="3.5" cy="6" r=".6"/><circle cx="3.5" cy="12" r=".6"/><circle cx="3.5" cy="18" r=".6"/></svg></button></div>
-<div class="cam" id="cam1"><div class="frame"><i></i></div><div class="ctl"><button class="cb zin" onclick="zoomBy(-1)" aria-label="Thu nhỏ"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/></svg></button><b class="zv">1.0×</b><button class="cb zin" onclick="zoomBy(1)" aria-label="Phóng to"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button><button class="cb tcb" onclick="torch()" aria-label="Đèn flash"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2L4.5 13.5H11L10 22l8.5-11.5H12L13 2z"/></svg></button></div><div class="ocrb"></div><div class="camov" onclick="enableCam()"></div></div>
+<div class="cam" id="cam1"><div class="frame"><i></i></div><div class="ctl"><button class="cb tcb" onclick="torch()" aria-label="Đèn flash"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2L4.5 13.5H11L10 22l8.5-11.5H12L13 2z"/></svg></button></div><div class="zbar"></div><div class="ocrb"></div><div class="camov" onclick="enableCam()"></div></div>
 <div class="row2"><input id="code" inputmode="numeric" placeholder="Code" autocomplete="off" enterkeyhint="next"><button class="ib sbtn" id="codeok" aria-label="Xác nhận mã"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></button><input id="qty" type="number" value="1" min="1" placeholder="SL"></div>
 <div class="ln"><span id="sp" style="color:var(--ok)">SP: -</span><span id="gia" class="pc">Giá: -</span></div>
 <div class="row" id="holdrow" style="display:none"><button class="big" id="hold" style="margin:0">✋ GIỮ ĐỂ QUÉT MÃ</button></div>
@@ -890,7 +896,7 @@ button.spin svg{animation:rps 1s linear infinite;color:#ea580c}button.spin{point
 <div class="row"><div class="pqw"><input id="pq" inputmode="numeric" placeholder="Nhập mã 13 số hoặc SKU 7 số"><button type="button" class="psb" id="psb" onclick="psGo()" aria-label="Tìm"><svg class="i1" viewBox="0 0 24 24"><path d="M4 6h10M4 12h7M4 18h5"/><circle cx="17" cy="15" r="3.5"/><path d="M19.6 17.6L22 20"/></svg><svg class="i2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4.2-4.2"/></svg></button></div><button id="pgo">Tìm</button></div>
 <div class="tabs" id="pmode"><button class="on" data-m="1">🔍 Tra giá</button><button data-m="2">🛒 Giỏ hàng</button></div>
 <div id="tierw" class="tier" style="display:none"><div class="chips" id="tchips"><button data-t="none">Không thẻ</button><button data-t="dong">Đồng</button><button data-t="bac">Bạc</button><button data-t="vang">Vàng</button><button data-t="bachkim">Bạch kim</button></div></div>
-<div class="cam" id="cam2"><div class="frame"><i></i></div><div class="ctl"><button class="cb zin" onclick="zoomBy(-1)" aria-label="Thu nhỏ"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/></svg></button><b class="zv">1.0×</b><button class="cb zin" onclick="zoomBy(1)" aria-label="Phóng to"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button><button class="cb tcb" onclick="torch()" aria-label="Đèn flash"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2L4.5 13.5H11L10 22l8.5-11.5H12L13 2z"/></svg></button></div><div class="ocrb"></div><div class="camov" onclick="enableCam()"></div></div>
+<div class="cam" id="cam2"><div class="frame"><i></i></div><div class="ctl"><button class="cb tcb" onclick="torch()" aria-label="Đèn flash"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2L4.5 13.5H11L10 22l8.5-11.5H12L13 2z"/></svg></button></div><div class="zbar"></div><div class="ocrb"></div><div class="camov" onclick="enableCam()"></div></div>
 <div class="sc"><div class="msg" id="pinfo">MÃ VẠCH: - | SKU: -</div><div id="pout"><div class="card nm">Vui lòng quét mã để kiểm tra giá...</div></div></div>
 <div id="ctot" class="ctot" style="display:none"><div class="ctl2"><span class="tl">TỔNG CỘNG</span><b id="ctv">0 VNĐ</b><small id="ctn"></small><small id="csv"></small><small id="cwn"></small></div><button class="ib ghost" onclick="cartClr()" aria-label="Xóa giỏ hàng"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button></div>
 <div id="pagainw" style="padding:8px 12px"><button class="big" style="background:#0a84ff;margin:0" onclick="pscan()">⚡ QUÉT TIẾP SẢN PHẨM KHÁC</button></div></section>
@@ -1182,15 +1188,18 @@ let fwAt=0,fwPrev=null,fwMoved=0,fwDone=true,fwShMax=0,fwRF=0;
 function sharpNow(){try{const vw=v.videoWidth,vh=v.videoHeight;fwX.drawImage(v,vw*.2,vh*.3,vw*.6,vh*.4,0,0,160,90);const d=fwX.getImageData(0,0,160,90).data;let sh=0,p=0;
   for(let y=0;y<89;y++)for(let x=0;x<159;x++){const i=(y*160+x)*4,a=d[i]*.3+d[i+1]*.59+d[i+2]*.11,b=d[i+4]*.3+d[i+5]*.59+d[i+6]*.11,c=d[i+640]*.3+d[i+641]*.59+d[i+642]*.11;sh+=Math.abs(a-b)+Math.abs(a-c);p++}return sh/p}catch(e){return 0}}
 let fwBusy=false;
-async function refocus(){const m=(CAPS&&CAPS.focusMode)||[];if(!track||!m.length||fwBusy||Date.now()-fwRF<700)return;fwRF=Date.now();focusAt=fwRF;fwBusy=true;
- try{const fd=CAPS.focusDistance;
-  /* Quét tiêu cự: thử vài khoảng cách gần, chọn khoảng cho ảnh nét nhất, rồi trả lại lấy nét liên tục */
-  if(fd&&fd.max>fd.min&&m.indexOf('manual')>=0){const lo=fd.min,hi=fd.max,pts=[];[1,1.25,1.6,2,2.6,3.5,5].forEach(k=>{const x=lo*k;if(x<=hi)pts.push(x)});
-   let bestD=pts[0],bestS=-1;await track.applyConstraints({advanced:[{focusMode:'manual'}]});
-   for(const x of pts){if(!track||!scanning)break;await track.applyConstraints({advanced:[{focusMode:'manual',focusDistance:x}]});await sleep(130);const sh=sharpNow();if(sh>bestS){bestS=sh;bestD=x}}
-   if(track){await track.applyConstraints({advanced:[{focusMode:'manual',focusDistance:bestD}]});await sleep(450)}}
-  else if(m.indexOf('single-shot')>=0){await track.applyConstraints({advanced:[{focusMode:'single-shot',pointsOfInterest:[{x:.5,y:.5}]}]});await sleep(300)}
-  if(track&&m.indexOf('continuous')>=0)await track.applyConstraints({advanced:[{focusMode:'continuous',pointsOfInterest:[{x:.5,y:.5}]}]})}catch(e){try{track&&m.indexOf('continuous')>=0&&await track.applyConstraints({advanced:[{focusMode:'continuous'}]})}catch(e2){}}
+function focusRing(){document.querySelectorAll('.cam').forEach(c=>{if(!c.offsetParent)return;const r=document.createElement('div');r.className='fring';r.style.left='50%';r.style.top='50%';c.appendChild(r);setTimeout(()=>r.remove(),700)})}
+async function refocus(){const m=(CAPS&&CAPS.focusMode)||[];if(!track||!m.length||fwBusy||Date.now()-fwRF<900)return;fwRF=Date.now();focusAt=fwRF;fwBusy=true;
+ const back=async()=>{if(track&&m.indexOf('continuous')>=0)await track.applyConstraints({advanced:[{focusMode:'continuous',pointsOfInterest:[{x:.5,y:.5}]}]})};
+ try{const fd=CAPS.focusDistance,sh0=sharpNow();let good=false;
+  /* Bước 1: nhờ bộ lấy nét gốc của máy (êm, không nhấp nháy) */
+  if(m.indexOf('single-shot')>=0){await track.applyConstraints({advanced:[{focusMode:'single-shot',pointsOfInterest:[{x:.5,y:.5}]}]});await sleep(380);const sh1=sharpNow();good=sh1>=sh0*1.12||(fwShMax>5&&sh1>=fwShMax*.8)||sh1>=sh0&&sh0>12}
+  /* Bước 2: chỉ khi vẫn mờ mới dò tiêu cự thủ công (dò ngắn, thoát sớm) */
+  if(!good&&fd&&fd.max>fd.min&&m.indexOf('manual')>=0){const lo=fd.min,hi=fd.max,pts=[];[1,1.25,1.6,2,2.6,3.5,5].forEach(k=>{const x=lo*k;if(x<=hi)pts.push(x)});
+   let bestD=pts[0],bestS=-1,drops=0;await track.applyConstraints({advanced:[{focusMode:'manual'}]});
+   for(const x of pts){if(!track||!scanning)break;await track.applyConstraints({advanced:[{focusMode:'manual',focusDistance:x}]});await sleep(100);const sh=sharpNow();if(sh>bestS){bestS=sh;bestD=x;drops=0}else if(bestS>0&&++drops>=2)break}
+   if(track){await track.applyConstraints({advanced:[{focusMode:'manual',focusDistance:bestD}]});await sleep(260)}}
+  await back()}catch(e){try{await back()}catch(e2){}}
  fwBusy=false;fwShMax=0;fwPrev=null}
 function focusWatch(){if(!scanning||!track||fwBusy||v.readyState<2||!v.videoWidth)return;const now=Date.now();if(now-fwAt<120)return;fwAt=now;
  try{const vw=v.videoWidth,vh=v.videoHeight;fwX.drawImage(v,vw*.2,vh*.3,vw*.6,vh*.4,0,0,160,90);const d=fwX.getImageData(0,0,160,90).data,n=160*90,g=new Uint8Array(n);
@@ -1201,7 +1210,7 @@ function focusWatch(){if(!scanning||!track||fwBusy||v.readyState<2||!v.videoWidt
   if(df>7){fwMoved=now;fwDone=false}
   else if(!fwDone&&now-fwMoved>250){fwDone=true;fwShMax=0;refocus();return}
   fwShMax=Math.max(sh,fwShMax*.97);
-  if(fwShMax>5&&sh<fwShMax*.7&&now-lastAct>600&&now-fwRF>1500){fwShMax=sh;refocus()}}catch(e){}}
+  if(fwShMax>5&&sh<fwShMax*.65&&now-lastAct>700&&now-fwRF>1800){fwShMax=sh;refocus()}}catch(e){}}
 function startLoop(){if(looping)return;looping=true;(async()=>{while(looping&&stream){
   const t0=performance.now();let did=false;focusWatch();
   if(scanning&&!askBusy&&v.readyState>=2&&v.videoWidth){try{const r=roi();if(r){const d=await decodeROI(r);if(d)accept(d);did=true}}catch(e){}}
@@ -1211,7 +1220,9 @@ let ZM=1,DZ=1,zT=0;
 const DZX=4,ZCAP=20,ZPRE=[1,2,3,5,8,12,16,20];
 const zHw=()=>CAPS&&CAPS.zoom&&CAPS.zoom.max>CAPS.zoom.min?{min:Math.max(1,CAPS.zoom.min),max:CAPS.zoom.max}:null;
 const zRange=()=>{const h=zHw();return h?{min:h.min,max:Math.min(ZCAP,h.max*DZX),hw:h}:{min:1,max:5,hw:null}};
-const zLab=()=>document.querySelectorAll('.zv').forEach(e=>{e.innerHTML='<small>ZOOM</small><i>'+(ZM>=10?Math.round(ZM):ZM.toFixed(1))+'×</i>';e.setAttribute('role','button');e.setAttribute('aria-label','Zoom, bấm để đổi mức')});
+function zLab(){if(!track)return;const r=zRange(),L=[1,2,3,5,10].filter(p=>p<=r.max+.01).slice(0,4);let on=-1;L.forEach((p,k)=>{if(p<=ZM+.05)on=k});if(on<0)on=0;
+ const exact=Math.abs(ZM-L[on])<.06,h=L.map((p,k)=>'<button type="button" class="'+(k===on?'on':'')+'" data-z="'+p+'" aria-label="Zoom '+p+' lần">'+(k===on&&!exact?(ZM>=10?Math.round(ZM):ZM.toFixed(1)):p)+'×</button>').join('');
+ document.querySelectorAll('.zbar').forEach(b=>{b.style.display='flex';b.innerHTML=h;b.onclick=e=>{const t=e.target.closest('button[data-z]');if(t){e.stopPropagation();setZoom(+t.dataset.z)}}})}
 function zDig(){v.style.transform='translateZ(0) scale('+DZ+')';ROIC=null}
 let zBusy=false,zNext=null,resHi=false,zRf=0,resBusy=false;
 /* Zoom càng cao càng cần nhiều điểm ảnh: tự nâng độ phân giải camera lên tối đa khi zoom ≥2.5×, hạ lại khi zoom ≤1.8× */
