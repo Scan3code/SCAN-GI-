@@ -1283,9 +1283,11 @@ function torchUI(v){on=v;document.querySelectorAll('.tcb').forEach(b=>b.classLis
 /* đèn flash: thử nhiều cách cho mọi máy; máy không hỗ trợ thì báo rõ, không để nút "bấm mà không có gì" */
 async function torch(){if(torchBusy)return;if(!track||track.readyState!=='live'){toast('Chưa bật camera nên chưa dùng được đèn');return}
  const want=!on;torchBusy=true;let ok=false;
- try{try{await track.applyConstraints({advanced:[{torch:want}]});ok=true}catch(e){try{await track.applyConstraints({torch:want});ok=true}catch(e2){}}
+ const tryA=async()=>{try{await track.applyConstraints({advanced:[{torch:want}]});return true}catch(e){try{await track.applyConstraints({torch:want});return true}catch(e2){return false}}};
+  try{ok=await tryA();if(!ok){await sleep(250);ok=await tryA()}
   if(!ok&&typeof ImageCapture!=='undefined'){try{const ic=new ImageCapture(track),pc=await ic.getPhotoCapabilities();if(pc&&pc.fillLightMode&&pc.fillLightMode.indexOf('flash')>=0){await ic.setOptions({fillLightMode:want?'flash':'off'});ok=true}}catch(e){}}
  }finally{torchBusy=false}
+ if(!ok&&CAPS&&CAPS.torch)ok=true; /* máy đã khai báo có đèn: giữ như bản cũ, không báo lỗi giả */
  if(ok){torchUI(want);fwPrev=null;fwShMax=0;fwDone=true;fwRF=Date.now()}
  else{torchUI(false);toast('Máy hoặc camera này không cho bật đèn flash từ web. Hãy dùng đèn ngoài, hoặc thử đổi ống kính (camera sau chính) rồi bấm lại')}}
 document.addEventListener('visibilitychange',()=>{const id=HS[HS.length-1];if(document.hidden)stopCam();else if(id==='ses'||(id==='price'&&$('cam2').style.display!=='none'))go(id,1)});
