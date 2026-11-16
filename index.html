@@ -1279,9 +1279,8 @@ async function torch(){if(torchBusy)return;if(!track||track.readyState!=='live')
  const want=!on;torchBusy=true;let ok=false;
  try{try{await track.applyConstraints({advanced:[{torch:want}]});ok=true}catch(e){try{await track.applyConstraints({torch:want});ok=true}catch(e2){}}
   if(!ok&&typeof ImageCapture!=='undefined'){try{const ic=new ImageCapture(track),pc=await ic.getPhotoCapabilities();if(pc&&pc.fillLightMode&&pc.fillLightMode.indexOf('flash')>=0){await ic.setOptions({fillLightMode:want?'flash':'off'});ok=true}}catch(e){}}
-  if(ok){try{const st=track.getSettings?track.getSettings():{};if(st&&typeof st.torch==='boolean'&&st.torch!==want)ok=false}catch(e){}}
  }finally{torchBusy=false}
- if(ok){torchUI(want);if(want&&!(CAPS&&CAPS.torch)&&!torchWarn){torchWarn=true;toast('Nếu đèn không sáng: máy/camera này không hỗ trợ bật đèn từ web')}}
+ if(ok){torchUI(want)}
  else{torchUI(false);toast('Máy hoặc camera này không cho bật đèn flash từ web. Hãy dùng đèn ngoài, hoặc thử đổi ống kính (camera sau chính) rồi bấm lại')}}
 document.addEventListener('visibilitychange',()=>{const id=HS[HS.length-1];if(document.hidden)stopCam();else if(id==='ses'||(id==='price'&&$('cam2').style.display!=='none'))go(id,1)});
 /* ===== ĐỌC MÃ 7 SỐ TRÊN TEM — làm theo cách app Android ScanBarcode đang dùng =====
