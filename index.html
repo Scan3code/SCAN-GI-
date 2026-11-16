@@ -1258,7 +1258,7 @@ async function startCam(){if(stream)return true;
     if(id&&CFG.camAuto!==id){CFG.camAuto=id;saveCfg()}}}catch(e){}
   v.srcObject=st;
   try{await v.play()}catch(e){st.getTracks().forEach(t=>t.stop());v.srcObject=null;camMsg('📷 Chạm vào đây để bật camera');return false}
-  stream=st;track=st.getVideoTracks()[0];CAPS=track.getCapabilities?track.getCapabilities():{};
+  stream=st;track=st.getVideoTracks()[0];torchWrap(track);CAPS=track.getCapabilities?track.getCapabilities():{};
   const adv=[{focusMode:'continuous'},{exposureMode:'continuous'}];if(CAPS.zoom)adv.push({zoom:Math.max(CAPS.zoom.min,Math.min(CAPS.zoom.max,CFG.zoom||1))});try{await track.applyConstraints({advanced:adv})}catch(e){}
   try{await track.applyConstraints({advanced:[{pointsOfInterest:[{x:.5,y:.5}]}]})}catch(e){}
   ctlInit();setTimeout(()=>resBoost(),400);
@@ -1273,6 +1273,9 @@ let SOFT=null;
 /* iPhone: tạm tắt camera bằng cách 'ngủ' luồng (không đóng) để lần mở lại không bị hỏi quyền nữa */
 function stopCam(hard){looping=false;scanning=false;if(WL){try{WL.release()}catch(e){}WL=null}on=false;document.querySelectorAll('.tcb').forEach(b=>b.classList.remove('lit'));if(stream){if(IOS&&!hard){try{stream.getTracks().forEach(t=>t.enabled=false);SOFT=stream}catch(e){stream.getTracks().forEach(t=>t.stop())}}else{stream.getTracks().forEach(t=>t.stop())}stream=null}if(hard&&SOFT){SOFT.getTracks().forEach(t=>t.stop());SOFT=null}track=null}
 let on=false,torchBusy=false,torchWarn=false;
+/* Mỗi lần app đổi cài đặt camera (lấy nét, độ phân giải, zoom) trình duyệt thay cả bộ cài đặt nên đèn bị tắt theo: bọc lại để đèn đang bật luôn được giữ */
+function torchWrap(t){if(!t||t.__tw||!t.applyConstraints)return;t.__tw=1;const o=t.applyConstraints.bind(t);
+ t.applyConstraints=function(c){try{if(on&&c&&!(Array.isArray(c.advanced)&&c.advanced.some(a=>a&&'torch' in a)))c=Object.assign({},c,{advanced:(c.advanced||[]).concat([{torch:true}])})}catch(e){}return o(c)}}
 function torchUI(v){on=v;document.querySelectorAll('.tcb').forEach(b=>b.classList.toggle('lit',v))}
 /* đèn flash: thử nhiều cách cho mọi máy; máy không hỗ trợ thì báo rõ, không để nút "bấm mà không có gì" */
 async function torch(){if(torchBusy)return;if(!track||track.readyState!=='live'){toast('Chưa bật camera nên chưa dùng được đèn');return}
@@ -1280,7 +1283,7 @@ async function torch(){if(torchBusy)return;if(!track||track.readyState!=='live')
  try{try{await track.applyConstraints({advanced:[{torch:want}]});ok=true}catch(e){try{await track.applyConstraints({torch:want});ok=true}catch(e2){}}
   if(!ok&&typeof ImageCapture!=='undefined'){try{const ic=new ImageCapture(track),pc=await ic.getPhotoCapabilities();if(pc&&pc.fillLightMode&&pc.fillLightMode.indexOf('flash')>=0){await ic.setOptions({fillLightMode:want?'flash':'off'});ok=true}}catch(e){}}
  }finally{torchBusy=false}
- if(ok){torchUI(want)}
+ if(ok){torchUI(want);fwPrev=null;fwShMax=0;fwDone=true;fwRF=Date.now()}
  else{torchUI(false);toast('Máy hoặc camera này không cho bật đèn flash từ web. Hãy dùng đèn ngoài, hoặc thử đổi ống kính (camera sau chính) rồi bấm lại')}}
 document.addEventListener('visibilitychange',()=>{const id=HS[HS.length-1];if(document.hidden)stopCam();else if(id==='ses'||(id==='price'&&$('cam2').style.display!=='none'))go(id,1)});
 /* ===== ĐỌC MÃ 7 SỐ TRÊN TEM — làm theo cách app Android ScanBarcode đang dùng =====
