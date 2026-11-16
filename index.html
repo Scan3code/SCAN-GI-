@@ -1200,6 +1200,7 @@ async function refocus(){const m=(CAPS&&CAPS.focusMode)||[];if(!track||!m.length
    for(const x of pts){if(!track||!scanning)break;await track.applyConstraints({advanced:[{focusMode:'manual',focusDistance:x}]});await sleep(100);const sh=sharpNow();if(sh>bestS){bestS=sh;bestD=x;drops=0}else if(bestS>0&&++drops>=2)break}
    if(track){await track.applyConstraints({advanced:[{focusMode:'manual',focusDistance:bestD}]});await sleep(260)}}
   await back()}catch(e){try{await back()}catch(e2){}}
+ try{if(on&&track)track.applyConstraints({advanced:[{torch:true}]}).catch(()=>{})}catch(e){}
  fwBusy=false;fwShMax=0;fwPrev=null}
 function focusWatch(){if(!scanning||!track||fwBusy||v.readyState<2||!v.videoWidth)return;const now=Date.now();if(now-fwAt<120)return;fwAt=now;
  try{const vw=v.videoWidth,vh=v.videoHeight;fwX.drawImage(v,vw*.2,vh*.3,vw*.6,vh*.4,0,0,160,90);const d=fwX.getImageData(0,0,160,90).data,n=160*90,g=new Uint8Array(n);
@@ -1276,6 +1277,8 @@ let on=false,torchBusy=false,torchWarn=false;
 /* Mỗi lần app đổi cài đặt camera (lấy nét, độ phân giải, zoom) trình duyệt thay cả bộ cài đặt nên đèn bị tắt theo: bọc lại để đèn đang bật luôn được giữ */
 function torchWrap(t){if(!t||t.__tw||!t.applyConstraints)return;t.__tw=1;const o=t.applyConstraints.bind(t);
  t.applyConstraints=function(c){try{if(on&&c&&!(Array.isArray(c.advanced)&&c.advanced.some(a=>a&&'torch' in a)))c=Object.assign({},c,{advanced:(c.advanced||[]).concat([{torch:true}])})}catch(e){}return o(c)}}
+/* chốt chặn: nếu đèn đang bật mà máy báo đã tắt (do đổi cài đặt camera) thì bật lại ngay */
+setInterval(()=>{try{if(on&&track&&track.readyState==='live'){const st=track.getSettings?track.getSettings():null;if(st&&st.torch===false)track.applyConstraints({advanced:[{torch:true}]}).catch(()=>{})}}catch(e){}},1000);
 function torchUI(v){on=v;document.querySelectorAll('.tcb').forEach(b=>b.classList.toggle('lit',v))}
 /* đèn flash: thử nhiều cách cho mọi máy; máy không hỗ trợ thì báo rõ, không để nút "bấm mà không có gì" */
 async function torch(){if(torchBusy)return;if(!track||track.readyState!=='live'){toast('Chưa bật camera nên chưa dùng được đèn');return}
