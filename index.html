@@ -1281,7 +1281,14 @@ function torchWrap(t){if(!t||t.__tw||!t.applyConstraints)return;t.__tw=1;const o
 setInterval(()=>{try{if(on&&track&&track.readyState==='live'){const st=track.getSettings?track.getSettings():null;if(st&&st.torch===false)track.applyConstraints({advanced:[{torch:true}]}).catch(()=>{})}}catch(e){}},1000);
 function torchUI(v){on=v;document.querySelectorAll('.tcb').forEach(b=>b.classList.toggle('lit',v))}
 /* đèn flash: thử nhiều cách cho mọi máy; máy không hỗ trợ thì báo rõ, không để nút "bấm mà không có gì" */
+/* Máy nhiều camera: chỉ camera sau chính mới có đèn flash. Nếu ống kính đang dùng không có đèn thì tự tìm ống kính có đèn */
+let torchNone=false;
+async function torchSeek(){const cur=track&&track.getSettings?track.getSettings().deviceId:'',keep=CFG.cam;toast('Đang tìm ống kính có đèn flash…');
+ for(const d of LENS.filter(d=>d.deviceId&&d.deviceId!==cur)){CFG.cam=d.deviceId;stopCam(true);let ok=false;try{ok=await startCam()}catch(e){}if(ok&&CAPS&&CAPS.torch){saveCfg();try{armScan()}catch(e){}return true}}
+ CFG.cam=keep||cur;stopCam(true);try{if(await startCam())armScan()}catch(e){}saveCfg();return false}
 async function torch(){if(torchBusy)return;if(!track||track.readyState!=='live'){toast('Chưa bật camera nên chưa dùng được đèn');return}
+ if(!on&&CAPS&&!CAPS.torch&&LENS.length>1&&!torchNone){torchBusy=true;let f=false;try{f=await torchSeek()}catch(e){}torchBusy=false;if(!f){torchNone=true;toast('Các ống kính của máy này đều không cho bật đèn flash từ web');return}}
+ if(!track||track.readyState!=='live')return;
  const want=!on;torchBusy=true;let ok=false;
  const tryA=async()=>{try{await track.applyConstraints({advanced:[{torch:want}]});return true}catch(e){try{await track.applyConstraints({torch:want});return true}catch(e2){return false}}};
   try{ok=await tryA();if(!ok){await sleep(250);ok=await tryA()}
