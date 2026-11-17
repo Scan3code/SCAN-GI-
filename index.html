@@ -1115,32 +1115,48 @@ const SR_=22050;
 function wavURL(x){const n=x.length,buf=new ArrayBuffer(44+n*2),dv=new DataView(buf),w=(o,t)=>{for(let i=0;i<t.length;i++)dv.setUint8(o+i,t.charCodeAt(i))};
  w(0,'RIFF');dv.setUint32(4,36+n*2,true);w(8,'WAVEfmt ');dv.setUint32(16,16,true);dv.setUint16(20,1,true);dv.setUint16(22,1,true);dv.setUint32(24,SR_,true);dv.setUint32(28,SR_*2,true);dv.setUint16(32,2,true);dv.setUint16(34,16,true);w(36,'data');dv.setUint32(40,n*2,true);
  for(let i=0;i<n;i++)dv.setInt16(44+i*2,Math.max(-1,Math.min(1,x[i]))*32767,true);return URL.createObjectURL(new Blob([buf],{type:'audio/wav'}))}
-function voice(o){const n=Math.floor(SR_*o.d),x=new Float32Array(n),H=o.h||26,ph=new Float64Array(H+1);let mx=1e-6;
- for(let i=0;i<n;i++){const t=i/n,ts=i/SR_;let f=o.f(t);if(o.vib)f*=1+o.vib[1]*Math.sin(6.2832*o.vib[0]*ts);
-  const F=o.F(t);let y=0;
-  for(let k=1;k<=H;k++){const fk=f*k;if(fk>SR_/2-600)break;ph[k]+=6.2832*fk/SR_;
-   const g=Math.exp(-Math.pow((fk-F[0])/o.bw[0],2))+.7*Math.exp(-Math.pow((fk-F[1])/o.bw[1],2))+.12/k;y+=g*Math.sin(ph[k])/Math.pow(k,.55)}
-  if(o.nz)y+=o.nz*(Math.random()*2-1)*.6;
-  if(o.tr)y*=1-o.tr[1]*(.5+.5*Math.sin(6.2832*o.tr[0]*ts));
-  y*=Math.min(1,ts/(o.at||.02))*Math.min(1,(o.d-ts)/(o.rl||.08));x[i]=y;if(Math.abs(y)>mx)mx=Math.abs(y)}
+/* Bộ tổng hợp giọng: nguồn thanh môn (xung Rosenberg, rung/nhiễu nhẹ) -> chuỗi bộ cộng hưởng formant chạy theo thời gian (kiểu Klatt) */
+const pw=p=>t=>{if(t<=p[0][0])return p[0][1];for(let i=1;i<p.length;i++)if(t<=p[i][0]){const a=p[i-1],b=p[i];return a[1]+(b[1]-a[1])*(t-a[0])/(b[0]-a[0])}return p[p.length-1][1]};
+function vox(o){const n=Math.floor(SR_*o.d),x=new Float32Array(n),NF=o.F.length,oq=o.oq||.6,tp=oq*.62,tn=oq*.38;
+ let ph=0,jit=0,gP=0,mx=1e-6;const A=new Float64Array(NF),Bc=new Float64Array(NF),C=new Float64Array(NF),y1=new Float64Array(NF),y2=new Float64Array(NF);
+ for(let i=0;i<n;i++){const t=i/n,ts=i/SR_;
+  if(i%12===0){for(let k=0;k<NF;k++){const Fk=typeof o.F[k]==='function'?o.F[k](t):o.F[k],r=Math.exp(-Math.PI*o.B[k]/SR_);C[k]=-r*r;Bc[k]=2*r*Math.cos(6.2832*Fk/SR_);A[k]=1-Bc[k]-C[k]}}
+  let f=o.f(t);if(o.vib)f*=1+o.vib[1]*Math.sin(6.2832*o.vib[0]*ts);
+  jit=jit*.96+(Math.random()*2-1)*.04;f*=1+(o.jit||0)*jit*5;
+  ph+=f/SR_;if(ph>=1)ph-=1;
+  let g=ph<tp?.5*(1-Math.cos(Math.PI*ph/tp)):ph<tp+tn?Math.cos(1.5708*(ph-tp)/tn):0;
+  const d=(g-gP)*(SR_/f)*.15;gP=g;const w=Math.random()*2-1;
+  let s=d+(o.asp||0)*w*(.25+g)*.5+(o.nz||0)*w*.3;
+  if(o.tr)s*=1-o.tr[1]*(.5+.5*Math.sin(6.2832*o.tr[0]*ts));
+  let y=s;for(let k=0;k<NF;k++){const z=A[k]*y+Bc[k]*y1[k]+C[k]*y2[k];y2[k]=y1[k];y1[k]=z;y=z}
+  y*=Math.min(1,ts/(o.at||.02))*Math.min(1,(o.d-ts)/(o.rl||.08))*(o.amp?o.amp(t):1);
+  y=Math.tanh(y*(o.drive||1));x[i]=y;if(Math.abs(y)>mx)mx=Math.abs(y)}
  for(let i=0;i<n;i++)x[i]=x[i]/mx*.92;return x}
 function joinV(p,gap){const g=Math.floor(SR_*gap),L=p.reduce((a,b)=>a+b.length,0)+g*(p.length-1),o=new Float32Array(L);let k=0;p.forEach(a=>{o.set(a,k);k+=a.length+g});return o}
+const barkP=(d,f)=>vox({d:d,f:pw([[0,f],[.15,f*.92],[1,f*.58]]),F:[pw([[0,650],[.35,760],[1,430]]),pw([[0,1100],[.35,1300],[1,800]]),2400,3500],B:[170,210,300,350],amp:pw([[0,1],[.3,.95],[1,.3]]),asp:.3,nz:.3,jit:.04,oq:.35,drive:1.9,at:.004,rl:.07});
+const quackP=(d,f)=>vox({d:d,f:pw([[0,f*.85],[.3,f],[1,f*.65]]),F:[pw([[0,350],[.25,750],[1,650]]),pw([[0,800],[.25,1600],[1,1350]]),2700,3600],B:[200,260,320,380],tr:[70,.5],asp:.18,nz:.12,jit:.03,oq:.35,drive:1.8,at:.01,rl:.035});
+const beeP=(d,f)=>vox({d:d,f:pw([[0,f*.92],[.2,f],[1,f*1.02]]),F:[pw([[0,350],[.12,470],[1,440]]),pw([[0,1500],[.12,2100],[1,2000]]),3000,3900],B:[100,160,240,320],vib:[6,.02],tr:[16,.2],asp:.05,jit:.015,oq:.6,drive:1.1,at:.04,rl:.14});
 const ANI={
- cat:{ok:()=>voice({d:.52,f:t=>t<.45?420+400*Math.sin(1.5708*t/.45):820-340*((t-.45)/.55),F:t=>[300+450*t,2300-1200*t],bw:[220,380],vib:[6,.02],at:.04,rl:.15,nz:.02}),
-      sku:()=>joinV([0,1].map(()=>voice({d:.2,f:t=>520+360*Math.sin(3.1416*t),F:t=>[350+350*t,2200-1000*t],bw:[220,380],vib:[6,.02],at:.02,rl:.07})),.05),
-      bad:()=>voice({d:.65,f:t=>400-120*t,F:t=>[700-200*t,1200-300*t],bw:[260,300],vib:[5,.03],at:.05,rl:.2,nz:.05})},
- dog:{ok:()=>voice({d:.2,f:t=>380-170*t,F:t=>[720-170*t,1250-300*t],bw:[300,400],nz:.35,at:.004,rl:.12,h:30}),
-      sku:()=>joinV([0,1].map(()=>voice({d:.16,f:t=>420-180*t,F:t=>[720-170*t,1250-300*t],bw:[300,400],nz:.35,at:.004,rl:.1,h:30})),.07),
-      bad:()=>voice({d:.5,f:t=>115-20*t,F:t=>[500-50*t,900-100*t],bw:[200,300],nz:.3,tr:[38,.85],at:.05,rl:.15})},
- cow:{ok:()=>voice({d:.85,f:t=>108+55*Math.sin(3.1416*Math.min(1,t*1.15)),F:t=>{const m=Math.sin(3.1416*t);return[350+250*m,800+300*m]},bw:[140,220],vib:[4.5,.025],at:.12,rl:.3,nz:.01,h:36}),
-      sku:()=>voice({d:.5,f:t=>145+50*Math.sin(3.1416*t),F:t=>{const m=Math.sin(3.1416*t);return[380+250*m,850+250*m]},bw:[150,230],vib:[5,.025],at:.08,rl:.2,h:32}),
-      bad:()=>voice({d:.95,f:t=>92-20*t,F:t=>[420-60*t,800-100*t],bw:[150,220],tr:[18,.35],vib:[4,.03],at:.1,rl:.3,h:36})},
- goat:{ok:()=>voice({d:.5,f:t=>400+70*Math.sin(3.1416*t),F:()=>[750,1500],bw:[250,350],tr:[32,.75],nz:.06,at:.03,rl:.12,h:28}),
-      sku:()=>joinV([0,1].map(()=>voice({d:.26,f:t=>450+60*Math.sin(3.1416*t),F:()=>[780,1550],bw:[250,350],tr:[34,.75],nz:.05,at:.02,rl:.08,h:28})),.05),
-      bad:()=>voice({d:.7,f:t=>330-70*t,F:()=>[650,1300],bw:[250,350],tr:[26,.8],nz:.06,at:.04,rl:.2,h:28})},
- duck:{ok:()=>voice({d:.2,f:t=>560-130*t,F:()=>[900,1900],bw:[350,500],tr:[55,.45],nz:.12,at:.008,rl:.07,h:30}),
-      sku:()=>joinV([0,1].map(()=>voice({d:.15,f:t=>600-130*t,F:()=>[950,1950],bw:[350,500],tr:[55,.45],nz:.1,at:.006,rl:.06,h:30})),.06),
-      bad:()=>voice({d:.35,f:t=>330-60*t,F:()=>[800,1600],bw:[350,500],tr:[40,.6],nz:.12,at:.01,rl:.12,h:30})}
+ /* MÈO: "meo" - nốt cao lên rồi xuống, formant trượt từ /m/-/e/ sang /ao/ */
+ cat:{ok:()=>vox({d:.58,f:pw([[0,430],[.25,560],[.45,820],[.65,780],[1,470]]),F:[pw([[0,280],[.2,420],[.4,700],[.6,780],[1,520]]),pw([[0,1700],[.2,2000],[.4,2200],[.6,1500],[1,950]]),3000,4000],B:[90,140,220,300],amp:pw([[0,.45],[.2,.9],[.7,1],[1,.8]]),asp:.05,jit:.012,vib:[5,.015],oq:.55,drive:1.2,at:.05,rl:.16}),
+      sku:()=>joinV([0,1].map(()=>vox({d:.2,f:pw([[0,520],[.5,850],[1,600]]),F:[pw([[0,300],[.5,480],[1,400]]),pw([[0,2200],[.5,2450],[1,2100]]),3000,4000],B:[90,140,220,300],asp:.04,jit:.012,oq:.55,drive:1.2,at:.015,rl:.07})),.05),
+      bad:()=>vox({d:.78,f:pw([[0,520],[.3,450],[1,250]]),F:[pw([[0,650],[1,480]]),pw([[0,1800],[1,950]]),2900,4000],B:[110,170,250,300],asp:.16,jit:.03,tr:[18,.25],oq:.45,drive:1.6,at:.05,rl:.28})},
+ /* CHÓ: "gâu gâu" - 2 tiếng sủa */
+ dog:{ok:()=>joinV([barkP(.24,360),barkP(.26,330)],.1),
+      sku:()=>joinV([barkP(.14,430),barkP(.14,440),barkP(.16,400)],.05),
+      bad:()=>vox({d:.7,f:pw([[0,105],[.5,95],[1,80]]),F:[450,900,2300,3400],B:[140,200,300,350],tr:[28,.7],asp:.2,nz:.3,jit:.05,oq:.4,drive:2,at:.08,rl:.2})},
+ /* BÒ: "ùm-bò" - nốt trầm dài, formant /u/ trượt sang /o/ */
+ cow:{ok:()=>vox({d:1,f:pw([[0,95],[.25,125],[.6,140],[1,92]]),F:[pw([[0,300],[.3,380],[.6,520],[1,330]]),pw([[0,700],[.3,800],[.6,900],[1,700]]),2400,3400],B:[80,110,200,300],amp:pw([[0,.7],[.3,1],[.7,1],[1,.6]]),vib:[5,.02],jit:.02,asp:.07,tr:[3.5,.12],oq:.7,drive:1.3,at:.15,rl:.35}),
+      sku:()=>vox({d:.5,f:pw([[0,105],[.4,140],[1,110]]),F:[pw([[0,320],[.5,450],[1,350]]),pw([[0,750],[1,800]]),2400,3400],B:[80,110,200,300],vib:[5,.02],jit:.02,asp:.07,oq:.7,drive:1.3,at:.08,rl:.2}),
+      bad:()=>vox({d:1,f:pw([[0,100],[1,70]]),F:[pw([[0,450],[1,300]]),650,2300,3300],B:[90,120,200,300],tr:[6,.3],asp:.1,jit:.04,oq:.7,drive:1.4,at:.1,rl:.35})},
+ /* DÊ: "bee" - tiếng be non, sáng, dễ thương */
+ goat:{ok:()=>beeP(.55,430),
+      sku:()=>joinV([beeP(.26,450),beeP(.26,470)],.06),
+      bad:()=>vox({d:.8,f:pw([[0,340],[1,240]]),F:[pw([[0,480],[1,420]]),pw([[0,1900],[1,1600]]),2900,3800],B:[110,170,250,330],vib:[6,.025],tr:[14,.25],asp:.07,jit:.02,oq:.55,drive:1.2,at:.05,rl:.25})},
+ /* VỊT: "quạc quạc" - 2 tiếng */
+ duck:{ok:()=>joinV([quackP(.2,430),quackP(.18,400)],.09),
+      sku:()=>joinV([0,1,2].map(i=>quackP(.11,470-i*20)),.05),
+      bad:()=>vox({d:.4,f:pw([[0,400],[1,250]]),F:[pw([[0,650],[1,520]]),pw([[0,1500],[1,1200]]),2600,3500],B:[220,280,330,380],tr:[55,.6],asp:.22,nz:.18,jit:.05,oq:.35,drive:1.9,at:.01,rl:.14})}
 };
 function aniSnd(k){const a=ANI[k];return a?{ok:wavURL(a.ok()),sku:wavURL(a.sku()),bad:wavURL(a.bad())}:null}
 function initSnd(){if(SND)return;try{const m=aniSnd(CFG.snk);SND=m?{ok:new Audio(m.ok),sku:new Audio(m.sku),bad:new Audio(m.bad)}:{ok:new Audio(mkWav([1500,2100],300,.95)),sku:new Audio(mkWav([1800,2400,1800],420,.95)),bad:new Audio(mkWav([330,260],480,.95))};for(const k in SND)SND[k].preload='auto'}catch(e){SND=null}}
@@ -1152,7 +1168,7 @@ const volG=()=>Math.pow(Math.min(100,Math.max(1,+CFG.vol||100))/100,1.6);
 function beep(k){if(!CFG.snd)return;
  try{if(IOS||(CFG.snk&&CFG.snk!=='def')){initSnd();const a=SND&&SND[k];if(a){try{a.volume=volG()}catch(_){}a.currentTime=0;const p=a.play();p&&p.catch&&p.catch(()=>{});return}}
   AC=AC||new(window.AudioContext||window.webkitAudioContext)();if(AC.state==='suspended')AC.resume();
-  const T={ok:[[1500,.14],[2100,.16]],qty:[[740,.1],[932,.1],[1245,.2]],sku:[[1800,.13],[2400,.14],[1800,.15]],bad:[[330,.24],[260,.24]]}[k]||[[1500,.15]],g=AC.createGain();g.gain.value=volG();g.connect(AC.destination);let t=AC.currentTime;
+  const T={ok:[[1500,.14],[2100,.16]],qty:[[740,.07],[932,.07],[1245,.14]],sku:[[1800,.13],[2400,.14],[1800,.15]],bad:[[330,.24],[260,.24]]}[k]||[[1500,.15]],g=AC.createGain();g.gain.value=volG();g.connect(AC.destination);let t=AC.currentTime;
   T.forEach(q=>{const o=AC.createOscillator(),e=AC.createGain();o.type='square';o.frequency.value=q[0];e.gain.setValueAtTime(0,t);e.gain.linearRampToValueAtTime(.9,t+.01);e.gain.setValueAtTime(.9,t+q[1]-.03);e.gain.linearRampToValueAtTime(0,t+q[1]);o.connect(e);e.connect(g);o.start(t);o.stop(t+q[1]);t+=q[1]})}catch(e){}}
 function haptic(ok,k){if(!CFG.vib)return;
  /* scan: 1 nhịp dài mạnh · nhập SL: 3 nhịp ngắn · sai: 2 nhịp rất dài */
