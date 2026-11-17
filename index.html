@@ -847,8 +847,6 @@ button.spin svg{animation:rps 1s linear infinite;color:#ea580c}button.spin{point
 /* ẩn mọi nút điều khiển video gốc của iPhone/Android (nút pause hiện giữa camera) */
 #v,.cam video{pointer-events:none!important;-webkit-touch-callout:none}
 video::-webkit-media-controls,video::-webkit-media-controls-panel,video::-webkit-media-controls-overlay-play-button,video::-webkit-media-controls-start-playback-button,video::-webkit-media-controls-play-button,video::-webkit-media-controls-enclosure,video::-webkit-media-controls-overlay-enclosure{display:none!important;opacity:0!important;-webkit-appearance:none!important}
-.cam video{opacity:0;transition:opacity .18s}
-.cam video.rd{opacity:1}
 </style>
 </head><body>
 
@@ -1154,12 +1152,16 @@ const volG=()=>Math.pow(Math.min(100,Math.max(1,+CFG.vol||100))/100,1.6);
 function beep(k){if(!CFG.snd)return;
  try{if(IOS||(CFG.snk&&CFG.snk!=='def')){initSnd();const a=SND&&SND[k];if(a){try{a.volume=volG()}catch(_){}a.currentTime=0;const p=a.play();p&&p.catch&&p.catch(()=>{});return}}
   AC=AC||new(window.AudioContext||window.webkitAudioContext)();if(AC.state==='suspended')AC.resume();
-  const T={ok:[[1500,.14],[2100,.16]],sku:[[1800,.13],[2400,.14],[1800,.15]],bad:[[330,.24],[260,.24]]}[k]||[[1500,.15]],g=AC.createGain();g.gain.value=volG();g.connect(AC.destination);let t=AC.currentTime;
+  const T={ok:[[1500,.14],[2100,.16]],qty:[[740,.1],[932,.1],[1245,.2]],sku:[[1800,.13],[2400,.14],[1800,.15]],bad:[[330,.24],[260,.24]]}[k]||[[1500,.15]],g=AC.createGain();g.gain.value=volG();g.connect(AC.destination);let t=AC.currentTime;
   T.forEach(q=>{const o=AC.createOscillator(),e=AC.createGain();o.type='square';o.frequency.value=q[0];e.gain.setValueAtTime(0,t);e.gain.linearRampToValueAtTime(.9,t+.01);e.gain.setValueAtTime(.9,t+q[1]-.03);e.gain.linearRampToValueAtTime(0,t+q[1]);o.connect(e);e.connect(g);o.start(t);o.stop(t+q[1]);t+=q[1]})}catch(e){}}
-function haptic(ok){if(!CFG.vib)return;try{if(navigator.vibrate){navigator.vibrate(ok?(CFG.vp==2?[80,50,80]:100):[280]);return}
- if(!HL){HL=document.createElement('label');HL.style.cssText='position:fixed;left:-99px;top:-99px;opacity:0;pointer-events:none';const i=document.createElement('input');i.type='checkbox';i.setAttribute('switch','');HL.appendChild(i);document.body.appendChild(HL)}HL.click()}catch(e){}}
+function haptic(ok,k){if(!CFG.vib)return;
+ /* scan: 1 nhịp dài mạnh · nhập SL: 3 nhịp ngắn · sai: 2 nhịp rất dài */
+ const P=ok?(k==='qty'?[70,55,70,55,70]:(CFG.vp==2?[140,60,140]:[220])):[420,100,420];
+ try{if(navigator.vibrate){navigator.vibrate(P);return}
+  if(!HL){HL=document.createElement('label');HL.style.cssText='position:fixed;left:-99px;top:-99px;opacity:0;pointer-events:none';const i=document.createElement('input');i.type='checkbox';i.setAttribute('switch','');HL.appendChild(i);document.body.appendChild(HL)}
+  const n=ok?(k==='qty'?3:2):3,gap=k==='qty'?75:ok?110:140;for(let x=0;x<n;x++)setTimeout(()=>{try{HL.click()}catch(e){}},x*gap)}catch(e){}}
 let lzT=0;function laserOk(){document.querySelectorAll('.frame').forEach(f=>f.classList.add('hit'));clearTimeout(lzT);lzT=setTimeout(()=>document.querySelectorAll('.frame.hit').forEach(f=>f.classList.remove('hit')),200)}
-function fb(ok,k){haptic(ok);beep(k||(ok?'ok':'bad'))}
+function fb(ok,k){haptic(ok,k);beep(k||(ok?'ok':'bad'))}
 let lastAct=Date.now();
 const camMsg=t=>document.querySelectorAll('.camov').forEach(e=>{e.textContent=t;e.style.display=t?'flex':'none'});
 const ocrSt=t=>{try{OCRD.st=t;detUp()}catch(e){}document.querySelectorAll('.ocrb').forEach(e=>{e.textContent=t;e.style.display=t?'block':'none'})};
@@ -1194,9 +1196,9 @@ const fwC=document.createElement('canvas');fwC.width=160;fwC.height=90;const fwX
 let fwAt=0,fwPrev=null,fwMoved=0,fwDone=true,fwShMax=0,fwRF=0;
 function sharpNow(){try{const vw=v.videoWidth,vh=v.videoHeight;fwX.drawImage(v,vw*.2,vh*.3,vw*.6,vh*.4,0,0,160,90);const d=fwX.getImageData(0,0,160,90).data;let sh=0,p=0;
   for(let y=0;y<89;y++)for(let x=0;x<159;x++){const i=(y*160+x)*4,a=d[i]*.3+d[i+1]*.59+d[i+2]*.11,b=d[i+4]*.3+d[i+5]*.59+d[i+6]*.11,c=d[i+640]*.3+d[i+641]*.59+d[i+642]*.11;sh+=Math.abs(a-b)+Math.abs(a-c);p++}return sh/p}catch(e){return 0}}
-let fwBusy=false;
+let fwBusy=false,camT=0;
 function focusRing(){document.querySelectorAll('.cam').forEach(c=>{if(!c.offsetParent)return;const r=document.createElement('div');r.className='fring';r.style.left='50%';r.style.top='50%';c.appendChild(r);setTimeout(()=>r.remove(),700)})}
-async function refocus(){const m=(CAPS&&CAPS.focusMode)||[];if(!track||!m.length||fwBusy||Date.now()-fwRF<900)return;fwRF=Date.now();focusAt=fwRF;fwBusy=true;
+async function refocus(){const m=(CAPS&&CAPS.focusMode)||[];if(!track||!m.length||fwBusy||Date.now()-fwRF<900||(IOS&&Date.now()-camT<5000))return;fwRF=Date.now();focusAt=fwRF;fwBusy=true;
  const back=async()=>{if(track&&m.indexOf('continuous')>=0)await track.applyConstraints({advanced:[{focusMode:'continuous',pointsOfInterest:[{x:.5,y:.5}]}]})};
  try{const fd=CAPS.focusDistance,sh0=sharpNow();let good=false;
   /* Bước 1: nhờ bộ lấy nét gốc của máy (êm, không nhấp nháy) */
@@ -1265,7 +1267,7 @@ async function startCam(){if(stream)return true;
     if(main&&main.deviceId&&main.deviceId!==id){st.getTracks().forEach(t=>t.stop());st=await get(Object.assign({deviceId:{exact:main.deviceId}},base));id=main.deviceId}
     if(id&&CFG.camAuto!==id){CFG.camAuto=id;saveCfg()}}}catch(e){}
   v.srcObject=st;
-  try{await v.play();camMsg('')}catch(e){st.getTracks().forEach(t=>t.stop());v.srcObject=null;camMsg('📷 Chạm vào đây để bật camera');return false}
+  try{await v.play();camMsg('');camT=Date.now()}catch(e){st.getTracks().forEach(t=>t.stop());v.srcObject=null;camMsg('📷 Chạm vào đây để bật camera');return false}
   stream=st;track=st.getVideoTracks()[0];torchWrap(track);CAPS=track.getCapabilities?track.getCapabilities():{};
   const adv=[{focusMode:'continuous'},{exposureMode:'continuous'}];if(CAPS.zoom)adv.push({zoom:Math.max(CAPS.zoom.min,Math.min(CAPS.zoom.max,CFG.zoom||1))});try{await track.applyConstraints({advanced:adv})}catch(e){}
   try{await track.applyConstraints({advanced:[{pointsOfInterest:[{x:.5,y:.5}]}]})}catch(e){}
@@ -1580,17 +1582,18 @@ function qkShow(){try{var _a=document.activeElement;if(_a&&_a.blur&&/^(INPUT|TEX
 function qkPress(k){if(!askBusy||QK.manual)return;if(k==='ok')return qkOk();if(k==='del')QK.s=QK.s.slice(0,-1);else if(QK.s.length<4)QK.s=(QK.s+k).replace(/^0+/,'');qkShow()}
 function qkHide(){askTok++;askBusy=false;lastT=Date.now();$('qk').style.display='none';$('qty').classList.remove('qa');QK={c:'',box:null,s:'',manual:false};qtyVis();
  if(QKH){QKH=0;window.dispatchEvent(new Event('resize'))}}
-function qkOk(){const n=+QK.s||1,c=QK.c,box=QK.box;qkHide();add(c,n,1,box)}
+function qkOk(){const n=+QK.s||1,c=QK.c,box=QK.box;qkHide();QTYF=1;add(c,n,1,box)}
 function qkCancel(){qkHide();$('code').value=''}
 /* Scan N khi NHẬP TAY mã: gõ mã → Enter/✓ → con trỏ nhảy sang ô SL (bàn phím số của máy) → gõ số → Enter */
-function codeSubmit(){if(askBusy&&QK.manual){manualDone();return}const c=$('code').value.trim();if(!c)return;if(CFG.scanN)askManual(c);else add(c,+$('qty').value||1,1)}
+function codeSubmit(){if(askBusy&&QK.manual){manualDone();return}const c=$('code').value.trim();if(!c)return;if(CFG.scanN)askManual(c);else{QTYF=1;add(c,+$('qty').value||1,1)}}
 function askManual(c){askBusy=true;QK={c,box:null,s:'',manual:true};const L=lookup(c);$('sp').textContent='SP: '+(L.name||'Không có trong danh mục');$('gia').textContent='Giá: '+(L.list?fmt(L.list):'-');
  const q=$('qty');q.readOnly=false;q.setAttribute('inputmode','numeric');q.value='';q.classList.add('qa');setTimeout(()=>{try{q.focus();q.select&&q.select()}catch(e){}},30)}
-function manualDone(){const n=+$('qty').value||1,c=QK.c,box=QK.box;askBusy=false;QK={c:'',box:null,s:'',manual:false};$('qty').classList.remove('qa');qtyVis();add(c,n,1,box);try{if(box)$('qty').blur();else $('code').focus()}catch(e){}}
+function manualDone(){const n=+$('qty').value||1,c=QK.c,box=QK.box;askBusy=false;QK={c:'',box:null,s:'',manual:false};$('qty').classList.remove('qa');qtyVis();QTYF=1;add(c,n,1,box);try{if(box)$('qty').blur();else $('code').focus()}catch(e){}}
 function manualCancel(){if(askBusy&&QK.manual){askBusy=false;QK={c:'',box:null,s:'',manual:false};$('qty').classList.remove('qa');qtyVis()}}
-function add(c,q,force,box){c=String(c).trim();if(!c||!cur)return;if(!force&&cool(c))return;lastC=c;lastT=Date.now();
+let QTYF=0;
+function add(c,q,force,box){const qf=QTYF;QTYF=0;c=String(c).trim();if(!c||!cur)return;if(!force&&cool(c))return;lastC=c;lastT=Date.now();
  const L=lookup(c),r={c,q,t:Date.now()};if(cur.type==='tc'){r.b=/^\d{13}$/.test(c)?c:(L.cat&&L.cat.b)||'';r.s=L.sku||''}
- cur.rows.push(r);saveSS();fb(cur.type==='tc'||L.found);$('code').value='';if(!CFG.scanN&&CFG.sl1)$('qty').value=1;$('sp').textContent='SP: '+(L.name||'Không có trong danh mục');$('gia').textContent='Giá: '+(L.list?fmt(L.list):'-');renderS();
+ cur.rows.push(r);saveSS();{const okk=cur.type==='tc'||L.found;fb(okk,okk&&qf?'qty':undefined)}$('code').value='';if(!CFG.scanN&&CFG.sl1)$('qty').value=1;$('sp').textContent='SP: '+(L.name||'Không có trong danh mục');$('gia').textContent='Giá: '+(L.list?fmt(L.list):'-');renderS();
  if(cur.type==='tc'&&CFG.ocrScan&&CFG.np&&!r.s&&/^\d{13}$/.test(c)&&box&&stream)bgOCR(r,box)}
 async function bgOCR(r,box){const sku=await resolve7(r.c,box,false);if(sku){r.s=sku;rememberSku(r.c,sku);saveSS();fb(true,'sku');if(HS[HS.length-1]==='ses')renderS()}}
 $('code').onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();codeSubmit()}};$('code').addEventListener('input',manualCancel);$('codeok').onclick=codeSubmit;
@@ -2018,10 +2021,7 @@ async function onlTake(x,j){if(!j)j=await onlGet(x);if(!j)return;const type=LT;
 </script>
 <script>
 /* hình camera đã chạy thì tắt ngay lớp 'chạm để bật / tạm dừng' (iPhone sau khi cho phép camera) */
-setInterval(()=>{try{if(stream&&v.videoWidth&&!v.paused&&!v.classList.contains('rd'))v.classList.add('rd')}catch(e){}},700);
-function vvHide(){try{v.classList.remove('rd')}catch(e){}}
-function vvShow(){try{if(v.requestVideoFrameCallback){v.requestVideoFrameCallback(()=>v.classList.add('rd'))}else setTimeout(()=>v.classList.add('rd'),250)}catch(e){v.classList.add('rd')}}
-(function(){try{const vv=typeof v!=='undefined'&&v;if(vv){['playing','loadeddata'].forEach(ev=>vv.addEventListener(ev,()=>{if(stream&&vv.videoWidth){camMsg('');vvShow()}}));vvHide();['emptied','abort'].forEach(ev=>vv.addEventListener(ev,vvHide))}}catch(e){}})();
+(function(){try{const vv=typeof v!=='undefined'&&v;if(vv){['playing','loadeddata'].forEach(ev=>vv.addEventListener(ev,()=>{if(stream&&vv.videoWidth){camMsg('')}}))}}catch(e){}})();
 </script>
 <script>if('serviceWorker' in navigator&&location.protocol.indexOf('http')===0)addEventListener('load',function(){navigator.serviceWorker.register('sw.js').catch(function(){})});</script>
 </body></html>
