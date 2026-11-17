@@ -847,6 +847,8 @@ button.spin svg{animation:rps 1s linear infinite;color:#ea580c}button.spin{point
 /* ẩn mọi nút điều khiển video gốc của iPhone/Android (nút pause hiện giữa camera) */
 #v,.cam video{pointer-events:none!important;-webkit-touch-callout:none}
 video::-webkit-media-controls,video::-webkit-media-controls-panel,video::-webkit-media-controls-overlay-play-button,video::-webkit-media-controls-start-playback-button,video::-webkit-media-controls-play-button,video::-webkit-media-controls-enclosure,video::-webkit-media-controls-overlay-enclosure{display:none!important;opacity:0!important;-webkit-appearance:none!important}
+.cam video{opacity:0;transition:opacity .18s}
+.cam video.rd{opacity:1}
 </style>
 </head><body>
 
@@ -919,7 +921,7 @@ video::-webkit-media-controls,video::-webkit-media-controls-panel,video::-webkit
 <div class="gi"><div class="gx"><b>Kiểu rung</b></div><div class="seg"><label class="sg"><input type="radio" name="vp" data-k="vp" value="1"><span>Nhẹ 1 lần</span></label><label class="sg"><input type="radio" name="vp" data-k="vp" value="2"><span>Mạnh 2 lần</span></label></div></div></div>
 <div class="gt">Cách quét (tiếp)</div>
 <div class="grp"><div class="gi"><div class="gx"><b>Chờ giữa 2 lần quét cùng mã</b></div><div class="seg"><label class="sg"><input type="radio" name="cd" data-k="cd" value="500"><span>0.5 giây</span></label><label class="sg"><input type="radio" name="cd" data-k="cd" value="1000"><span>1 giây</span></label><label class="sg"><input type="radio" name="cd" data-k="cd" value="1500"><span>1.5 giây</span></label><label class="sg"><input type="radio" name="cd" data-k="cd" value="2000"><span>2 giây</span></label></div></div>
-<div class="gi r"><div class="gx"><b>Camera 1080p</b><small>Nét hơn nhưng nặng máy hơn – tắt nếu thấy giật</small></div><input type="checkbox" data-k="hd"></div><div class="gi r"><div class="gx"><b>Toàn màn hình (Android)</b><small>Ẩn thanh phía dưới khi dùng app đã cài – vuốt mép màn hình để hiện lại</small></div><input type="checkbox" data-k="fs"></div></div>
+<div class="gi r"><div class="gx"><b>Camera 1080p</b><small>Nét hơn nhưng nặng máy hơn – tắt nếu thấy giật</small></div><input type="checkbox" data-k="hd"></div></div>
 <div class="gt">Đọc 7 số (SKU) trên tem</div>
 <div class="grp"><div class="gi"><div class="gx"><small>Mã vạch 13 số và dãy 7 số (SKU) in trên tem là HAI thứ khác nhau, không liên quan gì đến nhau. App không lấy bất kỳ con số nào trong mã 13 số để làm SKU. Chỉ khi mã 13 số chưa có trong danh mục, app mới cố đọc chữ 7 số in trên tem; đọc được thì điền, không đọc được thì để trống. Số lạ (không có trong danh mục) phải đọc trùng 3 lần mới được nhận để tránh sai; số có trong danh mục chỉ cần 1–2 lần nên rất nhanh.</small></div></div>
 <div class="gi r"><div class="gx"><b>Tự đọc khi Test giá</b><small>Quét mã 13 số không có trong danh mục → đọc 7 số trên tem rồi hiện giá và khuyến mãi.</small></div><input type="checkbox" data-k="ocrTest"></div>
@@ -2016,20 +2018,10 @@ async function onlTake(x,j){if(!j)j=await onlGet(x);if(!j)return;const type=LT;
 </script>
 <script>
 /* hình camera đã chạy thì tắt ngay lớp 'chạm để bật / tạm dừng' (iPhone sau khi cho phép camera) */
-(function(){try{const vv=typeof v!=='undefined'&&v;if(vv){['playing','loadeddata'].forEach(ev=>vv.addEventListener(ev,()=>{if(stream&&vv.videoWidth)camMsg('')}))}}catch(e){}})();
-</script>
-<script>
-/* toàn màn hình trên Android (app đã cài): ẩn thanh điều hướng phía dưới */
-(function(){try{
- const AND=/Android/i.test(navigator.userAgent),STAND=(window.matchMedia&&matchMedia('(display-mode: standalone)').matches)||(window.matchMedia&&matchMedia('(display-mode: fullscreen)').matches);
- const fsOn=()=>{if(CFG.fs===undefined)CFG.fs=1;return !!CFG.fs};
- const el=document.documentElement,isFs=()=>!!(document.fullscreenElement||document.webkitFullscreenElement);
- const enter=()=>{if(!AND||!STAND||!fsOn()||isFs())return;const f=el.requestFullscreen||el.webkitRequestFullscreen;if(!f)return;try{const r=f.call(el,{navigationUI:'hide'});if(r&&r.catch)r.catch(()=>{})}catch(e){}};
- const arm=()=>{if(!AND||!STAND)return;const h=()=>{enter();if(isFs()||!fsOn()){document.removeEventListener('touchend',h,true);document.removeEventListener('click',h,true)}};document.addEventListener('touchend',h,true);document.addEventListener('click',h,true)};
- arm();
- document.addEventListener('fullscreenchange',()=>{if(!isFs())arm()});
- document.addEventListener('change',e=>{const t=e.target;if(t&&t.dataset&&t.dataset.k==='fs'){if(t.checked)arm();else if(isFs()){try{(document.exitFullscreen||document.webkitExitFullscreen).call(document)}catch(x){}}}});
-}catch(e){}})();
+setInterval(()=>{try{if(stream&&v.videoWidth&&!v.paused&&!v.classList.contains('rd'))v.classList.add('rd')}catch(e){}},700);
+function vvHide(){try{v.classList.remove('rd')}catch(e){}}
+function vvShow(){try{if(v.requestVideoFrameCallback){v.requestVideoFrameCallback(()=>v.classList.add('rd'))}else setTimeout(()=>v.classList.add('rd'),250)}catch(e){v.classList.add('rd')}}
+(function(){try{const vv=typeof v!=='undefined'&&v;if(vv){['playing','loadeddata'].forEach(ev=>vv.addEventListener(ev,()=>{if(stream&&vv.videoWidth){camMsg('');vvShow()}}));vvHide();['emptied','abort'].forEach(ev=>vv.addEventListener(ev,vvHide))}}catch(e){}})();
 </script>
 <script>if('serviceWorker' in navigator&&location.protocol.indexOf('http')===0)addEventListener('load',function(){navigator.serviceWorker.register('sw.js').catch(function(){})});</script>
 </body></html>
